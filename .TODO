@@ -1,0 +1,11 @@
+Couldn't be bothered to make issues as of now, so here we go:
+
+1. Load the token safely, preferably from an online vault
+2. Write up apply.py
+3. Setup logging
+4. Write up setup.py
+5. Figure out how to get specific context - at the moment command can be typed anywhere,
+would like to do different things depending on where was it typed
+
+Grab token from here
+# https://discordapp.com/developers/applications
