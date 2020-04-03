@@ -2,4 +2,4 @@
 TODO: Docs
 """
 COMMAND_PREFIX = "!"
-TOKEN = "PLACE-TOKEN-HERE"
+TOKEN = ""
