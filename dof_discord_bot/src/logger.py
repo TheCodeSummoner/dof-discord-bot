@@ -14,8 +14,8 @@ import json as _json
 import os as _os
 
 _CONFIG_FILE_PATH = _os.path.join(_LOG_DIR, "config.json")
-_FILE_HANDLERS = {"logging.FileHandler", "log.restricted_file_handler._RestrictedFileHandler",
-                  "log.verbose_file_handler._VerboseFileHandler"}
+_FILE_HANDLERS = {"logging.FileHandler", "dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
+                  "dof_discord_bot.log.verbose_file_handler._VerboseFileHandler"}
 
 
 class LogError(Exception):
