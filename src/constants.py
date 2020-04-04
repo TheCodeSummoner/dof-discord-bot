@@ -1,5 +1,5 @@
 """
-TODO: Docs
+Constants and other static values.
 """
 import os as _os
 
@@ -17,4 +17,4 @@ COMMANDS = [
     "!cancel",
     "!submit"
 ]
-TOKEN = ""
+TOKEN = "NjkzMTU2NDA2NDI5MzUxOTQ2.XogxOA.WVj3_uXmp6V1jyXeLVeNJDAyyaE"

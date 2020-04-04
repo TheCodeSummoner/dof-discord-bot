@@ -2,7 +2,7 @@
 Verbose File Handler
 ====================
 
-Helper module storing the class to load in the config files.
+Helper module storing the class to load in the logging config files.
 
 Additionally amends the following logging record fields to give more relevant information:
 
@@ -19,9 +19,7 @@ _ROOT_DIR = _os.path.normpath(_os.path.join(_os.path.dirname(__file__), ".."))
 
 def _get_frame():
     """
-    Return the frame that called the logging function.
-
-    :return: Frame (see the `inspect' module for details)
+    Return the frame (see the `inspect' module for details) that called the logging function.
     """
     stack = _inspect.stack()[::-1]
 
@@ -50,9 +48,6 @@ class _VerboseFileHandler(_logging.FileHandler):
     def emit(self, record):
         """
         Overridden function modified so any logging call is put into the verbose file.
-
-        :param record: Record used in the emit function
-        :return: Result of the emit function
         """
         caller = _inspect.getframeinfo(_get_frame())
         record.filename = _os.path.relpath(caller.filename, _ROOT_DIR)

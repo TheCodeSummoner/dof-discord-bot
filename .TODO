@@ -1,10 +1,22 @@
-Couldn't be bothered to make issues as of now, so here we go:
+Personal to-do for issues I couldn't be bothered to put on the board...
 
-Load the token safely, preferably from an online vault
-Write up apply.py
-Write up setup.py
-Figure out how to get specific context - at the moment command can be typed anywhere, would like to do different things depending on where was it typed - can now restrict to dm only
-Add messages resource rather than hardcoded messages
+1. Load the token safely, preferably from an online vault, or at least from a file - currently at https://discordapp.com/developers/applications
+2. Add messages resources rather than hardcoded messages
 
-Grab token from here
-# https://discordapp.com/developers/applications
+3. Add something like this for welcome cog
+
+'''
+@commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        """
+        TODO: Docs, proper code
+        """
+        Log.debug(f"{member.display_name} joined DoF discord for the first time")
+
+        # TODO: Put this message into a different channel
+        await self._bot.channels["bot-testing"].send(f"Welcome to DoF discord, {member.display_name}! Please type !help"
+                                                     f" to learn more about the clan and possible commands!")
+'''
+
+4. Consider adding enums for application process - this way could override entire on_message bot functionality
+depending on the application status (in case other private conversations should be added)

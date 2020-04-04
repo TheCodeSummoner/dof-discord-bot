@@ -1,12 +1,25 @@
 """
-TODO: Docs
+An unorganised collection of non-static constructs, such as classes or utility functions.
 """
 import discord
 
 
 class MemberApplication:
     """
-    TODO: Docs
+    Member application class storing information about each applicant and the application stage.
+
+    Functions
+    ---------
+
+    The following list shortly summarises each function:
+
+        * progress - get application progress
+        * question - get current question
+        * answers - get current answers
+        * finished - is the application finished
+        * add_answer - register a new answer
+
+    See usage example in `ApplicationCog` (*apply.py*)
     """
     questions = [
         "What is your Steam profile link?",
@@ -19,7 +32,6 @@ class MemberApplication:
         "When can you usually play (BST zone for EUs and EST for NAs)?",
         "Anything you would like to add (type \"No\" if nothing to add)?"
     ]
-
     _questions_summary = [
         "Steam profile",
         "TaleWorlds profile",
@@ -40,21 +52,21 @@ class MemberApplication:
     @property
     def progress(self) -> int:
         """
-        TODO: Docs
+        Getter for which question is currently being answered (+1 because humans generally don't count from 0)
         """
         return self._progress + 1
 
     @property
-    def next_question(self) -> str:
+    def question(self) -> str:
         """
-        TODO: Docs
+        Getter for current question.
         """
         return MemberApplication.questions[self._progress]
 
     @property
     def answers(self) -> str:
         """
-        TODO: Docs
+        Get formatted answers.
         """
         return str.join("\n", (f"{MemberApplication._questions_summary[i]}: {self._answers[i]}"
                                for i in range(len(self._answers)))) + "\n"
@@ -62,13 +74,13 @@ class MemberApplication:
     @property
     def finished(self) -> bool:
         """
-        TODO: Docs
+        Get boolean determining whether application should be considered finished.
         """
         return self._progress == len(MemberApplication.questions)
 
     def add_answer(self, answer: str):
         """
-        TODO: Docs
+        Function used to register a new answer and increase the progress counter.
         """
         self._progress += 1
         self._answers.append(answer)

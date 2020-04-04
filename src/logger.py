@@ -4,7 +4,8 @@ Logger
 
 Module storing an implementation of a static log class and all values associated with it.
 
-The config.json file stored within the log folder is used to configure most of the logging functionality.
+The config.json file stored within the log folder is used to configure most of the logging functionality, however
+working with this module provides more direct control over the mechanisms.
 """
 from .constants import LOG_DIR as _LOG_DIR
 import logging as _logging
@@ -27,6 +28,7 @@ class LogError(Exception):
 def _configure(config_file_path: str = _CONFIG_FILE_PATH, log_directory: str = _LOG_DIR):
     """
     Helper function to configure the built-in logging module and retrieve a logger object.
+
     Uses a JSON configuration file.
 
     Providing `config_file_path` will result in reconfiguring the built-in logging functionalities, rather than
@@ -35,7 +37,7 @@ def _configure(config_file_path: str = _CONFIG_FILE_PATH, log_directory: str = _
     if not _os.path.exists(config_file_path):
         raise LogError(f"Failed to find the log config file at {config_file_path}")
     if not _os.path.exists(log_directory):
-        raise LogError(f"The log directory does not exist - {log_directory}")
+        raise LogError(f"Log directory does not exist at {log_directory}")
 
     try:
         with open(config_file_path, "r") as f:
@@ -63,6 +65,7 @@ class Log:
     ---------
 
     The following list shortly summarises each function:
+
         * reconfigure - a method to change the files' location
         * debug - a method to log a debug message
         * info - a method to log an info message
@@ -72,11 +75,12 @@ class Log:
     Usage
     -----
 
-    The class is static and should be used as follows::
+    This class is static and should be used by directly calling the classmethods, as follows::
 
         Log.debug("Debug message")
         Log.info("Info message")
-        ...
+        Log.warning("Warning message")
+        Log.error("Error message")
     """
     _configure()
     _logger = _logging.getLogger("dof-discord-bot")
