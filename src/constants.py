@@ -17,4 +17,4 @@ COMMANDS = [
     "!cancel",
     "!submit"
 ]
-TOKEN = "NjkzMTU2NDA2NDI5MzUxOTQ2.XogxOA.WVj3_uXmp6V1jyXeLVeNJDAyyaE"
+TOKEN = ""
