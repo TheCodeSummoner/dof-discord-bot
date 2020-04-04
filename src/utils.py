@@ -20,6 +20,18 @@ class MemberApplication:
         "Anything you would like to add (type \"No\" if nothing to add)?"
     ]
 
+    _questions_summary = [
+        "Steam profile",
+        "TaleWorlds profile",
+        "Country",
+        "English fluency",
+        "How did you find out about DoF",
+        "Why would you like to become a Defender",
+        "Other games",
+        "Time availability",
+        "Other"
+    ]
+
     def __init__(self, member: discord.Member):
         self._member = member
         self._progress = 0
@@ -44,7 +56,8 @@ class MemberApplication:
         """
         TODO: Docs
         """
-        return str.join("\n", self._answers)
+        return str.join("\n", (f"{MemberApplication._questions_summary[i]}: {self._answers[i]}"
+                               for i in range(len(self._answers)))) + "\n"
 
     @property
     def finished(self) -> bool:
