@@ -12,4 +12,9 @@ LOG_DIR = _os.path.join(ROOT_DIR, "log")
 TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 
 COMMAND_PREFIX = "!"
+COMMANDS = [
+    "!apply",
+    "!cancel",
+    "!submit"
+]
 TOKEN = ""
