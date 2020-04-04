@@ -16,6 +16,7 @@ class Bot(commands.Bot):
     def __init__(self, command_prefix: str):
         super().__init__(command_prefix)
         self._applications = dict()
+        self._channels = dict()
         self._load_extensions()
 
     def _load_extensions(self):
@@ -30,9 +31,7 @@ class Bot(commands.Bot):
         """
         TODO: Docs
         """
-        return {
-            "bot-testing": self.get_channel(693477969888411669)
-        }
+        return self._channels
 
     @property
     def applications(self) -> typing.Dict[discord.Member, MemberApplication]:
@@ -41,8 +40,16 @@ class Bot(commands.Bot):
         """
         return self._applications
 
+    def _discover_channels(self):
+        """
+        TODO: Docs
+        """
+        for channel in self.get_all_channels():
+            self._channels[channel.name] = channel
+
     async def on_ready(self):
         """
         TODO: Docs
         """
         Log.info(f"Logged on as {self.user}")
+        self._discover_channels()

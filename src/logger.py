@@ -1,8 +1,10 @@
 """
 Logger
 ======
+
 Module storing an implementation of a static log class and all values associated with it.
-The config.json file stored within the assets folder is used to configure most of the logging functionality.
+
+The config.json file stored within the log folder is used to configure most of the logging functionality.
 """
 from .constants import LOG_DIR as _LOG_DIR
 import logging as _logging
@@ -11,8 +13,8 @@ import json as _json
 import os as _os
 
 _CONFIG_FILE_PATH = _os.path.join(_LOG_DIR, "config.json")
-_FILE_HANDLERS = {"logging.FileHandler", "assets.common_logger.restricted_file_handler._RestrictedFileHandler",
-                  "assets.common_logger.verbose_file_handler._VerboseFileHandler"}
+_FILE_HANDLERS = {"logging.FileHandler", "log.restricted_file_handler._RestrictedFileHandler",
+                  "log.verbose_file_handler._VerboseFileHandler"}
 
 
 class LogError(Exception):
@@ -27,13 +29,8 @@ def _configure(config_file_path: str = _CONFIG_FILE_PATH, log_directory: str = _
     Helper function to configure the built-in logging module and retrieve a logger object.
     Uses a JSON configuration file.
 
-    ..warning::
-        Providing `config_file_path` will result in reconfiguring the built-in logging functionalities, rather than
-        specific logger's config - use with caution!
-
-    :param config_file_path: Path to the JSON configuration file
-    :param log_directory: Path to where the logs should be stored
-    :raises: LogError
+    Providing `config_file_path` will result in reconfiguring the built-in logging functionalities, rather than
+    specific logger's config - use with caution!
     """
     if not _os.path.exists(config_file_path):
         raise LogError(f"Failed to find the log config file at {config_file_path}")
@@ -79,6 +76,7 @@ class Log:
 
         Log.debug("Debug message")
         Log.info("Info message")
+        ...
     """
     _configure()
     _logger = _logging.getLogger("dof-discord-bot")
@@ -87,10 +85,6 @@ class Log:
     def debug(cls, message: str, *args, **kwargs):
         """
         Standard debug logging.
-
-        :param message: Message to log
-        :param args: Args passed to the internal logger
-        :param kwargs: Kwargs passed to the internal logger
         """
         cls._logger.debug(message, *args, **kwargs)
 
@@ -98,10 +92,6 @@ class Log:
     def info(cls, message: str, *args, **kwargs):
         """
         Standard info logging.
-
-        :param message: Message to log
-        :param args: Args passed to the internal logger
-        :param kwargs: Kwargs passed to the internal logger
         """
         cls._logger.info(message, *args, **kwargs)
 
@@ -109,10 +99,6 @@ class Log:
     def warning(cls, message: str, *args, **kwargs):
         """
         Standard warning logging.
-
-        :param message: Message to log
-        :param args: Args passed to the internal logger
-        :param kwargs: Kwargs passed to the internal logger
         """
         cls._logger.warning(message, *args, **kwargs)
 
@@ -120,9 +106,5 @@ class Log:
     def error(cls, message: str, *args, **kwargs):
         """
         Standard error logging.
-
-        :param message: Message to log
-        :param args: Args passed to the internal logger
-        :param kwargs: Kwargs passed to the internal logger
         """
         cls._logger.error(message, *args, **kwargs)

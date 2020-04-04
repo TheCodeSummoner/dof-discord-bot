@@ -10,15 +10,15 @@ class MemberApplication:
     """
     questions = [
         "What is your Steam profile link?",
-        "What is your TaleWorlds profile link (if you have one)?"]#,
-    #     "Which country are you from?",
-    #     "How well can you speak English?",
-    #     "How did you find out about DoF?",
-    #     "Why would you like to become a Defender?",
-    #     "What other games do you play?",
-    #     "When can you usually play (BST zone for EUs and EST for NAs)?",
-    #     "Anything you would like to add (type \"No\" if nothing to add)?"
-    # ]
+        "What is your TaleWorlds profile link (if you have one)?",
+        "Which country are you from?",
+        "How well can you speak English?",
+        "How did you find out about DoF?",
+        "Why would you like to become a Defender?",
+        "What other games do you play?",
+        "When can you usually play (BST zone for EUs and EST for NAs)?",
+        "Anything you would like to add (type \"No\" if nothing to add)?"
+    ]
 
     def __init__(self, member: discord.Member):
         self._member = member

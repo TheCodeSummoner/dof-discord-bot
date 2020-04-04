@@ -25,35 +25,35 @@
             "stream":"ext://sys.stdout"
         },
         "debug":{
-            "class":"assets.common_logger.restricted_file_handler._RestrictedFileHandler",
+            "class":"log.restricted_file_handler._RestrictedFileHandler",
             "level":"DEBUG",
             "formatter":"basic",
             "encoding":"utf8",
             "filename":"debug.log"
         },
         "info":{
-            "class":"assets.common_logger.restricted_file_handler._RestrictedFileHandler",
+            "class":"log.restricted_file_handler._RestrictedFileHandler",
             "level":"INFO",
             "formatter":"basic",
             "encoding":"utf8",
             "filename":"info.log"
         },
         "warning":{
-            "class":"assets.common_logger.restricted_file_handler._RestrictedFileHandler",
+            "class":"log.restricted_file_handler._RestrictedFileHandler",
             "level":"WARNING",
             "formatter":"basic",
             "encoding":"utf8",
             "filename":"warning.log"
         },
         "error":{
-            "class":"assets.common_logger.restricted_file_handler._RestrictedFileHandler",
+            "class":"log.restricted_file_handler._RestrictedFileHandler",
             "level":"ERROR",
             "formatter":"basic",
             "encoding":"utf8",
             "filename":"error.log"
         },
         "verbose":{
-            "class":"assets.common_logger.verbose_file_handler._VerboseFileHandler",
+            "class":"log.verbose_file_handler._VerboseFileHandler",
             "level":"DEBUG",
             "formatter":"verbose",
             "encoding":"utf8",

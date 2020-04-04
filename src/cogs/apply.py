@@ -24,6 +24,8 @@ class ApplicationCog(commands.Cog):
         TODO: Docs, proper code
         """
         Log.debug(f"{member.display_name} joined DoF discord for the first time")
+
+        # TODO: Put this message into a different channel
         await self._bot.channels["bot-testing"].send(f"Welcome to DoF discord, {member.display_name}! Please type !help"
                                                      f" to learn more about the clan and possible commands!")
 
@@ -102,8 +104,8 @@ class ApplicationCog(commands.Cog):
         if member in self._bot.applications and self._bot.applications[member].finished:
             Log.info(f"Received application submission request from {member.display_name}")
 
+            await self._submit_application(member)
             await member.send(f"Application from {member.display_name} submitted")
-            # TODO: Submit application
             del self._bot.applications[member]
         else:
             await member.send(f"Couldn't find a finished application from {member.display_name} - please check you "
@@ -151,6 +153,13 @@ class ApplicationCog(commands.Cog):
             await member.send("Hi! I have noticed you've tried to use the !cancel command, but it can only be used in a"
                               " direct message. If you would like to cancel a DoF application, please type the command "
                               "again here.")
+
+    async def _submit_application(self, member: discord.Member):
+        """
+        TODO: Docs
+        """
+        await self._bot.channels["applications"].send(f"New application from {member.display_name}:\n\n"
+                                                      f"{self._bot.applications[member].answers}")
 
 
 def setup(bot: commands.Bot):
