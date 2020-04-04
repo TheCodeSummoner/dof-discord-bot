@@ -45,7 +45,8 @@ class ApplicationCog(commands.Cog):
 
             # Check if the message is application-related
             if member in self._bot.applications:
-                self._bot.applications[member].add_answer(message.content)
+                if not self._bot.applications[member].finished:
+                    self._bot.applications[member].add_answer(message.content)
 
                 # Once last question was answered, prepare current application for a review and ask for confirmation
                 if self._bot.applications[member].finished:
