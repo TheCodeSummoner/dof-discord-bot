@@ -1,0 +1,76 @@
+{
+    "version":1,
+    "formatters":{
+        "console":{
+            "format":"{asctime} {levelname} {message}",
+            "datefmt":"%y-%m-%d %H:%M:%S",
+            "style":"{"
+        },
+        "basic":{
+            "format":"{asctime} {levelname} {message}",
+            "datefmt":"%y-%m-%d %H:%M:%S",
+            "style":"{"
+        },
+        "verbose":{
+            "format":"{asctime}  {levelname} \t| {processName} \t {process} \t| {filename} \t| {function} \t {lineno} \t| {message}",
+            "datefmt":"%y-%m-%d %H:%M:%S",
+            "style":"{"
+        }
+    },
+    "handlers":{
+        "console":{
+            "class":"logging.StreamHandler",
+            "level":"INFO",
+            "formatter":"console",
+            "stream":"ext://sys.stdout"
+        },
+        "debug":{
+            "class":"dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
+            "level":"DEBUG",
+            "formatter":"basic",
+            "encoding":"utf8",
+            "filename":"debug.log"
+        },
+        "info":{
+            "class":"dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
+            "level":"INFO",
+            "formatter":"basic",
+            "encoding":"utf8",
+            "filename":"info.log"
+        },
+        "warning":{
+            "class":"dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
+            "level":"WARNING",
+            "formatter":"basic",
+            "encoding":"utf8",
+            "filename":"warning.log"
+        },
+        "error":{
+            "class":"dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
+            "level":"ERROR",
+            "formatter":"basic",
+            "encoding":"utf8",
+            "filename":"error.log"
+        },
+        "verbose":{
+            "class":"dof_discord_bot.log.verbose_file_handler._VerboseFileHandler",
+            "level":"DEBUG",
+            "formatter":"verbose",
+            "encoding":"utf8",
+            "filename":"verbose.log"
+        }
+    },
+    "loggers": {
+        "dof-discord-bot": {
+            "level": "DEBUG",
+            "handlers": [
+                "console",
+                "debug",
+                "info",
+                "warning",
+                "error",
+                "verbose"
+            ]
+        }
+    }
+}
