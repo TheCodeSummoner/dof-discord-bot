@@ -44,7 +44,7 @@ class Bot(commands.Bot):
         """
         Function used to load all cogs.
         """
-        self.load_extension("src.cogs.apply")
+        self.load_extension("dof_discord_bot.src.cogs.apply")
         Log.info("Extensions loaded")
 
     @property

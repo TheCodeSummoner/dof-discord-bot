@@ -6,7 +6,7 @@ Prerequisites
 -------------
 
 You must have Python 3 installed. You must have the token loaded (check `src/constants`). You must install this package
-by running `python -m pip install .` in `dof-discord-bot` (root) folder.
+by running `pip install .` in `dof-discord-bot` (root) folder.
 
 Usage
 -----
