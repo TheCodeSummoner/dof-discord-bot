@@ -23,26 +23,26 @@ class MemberApplication:
     See usage example in `ApplicationCog` (*apply.py*)
     """
     questions = [
-        "What is your Steam profile link?",
-        "What is your TaleWorlds profile link (if you have one)?",
-        "Which country are you from?",
-        "How well can you speak English?",
-        "How did you find out about DoF?",
-        "Why would you like to become a Defender?",
-        "What other games do you play?",
-        "When can you usually play (BST zone for EUs and EST for NAs)?",
-        "Anything you would like to add (type \"No\" if nothing to add)?"
+        strings.STEAM_PROFILE_LONG,
+        strings.TW_PROFILE_LONG,
+        strings.COUNTRY_LONG,
+        strings.ENGLISH_FLUENCY_LONG,
+        strings.DOF_FIRST_ENCOUNTER_LONG,
+        strings.DOF_WHY_JOIN_LONG,
+        strings.OTHER_GAMES_LONG,
+        strings.TIME_AVAILABILITY_LONG,
+        strings.ANYTHING_ELSE_LONG
     ]
     _questions_summary = [
-        "Steam profile",
-        "TaleWorlds profile",
-        "Country",
-        "English fluency",
-        "How did you find out about DoF",
-        "Why would you like to become a Defender",
-        "Other games",
-        "Time availability",
-        "Other"
+        strings.STEAM_PROFILE_SHORT,
+        strings.TW_PROFILE_SHORT,
+        strings.COUNTRY_SHORT,
+        strings.ENGLISH_FLUENCY_SHORT,
+        strings.DOF_FIRST_ENCOUNTER_SHORT,
+        strings.DOF_WHY_JOIN_SHORT,
+        strings.OTHER_GAMES_SHORT,
+        strings.TIME_AVAILABILITY_SHORT,
+        strings.ANYTHING_ELSE_SHORT
     ]
 
     def __init__(self, member: discord.Member):
