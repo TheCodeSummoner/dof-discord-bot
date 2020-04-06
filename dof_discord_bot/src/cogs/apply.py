@@ -63,10 +63,8 @@ class ApplicationCog(commands.Cog):
                 # Once last question was answered, prepare current application for a review and ask for confirmation
                 if self._bot.applications[member].finished:
                     Log.debug(f"Application by {member.display_name} completed")
-                    await member.send(f"You have completed the application - here is what you've written:\n"
-                                      f"{self._bot.applications[member].answers}\n"
-                                      f"Would you like to submit this application? Type !submit to submit it or "
-                                      f"!cancel to cancel the application")
+                    await member.send(strings.MEMBER_APPLICATION_COMPLETED
+                                      .format(self._bot.applications[member].answers))
                 else:
                     await member.send(f"{self._bot.applications[member].question}")
 
@@ -87,19 +85,17 @@ class ApplicationCog(commands.Cog):
 
         if member not in self._bot.applications:
             Log.info(f"Received new application request from {member.display_name}")
-            await member.send(strings.ON_NEW_MEMBER_APPLICATION.format(member.display_name))
+            await member.send(strings.NEW_MEMBER_APPLICATION.format(member.display_name))
             self._bot.applications[member] = MemberApplication(member)
             await member.send(f"{self._bot.applications[member].question}")
         else:
             if self._bot.applications[member].finished:
-                await member.send(f"You have completed the application - here is what you've written:\n"
-                                  f"{self._bot.applications[member].answers}\n"
-                                  f"Would you like to submit this application? Type !submit to submit it or "
-                                  f"!cancel to cancel the application")
+                await member.send(strings.MEMBER_APPLICATION_COMPLETED
+                                  .format(self._bot.applications[member].answers))
             else:
-                await member.send(f"You are currently on step {self._bot.applications[member].progress} out of "
-                                  f"{len(MemberApplication.questions)}.\n"
-                                  f"Current question is: {self._bot.applications[member].question}")
+                await member.send(strings.CHECK_APPLICATION_PROGRESS
+                                  .format(self._bot.applications[member].progress,len(MemberApplication.questions),
+                                          self._bot.applications[member].question))
 
     @apply.error
     async def apply_handler(self, ctx, error: discord.DiscordException):
@@ -111,9 +107,7 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !apply command in a non-dm context, from {member.display_name}")
-            await member.send("Hi! I have noticed you've tried to use the !apply command, but it can only be used in a "
-                              "direct message. If you would like to start a DoF application, please type the command "
-                              "again here.")
+            await member.send(strings.NOT_APPLICATION_DM.format("!apply", "start"))
 
     @commands.dm_only()
     @commands.command()
@@ -133,11 +127,10 @@ class ApplicationCog(commands.Cog):
             Log.info(f"Received application submission request from {member.display_name}")
 
             await self._submit_application(member)
-            await member.send(f"Application from {member.display_name} submitted")
+            await member.send(strings.APPLICATION_SUBMITTED.format(member.display_name))
             del self._bot.applications[member]
         else:
-            await member.send(f"Couldn't find a finished application from {member.display_name} - please check you "
-                              f"have completed an application by using the !apply command")
+            await member.send(strings.APPLICATION_UNFINISHED.format(member.display_name))
 
     @submit.error
     async def submit_handler(self, ctx, error: discord.DiscordException):
@@ -149,9 +142,7 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !submit command in a non-dm context, from {member.display_name}")
-            await member.send("Hi! I have noticed you've tried to use the !submit command, but it can only be used in a"
-                              " direct message. If you would like to submit a DoF application, please type the command "
-                              "again here.")
+            await member.send(strings.NOT_APPLICATION_DM.format("!submit", "submit"))
 
     @commands.dm_only()
     @commands.command()
@@ -169,11 +160,10 @@ class ApplicationCog(commands.Cog):
 
         if member in self._bot.applications:
             Log.info(f"Received application cancellation request from {member.display_name}")
-            await member.send(f"Application from {member.display_name} successfully cancelled")
+            await member.send(strings.APPLICATION_CANCELLED.format(member.display_name))
             del self._bot.applications[member]
         else:
-            await member.send(f"Couldn't find a started application from {member.display_name} - please check you "
-                              f"have started an application by using the !apply command")
+            await member.send(strings.APPLICATION_NOT_STARTED.format(member.display_name))
 
     @cancel.error
     async def cancel_handler(self, ctx, error: discord.DiscordException):
@@ -185,16 +175,14 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !cancel command in a non-dm context, from {member.display_name}")
-            await member.send("Hi! I have noticed you've tried to use the !cancel command, but it can only be used in a"
-                              " direct message. If you would like to cancel a DoF application, please type the command "
-                              "again here.")
+            await member.send(strings.NOT_APPLICATION_DM.format("!cancel", "cancel"))
 
     async def _submit_application(self, member: discord.Member):
         """
         Helper method to format and send an application to the relevant channel.
         """
-        await self._bot.channels["applications"].send(f"New application from {member.display_name}:\n\n"
-                                                      f"{self._bot.applications[member].answers}")
+        await self._bot.channels["applications"].send(
+            strings.SUBMIT_APPLICATION.format(member.display_name, self._bot.applications[member].answers))
 
 
 def setup(bot: commands.Bot):
