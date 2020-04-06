@@ -2,6 +2,7 @@
 An unorganised collection of non-static constructs, such as classes or utility functions.
 """
 import discord
+from . import strings
 
 
 class MemberApplication:

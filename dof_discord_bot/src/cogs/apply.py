@@ -6,6 +6,7 @@ Module storing DoF member application related functionality.
 """
 import discord
 from discord.ext import commands
+from .. import strings
 from ..bot import Bot
 from ..logger import Log
 from ..utils import MemberApplication
@@ -86,11 +87,7 @@ class ApplicationCog(commands.Cog):
 
         if member not in self._bot.applications:
             Log.info(f"Received new application request from {member.display_name}")
-            await member.send(f"Thank you for being interested in joining DoF, {member.display_name} :)\n"
-                              f"Please answer each question to submit an application (don't worry, you will have a "
-                              f"chance to review your application before submission).\n"
-                              f"You can cancel your application at any time by typing \"!cancel\".\n"
-                              f"You can check your application progress at any time by typing \"!apply\".")
+            await member.send(strings.ON_NEW_MEMBER_APPLICATION.format(member.display_name))
             self._bot.applications[member] = MemberApplication(member)
             await member.send(f"{self._bot.applications[member].question}")
         else:
