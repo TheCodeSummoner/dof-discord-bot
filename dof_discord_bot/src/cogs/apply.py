@@ -94,7 +94,7 @@ class ApplicationCog(commands.Cog):
                                   .format(self._bot.applications[member].answers))
             else:
                 await member.send(strings.CHECK_APPLICATION_PROGRESS
-                                  .format(self._bot.applications[member].progress,len(MemberApplication.questions),
+                                  .format(self._bot.applications[member].progress, len(MemberApplication.questions),
                                           self._bot.applications[member].question))
 
     @apply.error

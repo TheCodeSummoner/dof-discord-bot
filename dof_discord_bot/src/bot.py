@@ -35,7 +35,7 @@ class Bot(commands.Bot):
     """
 
     def __init__(self, command_prefix: str):
-        super().__init__(command_prefix)
+        super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"))
         self._applications = dict()
         self._channels = dict()
         self._load_extensions()
