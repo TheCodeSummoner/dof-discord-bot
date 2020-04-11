@@ -70,7 +70,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def apply(self, ctx, *, member: discord.Member = None):
+    async def apply(self, ctx: commands.Context, *, member: discord.Member = None):
         """
         Apply command is used to start a new member application, or display progress of the current one.
 
@@ -98,7 +98,7 @@ class ApplicationCog(commands.Cog):
                                           self._bot.applications[member].question))
 
     @apply.error
-    async def apply_handler(self, ctx, error: discord.DiscordException):
+    async def apply_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
         Since apply is a direct-message-only command, an error handler is required to respond to the command calls
         outside of a DM context.
@@ -111,7 +111,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def submit(self, ctx, *, member: discord.Member = None):
+    async def submit(self, ctx: commands.Context, *, member: discord.Member = None):
         """
         Submit command is used to submit a finished application.
 
@@ -133,7 +133,7 @@ class ApplicationCog(commands.Cog):
             await member.send(strings.APPLICATION_UNFINISHED.format(member.display_name))
 
     @submit.error
-    async def submit_handler(self, ctx, error: discord.DiscordException):
+    async def submit_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
         Since submit is a direct-message-only command, an error handler is required to respond to the command calls
         outside of a DM context.
@@ -146,7 +146,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def cancel(self, ctx, *, member: discord.Member = None):
+    async def cancel(self, ctx: commands.Context, *, member: discord.Member = None):
         """
         Cancel command is used to cancel an in-progress application.
 
@@ -166,7 +166,7 @@ class ApplicationCog(commands.Cog):
             await member.send(strings.APPLICATION_NOT_STARTED.format(member.display_name))
 
     @cancel.error
-    async def cancel_handler(self, ctx, error: discord.DiscordException):
+    async def cancel_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
         Since cancel is a direct-message-only command, an error handler is required to respond to the command calls
         outside of a DM context.

@@ -1,5 +1,5 @@
 """
-TODO: Docs
+TODO: Docs, logs
 """
 import discord
 from discord.ext import commands
@@ -752,19 +752,24 @@ class Help(DiscordCog):
     """
 
     @commands.command()
-    async def help(self, ctx: Context, *commands) -> None:
-        """Shows Command Help."""
-        try:
-            await HelpSession.start(ctx, *commands)
-        except HelpQueryNotFound as error:
+    async def help(self, ctx: commands.Context, *commands) -> None:
+        """
+        TODO: Docs
+        """
+        await HelpSession.start(ctx, *commands)
+
+
+    @help.error
+    async def help_handler(self, ctx: commands.Context, error: Exception):
+        """
+        TODO: Docs
+        """
+        if isinstance(error, HelpQueryNotFound):
             embed = Embed()
             embed.colour = Colour.red()
             embed.title = str(error)
-
             await ctx.send(embed=embed)
 
-    @help.error
-    async def help_handler(self):
 
 
 def setup(bot: Bot):
