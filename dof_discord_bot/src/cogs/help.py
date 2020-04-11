@@ -292,9 +292,9 @@ REACTIONS = {
 Cog = namedtuple('Cog', ['name', 'description', 'commands'])
 
 
-class HelpQueryNotFound(discord.DiscordException):
+class _HelpQueryNotFound(discord.DiscordException):
     """
-    Raised when a HelpSession Query doesn't match a command or cog.
+    Raised when a _HelpSession Query doesn't match a command or cog.
 
     Contains the custom attribute of ``possible_matches``.
 
@@ -307,7 +307,7 @@ class HelpQueryNotFound(discord.DiscordException):
         self.possible_matches = possible_matches
 
 
-class HelpSession:
+class _HelpSession:
     """
     An interactive session for bot and command help output.
 
@@ -340,7 +340,7 @@ class HelpSession:
         show_hidden: bool = False,
         max_lines: int = 3
     ):
-        """Creates an instance of the HelpSession class."""
+        """Creates an instance of the _HelpSession class."""
         self._ctx = ctx
         self._bot = ctx.bot
         self.title = "Command Help"
@@ -408,11 +408,11 @@ class HelpSession:
         """
         Handles when a query does not match a valid command or cog.
 
-        Will pass on possible close matches along with the `HelpQueryNotFound` exception.
+        Will pass on possible close matches along with the `_HelpQueryNotFound` exception.
         """
         # Combine command and cog names
         choices = list(self._bot.all_commands) + list(self._bot.cogs)
-        raise HelpQueryNotFound(f'Query "{query}" not found.')
+        raise _HelpQueryNotFound(f'Query "{query}" not found.')
 
     async def timeout(self, seconds: int = 30) -> None:
         """Waits for a set number of seconds, then stops the help session."""
@@ -471,7 +471,7 @@ class HelpSession:
         self._bot.add_listener(self.on_message_delete)
 
         # Send the help message
-        await self.update_page()
+        await self._update_page()
         self.add_reactions()
 
     def add_reactions(self) -> None:
@@ -668,8 +668,10 @@ class HelpSession:
 
         return embed
 
-    async def update_page(self, page_number: int = 0) -> None:
-        """Sends the intial message, or changes the existing one to the given page number."""
+    async def _update_page(self, page_number: int = 0):
+        """
+        Sends the initial message, or changes the existing one to the given page number.
+        """
         self._current_page = page_number
         embed_page = self.embed_page(page_number)
 
@@ -679,7 +681,7 @@ class HelpSession:
             await self.message.edit(embed=embed_page)
 
     @classmethod
-    async def start(cls, ctx: Context, *command, **options) -> "HelpSession":
+    async def start(cls, ctx: Context, *command, **options) -> "_HelpSession":
         """
         Create and begin a help session based on the given command context.
 
@@ -693,56 +695,68 @@ class HelpSession:
             * max_lines: Optional[int]
                 Sets the max number of lines the paginator will add to a single page. Defaults to 20.
         """
-        session = cls(ctx, *command, **options)
-        await session.prepare()
-
-        return session
+        _session = cls(ctx, *command, **options)
+        await _session._prepare()
+        return _session
 
     async def stop(self) -> None:
-        """Stops the help session, removes event listeners and attempts to delete the help message."""
-        self._bot.remove_listener(self.on_reaction_add)
-        self._bot.remove_listener(self.on_message_delete)
+        """
+        Stops the help session, removes event listeners and attempts to delete the help message.
+        """
+        self._bot.remove_listener(self._on_reaction_add)
+        self._bot.remove_listener(self._on_message_delete)
 
-        # ignore if permission issue, or the message doesn't exist
+        # Ignore if permission issue, or the message doesn't exist
         with suppress(HTTPException, AttributeError):
-            if self._cleanup:
-                await self.message.delete()
-            else:
-                await self.message.clear_reactions()
+            await self._message.delete()
 
     @property
-    def is_first_page(self) -> bool:
-        """Check if session is currently showing the first page."""
+    def _is_first_page(self) -> bool:
+        """
+        Check if session is currently showing the first page.
+        """
         return self._current_page == 0
 
     @property
-    def is_last_page(self) -> bool:
-        """Check if the session is currently showing the last page."""
-        return self._current_page == (len(self._pages)-1)
+    def _is_last_page(self) -> bool:
+        """
+        Check if the session is currently showing the last page.
+        """
+        return self._current_page == (len(self._pages) - 1)
 
-    async def do_first(self) -> None:
-        """Event that is called when the user requests the first page."""
-        if not self.is_first_page:
-            await self.update_page(0)
+    async def _first_page(self):
+        """
+        Event that is called when the user requests the first page.
+        """
+        if not self._is_first_page:
+            await self._update_page(0)
 
-    async def do_back(self) -> None:
-        """Event that is called when the user requests the previous page."""
-        if not self.is_first_page:
-            await self.update_page(self._current_page-1)
+    async def _previous_page(self):
+        """
+        Event that is called when the user requests the previous page.
+        """
+        if not self._is_first_page:
+            await self._update_page(self._current_page - 1)
 
-    async def do_next(self) -> None:
-        """Event that is called when the user requests the next page."""
-        if not self.is_last_page:
-            await self.update_page(self._current_page+1)
+    async def _next_page(self):
+        """
+        Event that is called when the user requests the next page.
+        """
+        if not self._is_last_page:
+            await self._update_page(self._current_page + 1)
 
-    async def do_end(self) -> None:
-        """Event that is called when the user requests the last page."""
-        if not self.is_last_page:
-            await self.update_page(len(self._pages)-1)
+    async def _last_page(self):
+        """
+        Event that is called when the user requests the last page.
+        """
+        if not self._is_last_page:
+            await self._update_page(len(self._pages) - 1)
 
-    async def do_stop(self) -> None:
-        """Event that is called when the user requests to stop the help session."""
-        await self.message.delete()
+    async def _delete(self):
+        """
+        Event that is called when the user requests to stop the help session.
+        """
+        await self._message.delete()
 
 
 class Help(DiscordCog):
@@ -756,8 +770,8 @@ class Help(DiscordCog):
         TODO: Docs
         """
         try:
-            await HelpSession.start(ctx, *commands)
-        except HelpQueryNotFound as e:
+            await _HelpSession.start(ctx, *commands)
+        except _HelpQueryNotFound as e:
             await self.help_handler(ctx, e)
 
     @help.error
@@ -765,7 +779,7 @@ class Help(DiscordCog):
         """
         TODO: Docs
         """
-        if isinstance(error, HelpQueryNotFound):
+        if isinstance(error, _HelpQueryNotFound):
             embed = Embed()
             embed.colour = Colour.red()
             embed.title = str(error)
