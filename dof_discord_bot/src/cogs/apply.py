@@ -187,6 +187,6 @@ class ApplicationCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     """
-    TODO: Docs
+    Standard setup, loads the cog.
     """
     bot.add_cog(ApplicationCog(bot))

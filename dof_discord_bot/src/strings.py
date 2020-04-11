@@ -22,6 +22,10 @@ SUBMIT_APPLICATION = """New application from {}:
 
 {}"""
 
+# --= Help cog =--
+INVALID_QUERY = """
+"""
+
 # --= Utils module =--
 STEAM_PROFILE_LONG = "What is your Steam profile link?"
 STEAM_PROFILE_SHORT = "Steam profile"
