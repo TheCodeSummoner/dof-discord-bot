@@ -12,7 +12,6 @@ from contextlib import suppress
 from typing import Union
 from ..bot import Bot
 import typing as t
-import discord
 from ..logger import Log
 from discord.ext.commands import Paginator
 
@@ -293,7 +292,7 @@ REACTIONS = {
 Cog = namedtuple('Cog', ['name', 'description', 'commands'])
 
 
-class HelpQueryNotFound(ValueError):
+class HelpQueryNotFound(discord.DiscordException):
     """
     Raised when a HelpSession Query doesn't match a command or cog.
 
@@ -756,11 +755,13 @@ class Help(DiscordCog):
         """
         TODO: Docs
         """
-        await HelpSession.start(ctx, *commands)
-
+        try:
+            await HelpSession.start(ctx, *commands)
+        except HelpQueryNotFound as e:
+            await self.help_handler(ctx, e)
 
     @help.error
-    async def help_handler(self, ctx: commands.Context, error: Exception):
+    async def help_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
         TODO: Docs
         """
@@ -771,12 +772,11 @@ class Help(DiscordCog):
             await ctx.send(embed=embed)
 
 
-
 def setup(bot: Bot):
     """
     Standard setup, loads the cog.
 
     Removes the default help command beforehand.
     """
-    bot.remove_command('help')
+    bot.remove_command("help")
     bot.add_cog(Help())
