@@ -281,12 +281,13 @@ class LinePaginator(Paginator):
         with suppress(discord.NotFound):
             await message.clear_reactions()
 
+
 REACTIONS = {
-    FIRST_EMOJI: 'first',
-    LEFT_EMOJI: 'back',
-    RIGHT_EMOJI: 'next',
-    LAST_EMOJI: 'end',
-    DELETE_EMOJI: 'stop',
+    FIRST_EMOJI: '_first_page',
+    LEFT_EMOJI: '_previous_page',
+    RIGHT_EMOJI: '_next_page',
+    LAST_EMOJI: '_last_page',
+    DELETE_EMOJI: '_delete',
 }
 
 Cog = namedtuple('Cog', ['name', 'description', 'commands'])
@@ -324,6 +325,16 @@ class _HelpSession:
         * destination: `discord.abc.Messageable`
             Where the help message is to be sent to.
 
+    Available options kwargs:
+        * cleanup: Optional[bool]
+            Set to `True` to have the message deleted on session end. Defaults to `False`.
+        * only_can_run: Optional[bool]
+            Set to `True` to hide commands the user can't run. Defaults to `False`.
+        * show_hidden: Optional[bool]
+            Set to `True` to include hidden commands. Defaults to `False`.
+        * max_lines: Optional[int]
+            Sets the max number of lines the paginator will add to a single page. Defaults to 20.
+
     Cogs can be grouped into custom categories. All cogs with the same category will be displayed
     under a single category name in the help output. Custom categories are defined inside the cogs
     as a class attribute named `category`. A description can also be specified with the attribute
@@ -334,7 +345,7 @@ class _HelpSession:
     def __init__(
         self,
         ctx: Context,
-        *command,
+        command,
         cleanup: bool = False,
         only_can_run: bool = True,
         show_hidden: bool = False,
@@ -347,13 +358,13 @@ class _HelpSession:
 
         # set the query details for the session
         if command:
-            query_str = ' '.join(command)
-            self.query = self._get_query(query_str)
+            self.query = self._get_query(command)
+            print(self.query)
             self.description = self.query.description or self.query.help
         else:
             self.query = ctx.bot
             self.description = self.query.description
-        self.author = ctx.author
+        self._author = ctx.author
         self.destination = ctx.channel
 
         # set the config for the session
@@ -365,14 +376,16 @@ class _HelpSession:
         # init session states
         self._pages = None
         self._current_page = 0
-        self.message = None
+        self._message = None
         self._timeout_task = None
         self.reset_timeout()
 
     def _get_query(self, query: str) -> Union[Command, Cog]:
         """Attempts to match the provided query with a valid command or cog."""
+        print("GET QUERY", query)
         command = self._bot.get_command(query)
         if command:
+            print("RETURNING", command)
             return command
 
         # Find all cog categories that match.
@@ -386,7 +399,9 @@ class _HelpSession:
 
         # Try to search by cog name if no categories match.
         if not cog_matches:
+            print(query)
             cog = self._bot.cogs.get(query)
+            print(cog)
 
             # Don't consider it a match if the cog has a category.
             if cog and not hasattr(cog, "category"):
@@ -395,7 +410,7 @@ class _HelpSession:
         if cog_matches:
             cog = cog_matches[0]
             cmds = (cog.get_commands() for cog in cog_matches)  # Commands of all cogs
-
+            print(cog)
             return Cog(
                 name=cog.category if hasattr(cog, "category") else cog.qualified_name,
                 description=description or cog.description,
@@ -429,61 +444,35 @@ class _HelpSession:
         # recreate the timeout task
         self._timeout_task = self._bot.loop.create_task(self.timeout())
 
-    async def on_reaction_add(self, reaction: Reaction, user: User) -> None:
-        """Event handler for when reactions are added on the help message."""
-        # ensure it was the relevant session message
-        if reaction.message.id != self.message.id:
-            return
-
-        # ensure it was the session author who reacted
-        if user.id != self.author.id:
-            return
-
-        emoji = str(reaction.emoji)
-
-        # check if valid action
-        if emoji not in REACTIONS:
-            return
-
-        self.reset_timeout()
-
-        # Run relevant action method
-        action = getattr(self, f'do_{REACTIONS[emoji]}', None)
-        if action:
-            await action()
-
-        # remove the added reaction to prep for re-use
-        with suppress(HTTPException):
-            await self.message.remove_reaction(reaction, user)
-
-    async def on_message_delete(self, message: Message) -> None:
-        """Closes the help session when the help message is deleted."""
-        if message.id == self.message.id:
-            await self.stop()
-
-    async def prepare(self) -> None:
+    async def _prepare(self) -> None:
         """Sets up the help session pages, events, message and reactions."""
         # create paginated content
         await self.build_pages()
 
         # setup listeners
+        print("ADDING LISTENERS")
         self._bot.add_listener(self.on_reaction_add)
+        print("Next")
         self._bot.add_listener(self.on_message_delete)
+        print("Next")
 
         # Send the help message
         await self._update_page()
+        print("Page updated")
         self.add_reactions()
+        print("Added reactions")
+        print(self._bot.extra_events)
 
     def add_reactions(self) -> None:
         """Adds the relevant reactions to the help message based on if pagination is required."""
         # if paginating
         if len(self._pages) > 1:
             for reaction in REACTIONS:
-                self._bot.loop.create_task(self.message.add_reaction(reaction))
+                self._bot.loop.create_task(self._message.add_reaction(reaction))
 
         # if single-page
         else:
-            self._bot.loop.create_task(self.message.add_reaction(DELETE_EMOJI))
+            self._bot.loop.create_task(self._message.add_reaction(DELETE_EMOJI))
 
     def _category_key(self, cmd: Command) -> str:
         """
@@ -675,40 +664,68 @@ class _HelpSession:
         self._current_page = page_number
         embed_page = self.embed_page(page_number)
 
-        if not self.message:
-            self.message = await self.destination.send(embed=embed_page)
+        if not self._message:
+            self._message = await self.destination.send(embed=embed_page)
         else:
-            await self.message.edit(embed=embed_page)
+            await self._message.edit(embed=embed_page)
 
     @classmethod
-    async def start(cls, ctx: Context, *command, **options) -> "_HelpSession":
+    async def start(cls, ctx: commands.Context, command: str, **options) -> "_HelpSession":
         """
-        Create and begin a help session based on the given command context.
-
-        Available options kwargs:
-            * cleanup: Optional[bool]
-                Set to `True` to have the message deleted on session end. Defaults to `False`.
-            * only_can_run: Optional[bool]
-                Set to `True` to hide commands the user can't run. Defaults to `False`.
-            * show_hidden: Optional[bool]
-                Set to `True` to include hidden commands. Defaults to `False`.
-            * max_lines: Optional[int]
-                Sets the max number of lines the paginator will add to a single page. Defaults to 20.
+        Create and begin a help session based on the given context.
         """
-        _session = cls(ctx, *command, **options)
-        await _session._prepare()
-        return _session
+        print("STARTING...")
+        session = cls(ctx, command, **options)
+        await session._prepare()
+        return session
 
     async def stop(self) -> None:
         """
         Stops the help session, removes event listeners and attempts to delete the help message.
         """
-        self._bot.remove_listener(self._on_reaction_add)
-        self._bot.remove_listener(self._on_message_delete)
+        print("STOPPING...")
+        self._bot.remove_listener(self.on_reaction_add)
+        self._bot.remove_listener(self.on_message_delete)
 
         # Ignore if permission issue, or the message doesn't exist
         with suppress(HTTPException, AttributeError):
             await self._message.delete()
+
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
+        """
+        Event handler for when reactions are added on the help message.
+        """
+        # Ensure it was the relevant session message
+        if reaction.message.id != self._message.id:
+            return
+
+        # Ensure it was the session author who reacted
+        if user.id != self._author.id:
+            return
+
+        emoji = str(reaction.emoji) #
+
+        # Check if a valid action
+        if emoji not in REACTIONS:
+            return
+
+        self.reset_timeout()
+
+        # Run relevant action method
+        action = getattr(self, f'{REACTIONS[emoji]}', None)
+        if action:
+            await action()
+
+        # Remove the added reaction to prep for re-use
+        with suppress(HTTPException):
+            await self._message.remove_reaction(reaction, user)
+
+    async def on_message_delete(self, message: discord.Message):
+        """
+        Closes the help session when the help message is deleted.
+        """
+        if message.id == self._message.id:
+            await self.stop()
 
     @property
     def _is_first_page(self) -> bool:
@@ -765,12 +782,12 @@ class Help(DiscordCog):
     """
 
     @commands.command()
-    async def help(self, ctx: commands.Context, *commands) -> None:
+    async def help(self, ctx: commands.Context, command: str = ""):
         """
-        TODO: Docs
+        TODO: Docs, mention only 1 argument is accepted
         """
         try:
-            await _HelpSession.start(ctx, *commands)
+            await _HelpSession.start(ctx, command)
         except _HelpQueryNotFound as e:
             await self.help_handler(ctx, e)
 
