@@ -42,6 +42,8 @@ class InformationCog(commands.Cog):
     async def info(self, ctx: commands.Context):
         """
         Info command is used to display DoF-related information.
+
+        TODO: Code needed :)
         """
         member = ctx.author
 
