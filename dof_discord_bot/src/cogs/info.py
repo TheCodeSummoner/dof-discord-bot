@@ -36,19 +36,15 @@ class InformationCog(commands.Cog):
         Listener providing a way to listen to a new member joining DoF discord, to welcome them properly.
         """
         Log.info(f"{member.display_name} joined DoF discord for the first time")
-        await self.bot.channels["chat"].send(strings.Info.welcome.format(member.display_name))
+        await self.bot.channels["chat"].send(strings.Info.welcome.format(member.mention))
 
     @commands.command()
-    async def info(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def info(self, ctx: commands.Context):
         """
-        Cancel command is used to cancel an in-progress application.
-
-        Current steps are as follows:
-
-            1. If application isn't started, relevant help message is displayed
-            2. If application is started, it is then cancelled and removed from the applications dictionary
+        Info command is used to display DoF-related information.
         """
-        member = member or ctx.author
+        member = ctx.author
+
         Log.debug(f"Detected !info command used by {member.display_name}")
         await ctx.send("Sorry! The command is still under construction :(")
 

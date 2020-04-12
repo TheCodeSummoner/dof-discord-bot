@@ -69,7 +69,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def apply(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def apply(self, ctx: commands.Context):
         """
         Apply command is used to start a new member application, or display progress of the current one.
 
@@ -79,7 +79,7 @@ class ApplicationCog(commands.Cog):
             2. If application is already in progress but not finished, progress is displayed and question repeated
             3. If application is in progress and finished, submission request message is displayed
         """
-        member = member or ctx.author
+        member = ctx.author
         Log.debug(f"Detected !apply command used by {member.display_name}")
 
         if member not in self.bot.applications:
@@ -110,7 +110,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def submit(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def submit(self, ctx: commands.Context):
         """
         Submit command is used to submit a finished application.
 
@@ -119,7 +119,7 @@ class ApplicationCog(commands.Cog):
             1. If application isn't finished, relevant help message is displayed
             2. If application is finished, it is then formatted and submitted to the applications channel
         """
-        member = member or ctx.author
+        member = ctx.author
         Log.debug(f"Detected !submit command used by {member.display_name}")
 
         if member in self.bot.applications and self.bot.applications[member].finished:
@@ -145,7 +145,7 @@ class ApplicationCog(commands.Cog):
 
     @commands.dm_only()
     @commands.command()
-    async def cancel(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def cancel(self, ctx: commands.Context):
         """
         Cancel command is used to cancel an in-progress application.
 
@@ -154,7 +154,7 @@ class ApplicationCog(commands.Cog):
             1. If application isn't started, relevant help message is displayed
             2. If application is started, it is then cancelled and removed from the applications dictionary
         """
-        member = member or ctx.author
+        member = ctx.author
         Log.debug(f"Detected !cancel command used by {member.display_name}")
 
         if member in self.bot.applications:
