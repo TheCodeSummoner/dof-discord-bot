@@ -1,47 +1,109 @@
 """
-Formattable strings
+Formattable strings, loaded from a YAML file.
 """
+import os as _os
+import yaml as _yaml
+from .constants import ROOT_DIR as _ROOT_DIR
+from .logger import Log as _Log
 
-# --= Apply cog =--
-NEW_MEMBER_APPLICATION = """Thank you for being interested in joining DoF, {} :)
-Please answer each question to submit an application (don't worry, you will have a chance to review your application before submission).
-You can cancel your application at any time by typing \"!cancel\".
-You can check your application progress at any time by typing \"!apply\"."""
-MEMBER_APPLICATION_COMPLETED = """You have completed the application - here is what you've written:
-{}
-Would you like to submit this application? Type !submit to submit it, or !cancel to cancel the application."""
-CHECK_APPLICATION_PROGRESS = """You are currently on step {} out of {}.
-Current question is: {}"""
-NOT_APPLICATION_DM = """Hi! I've' noticed you've tried to use the {} command, but it can only be used as a direct message.
-If you would like to {} a DoF application, please type the command again here."""
-APPLICATION_SUBMITTED = """Application from {} successfully submitted."""
-APPLICATION_UNFINISHED = """Couldn't find a finished application from {} - please check you have completed an application by using the \"!apply\" command."""
-APPLICATION_CANCELLED = """Application from {} successfully cancelled"""
-APPLICATION_NOT_STARTED = """Couldn't find a started application from {} - please make sure you have started an application by using the \"!apply\" command"""
-SUBMIT_APPLICATION = """New application from {}:
+with open(_os.path.join(_ROOT_DIR, "strings.yaml"), encoding="UTF-8") as f:
+    _CONFIG_YAML = _yaml.safe_load(f)
 
-{}"""
+# Hard code the root section as the yaml file is only used for strings resources
+_MAIN_YAML_SECTION = "strings"
 
-# --= Help cog =--
-INVALID_QUERY = """
-"""
 
-# --= Utils module =--
-STEAM_PROFILE_LONG = "What is your Steam profile link?"
-STEAM_PROFILE_SHORT = "Steam profile"
-TW_PROFILE_LONG = "What is your TaleWorlds profile link (if you have one)?"
-TW_PROFILE_SHORT = "TaleWorlds profile"
-COUNTRY_LONG = "Which country are you from?"
-COUNTRY_SHORT = "Country"
-ENGLISH_FLUENCY_LONG = "How well can you speak English?"
-ENGLISH_FLUENCY_SHORT = "English fluency"
-DOF_FIRST_ENCOUNTER_LONG = "How did you find out about DoF?"
-DOF_FIRST_ENCOUNTER_SHORT = "How did you find out about DoF"
-DOF_WHY_JOIN_LONG = "Why would you like to become a Defender?"
-DOF_WHY_JOIN_SHORT = "Why would you like to become a Defender"
-OTHER_GAMES_LONG = "What other games do you play?"
-OTHER_GAMES_SHORT = "Other games"
-TIME_AVAILABILITY_LONG = "When can you usually play (BST zone for EUs and EST for NAs)?"
-TIME_AVAILABILITY_SHORT = "Time availability"
-ANYTHING_ELSE_LONG = "Anything you would like to add (type \"No\" if nothing to add)?"
-ANYTHING_ELSE_SHORT = "Other"
+class _YAMLStringsGetter(type):
+    """
+    Implements a custom metaclass used for accessing configuration data by simply accessing class attributes.
+
+    `section` specifies the YAML configuration section (or "key") in which the configuration lives, and must be set.
+
+    Example Usage:
+
+        # strings.yaml
+        strings:
+            apply_cog:
+                new_application: '(...)'
+                application_completed: '(...)'
+
+        # strings.py
+        class Application(metaclass=YAMLGetter):
+            section = "apply_cog"
+
+        # Usage in Python code
+        import strings
+        print(strings.Application.new_application)
+    """
+
+    def __getattr__(cls, name):
+        name = name.lower()
+
+        try:
+            if cls.section is not None:
+                return _CONFIG_YAML[_MAIN_YAML_SECTION][cls.section][name]
+            else:
+                raise KeyError("Can not access the values without providing a \"section\" key")
+        except KeyError:
+            dotted_path = '.'.join((cls.section, name))
+            _Log.error(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
+            raise
+
+    def __getitem__(cls, name):
+        return cls.__getattr__(name)
+
+    def __iter__(cls):
+        """
+        Return generator of key: value pairs of current constants class' config values.
+        """
+        for name in cls.__annotations__:
+            yield name, getattr(cls, name)
+
+
+class Application(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the member application process (and the application cog).
+    """
+    section = "apply_cog"
+    new_application: str
+    completed: str
+    check_progress: str
+    dm_only: str
+    submitted: str
+    unfinished: str
+    cancelled: str
+    not_started: str
+    submit: str
+
+
+class Utils(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the utils module.
+    """
+    section = "utils_module"
+    steam_profile_long: str
+    steam_profile_short: str
+    tw_profile_long: str
+    tw_profile_short: str
+    country_long: str
+    country_short: str
+    english_fluency_long: str
+    english_fluency_short: str
+    dof_first_encounter_long: str
+    dof_first_encounter_short: str
+    dof_why_join_long: str
+    dof_why_join_short: str
+    other_games_long: str
+    other_games_short: str
+    time_availability_long: str
+    time_availability_short: str
+    anything_else_long: str
+    anything_else_short: str
+
+
+class Info(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the general information (and the information cog).
+    """
+    section = "info_cog"
+    welcome: str

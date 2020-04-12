@@ -10,7 +10,6 @@ from .. import strings
 from ..bot import Bot
 from ..logger import Log
 from ..utils import MemberApplication
-from ..constants import COMMANDS
 
 
 class ApplicationCog(commands.Cog):
@@ -26,13 +25,13 @@ class ApplicationCog(commands.Cog):
     --------
 
         * apply - Start a new DoF member application or display information about the current one
-        * submit - Submit a finished application (uses _submit_application function)
+        * submit - Submit a finished application (uses submit_application function)
         * cancel - Cancel an in-progress application
     """
 
     def __init__(self, bot: Bot):
         super().__init__()
-        self._bot = bot
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -49,24 +48,24 @@ class ApplicationCog(commands.Cog):
         member: discord.Member = message.author
 
         # Ignore commands
-        if message.content in COMMANDS:
+        if message.content.startswith("!") and message.content[1:] in self.bot.all_commands.keys():
             return
 
         if message.channel.type == discord.ChannelType.private:
             Log.debug(f"Received a direct message from {member.display_name}")
 
             # Check if the message is application-related
-            if member in self._bot.applications:
-                if not self._bot.applications[member].finished:
-                    self._bot.applications[member].add_answer(message.content)
+            if member in self.bot.applications:
+                if not self.bot.applications[member].finished:
+                    self.bot.applications[member].add_answer(message.content)
 
                 # Once last question was answered, prepare current application for a review and ask for confirmation
-                if self._bot.applications[member].finished:
+                if self.bot.applications[member].finished:
                     Log.debug(f"Application by {member.display_name} completed")
-                    await member.send(strings.MEMBER_APPLICATION_COMPLETED
-                                      .format(self._bot.applications[member].answers))
+                    await member.send(strings.Application.completed
+                                      .format(self.bot.applications[member].answers))
                 else:
-                    await member.send(f"{self._bot.applications[member].question}")
+                    await member.send(f"{self.bot.applications[member].question}")
 
     @commands.dm_only()
     @commands.command()
@@ -83,19 +82,19 @@ class ApplicationCog(commands.Cog):
         member = member or ctx.author
         Log.debug(f"Detected !apply command used by {member.display_name}")
 
-        if member not in self._bot.applications:
+        if member not in self.bot.applications:
             Log.info(f"Received new application request from {member.display_name}")
-            await member.send(strings.NEW_MEMBER_APPLICATION.format(member.display_name))
-            self._bot.applications[member] = MemberApplication(member)
-            await member.send(f"{self._bot.applications[member].question}")
+            await member.send(strings.Application.new_application.format(member.display_name))
+            self.bot.applications[member] = MemberApplication(member)
+            await member.send(f"{self.bot.applications[member].question}")
         else:
-            if self._bot.applications[member].finished:
-                await member.send(strings.MEMBER_APPLICATION_COMPLETED
-                                  .format(self._bot.applications[member].answers))
+            if self.bot.applications[member].finished:
+                await member.send(strings.Application.completed
+                                  .format(self.bot.applications[member].answers))
             else:
-                await member.send(strings.CHECK_APPLICATION_PROGRESS
-                                  .format(self._bot.applications[member].progress, len(MemberApplication.questions),
-                                          self._bot.applications[member].question))
+                await member.send(strings.Application.check_progress
+                                  .format(self.bot.applications[member].progress, len(MemberApplication.questions),
+                                          self.bot.applications[member].question))
 
     @apply.error
     async def apply_handler(self, ctx: commands.Context, error: discord.DiscordException):
@@ -107,7 +106,7 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !apply command in a non-dm context, from {member.display_name}")
-            await member.send(strings.NOT_APPLICATION_DM.format("!apply", "start"))
+            await member.send(strings.Application.dm_only.format("!apply", "start"))
 
     @commands.dm_only()
     @commands.command()
@@ -123,14 +122,14 @@ class ApplicationCog(commands.Cog):
         member = member or ctx.author
         Log.debug(f"Detected !submit command used by {member.display_name}")
 
-        if member in self._bot.applications and self._bot.applications[member].finished:
+        if member in self.bot.applications and self.bot.applications[member].finished:
             Log.info(f"Received application submission request from {member.display_name}")
 
-            await self._submit_application(member)
-            await member.send(strings.APPLICATION_SUBMITTED.format(member.display_name))
-            del self._bot.applications[member]
+            await self.submit_application(member)
+            await member.send(strings.Application.submitted.format(member.display_name))
+            del self.bot.applications[member]
         else:
-            await member.send(strings.APPLICATION_UNFINISHED.format(member.display_name))
+            await member.send(strings.Application.unfinished.format(member.display_name))
 
     @submit.error
     async def submit_handler(self, ctx: commands.Context, error: discord.DiscordException):
@@ -142,7 +141,7 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !submit command in a non-dm context, from {member.display_name}")
-            await member.send(strings.NOT_APPLICATION_DM.format("!submit", "submit"))
+            await member.send(strings.Application.dm_only.format("!submit", "submit"))
 
     @commands.dm_only()
     @commands.command()
@@ -158,12 +157,12 @@ class ApplicationCog(commands.Cog):
         member = member or ctx.author
         Log.debug(f"Detected !cancel command used by {member.display_name}")
 
-        if member in self._bot.applications:
+        if member in self.bot.applications:
             Log.info(f"Received application cancellation request from {member.display_name}")
-            await member.send(strings.APPLICATION_CANCELLED.format(member.display_name))
-            del self._bot.applications[member]
+            await member.send(strings.Application.cancelled.format(member.display_name))
+            del self.bot.applications[member]
         else:
-            await member.send(strings.APPLICATION_NOT_STARTED.format(member.display_name))
+            await member.send(strings.Application.not_started.format(member.display_name))
 
     @cancel.error
     async def cancel_handler(self, ctx: commands.Context, error: discord.DiscordException):
@@ -175,14 +174,14 @@ class ApplicationCog(commands.Cog):
 
         if isinstance(error, commands.PrivateMessageOnly):
             Log.debug(f"Detected !cancel command in a non-dm context, from {member.display_name}")
-            await member.send(strings.NOT_APPLICATION_DM.format("!cancel", "cancel"))
+            await member.send(strings.Application.dm_only.format("!cancel", "cancel"))
 
-    async def _submit_application(self, member: discord.Member):
+    async def submit_application(self, member: discord.Member):
         """
         Helper method to format and send an application to the relevant channel.
         """
-        await self._bot.channels["applications"].send(
-            strings.SUBMIT_APPLICATION.format(member.display_name, self._bot.applications[member].answers))
+        await self.bot.channels["applications"].send(
+            strings.Application.submit.format(member.display_name, self.bot.applications[member].answers))
 
 
 def setup(bot: commands.Bot):

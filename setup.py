@@ -20,8 +20,7 @@ ROOT = os.path.normpath(os.path.dirname(__file__))
 # Specify which files should be added to the installation
 PACKAGE_DATA = [
     os.path.join(ROOT, "dof_discord_bot", "log", "config.json"),
-    os.path.join(ROOT, "dof_discord_bot", "log", "README.md"),
-    os.path.join(ROOT, "dof_discord_bot", "src", "README.md"),
+    os.path.join(ROOT, "strings.yaml"),
     os.path.join(ROOT, "LICENSE"),
     os.path.join(ROOT, "README.md")
 ]
@@ -30,7 +29,7 @@ PACKAGE_DATA = [
 setuptools.setup(
     name="dof_discord_bot",
     description="Defender's of Faith discord bot",
-    version="1.0.0",
+    version="1.1.0",
     author="Florianski Kacper",
     maintainer="Florianski Kacper",
     maintainer_email="kacper.florianski@gmail.com",
@@ -44,7 +43,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
     ],
     install_requires=[
-        "discord"
+        "discord",
+        "pyyaml"
     ],
     python_requires=">=3.8.1",
 )

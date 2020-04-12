@@ -15,8 +15,7 @@ import typing as t
 from ..logger import Log
 from discord.ext.commands import Paginator
 
-from discord import Colour, Embed, HTTPException, Message, Reaction, User
-from discord.ext import commands
+from discord import Colour, Embed, HTTPException, User
 from discord.ext.commands import Cog as DiscordCog, Command, Context
 
 DELETE_EMOJI = "<:trashcan:>"
@@ -282,33 +281,25 @@ class LinePaginator(Paginator):
             await message.clear_reactions()
 
 
-REACTIONS = {
-    FIRST_EMOJI: '_first_page',
-    LEFT_EMOJI: '_previous_page',
-    RIGHT_EMOJI: '_next_page',
-    LAST_EMOJI: '_last_page',
-    DELETE_EMOJI: '_delete',
-}
+# Declare unicode-based emojis
+FIRST_PAGE_EMOJI = "\u23EE"
+PREVIOUS_PAGE_EMOJI = "\u2B05"
+NEXT_PAGE_EMOJI = "\u27A1"
+LAST_PAGE_EMOJI = "\u23ED"
+DELETE_EMOJI = "<:trashcan:>"
 
 Cog = namedtuple('Cog', ['name', 'description', 'commands'])
 
 
-class _HelpQueryNotFound(discord.DiscordException):
+class HelpQueryNotFound(discord.DiscordException):
     """
-    Raised when a _HelpSession Query doesn't match a command or cog.
-
-    Contains the custom attribute of ``possible_matches``.
-
-    Instances of this object contain a dictionary of any command(s) that were close to matching the
-    query, where keys are the possible matched command names and values are the likeness match scores.
+    Raised when a HelpSession query doesn't match a command or a cog.
     """
-
-    def __init__(self, arg: str, possible_matches: dict = None):
+    def __init__(self, arg: str):
         super().__init__(arg)
-        self.possible_matches = possible_matches
 
 
-class _HelpSession:
+class HelpSession:
     """
     An interactive session for bot and command help output.
 
@@ -342,18 +333,18 @@ class _HelpSession:
     the regular description (class docstring) of the first cog found in the category.
     """
 
-    def __init__(
-        self,
-        ctx: Context,
-        command,
-        cleanup: bool = False,
-        only_can_run: bool = True,
-        show_hidden: bool = False,
-        max_lines: int = 3
-    ):
-        """Creates an instance of the _HelpSession class."""
-        self._ctx = ctx
-        self._bot = ctx.bot
+    def __init__(self, ctx: commands.Context, command: str = "", max_lines: int = 3):
+        # Declare a mapping of emoji to reaction functions
+        self.reactions = {
+            FIRST_PAGE_EMOJI: self.do_first_page,
+            PREVIOUS_PAGE_EMOJI: self.do_previous_page,
+            NEXT_PAGE_EMOJI: self.do_next_page,
+            LAST_PAGE_EMOJI: self.do_last_page,
+            DELETE_EMOJI: self.do_delete()
+        }
+
+        self.ctx = ctx
+        self.bot = ctx.bot
         self.title = "Command Help"
 
         # set the query details for the session
@@ -364,26 +355,23 @@ class _HelpSession:
         else:
             self.query = ctx.bot
             self.description = self.query.description
-        self._author = ctx.author
+        self.author = ctx.author
         self.destination = ctx.channel
 
         # set the config for the session
-        self._cleanup = cleanup
-        self._only_can_run = only_can_run
-        self._show_hidden = show_hidden
         self._max_lines = max_lines
 
         # init session states
-        self._pages = None
-        self._current_page = 0
-        self._message = None
-        self._timeout_task = None
+        self.pages = None
+        self.current_page = 0
+        self.message = None
+        self.timeout_task = None
         self.reset_timeout()
 
     def _get_query(self, query: str) -> Union[Command, Cog]:
         """Attempts to match the provided query with a valid command or cog."""
         print("GET QUERY", query)
-        command = self._bot.get_command(query)
+        command = self.bot.get_command(query)
         if command:
             print("RETURNING", command)
             return command
@@ -391,7 +379,7 @@ class _HelpSession:
         # Find all cog categories that match.
         cog_matches = []
         description = None
-        for cog in self._bot.cogs.values():
+        for cog in self.bot.cogs.values():
             if hasattr(cog, "category") and cog.category == query:
                 cog_matches.append(cog)
                 if hasattr(cog, "category_description"):
@@ -400,7 +388,7 @@ class _HelpSession:
         # Try to search by cog name if no categories match.
         if not cog_matches:
             print(query)
-            cog = self._bot.cogs.get(query)
+            cog = self.bot.cogs.get(query)
             print(cog)
 
             # Don't consider it a match if the cog has a category.
@@ -423,26 +411,28 @@ class _HelpSession:
         """
         Handles when a query does not match a valid command or cog.
 
-        Will pass on possible close matches along with the `_HelpQueryNotFound` exception.
+        Will pass on possible close matches along with the `HelpQueryNotFound` exception.
         """
         # Combine command and cog names
-        choices = list(self._bot.all_commands) + list(self._bot.cogs)
-        raise _HelpQueryNotFound(f'Query "{query}" not found.')
+        choices = list(self.bot.all_commands) + list(self.bot.cogs)
+        raise HelpQueryNotFound(f'Query "{query}" not found.')
 
     async def timeout(self, seconds: int = 30) -> None:
         """Waits for a set number of seconds, then stops the help session."""
         await asyncio.sleep(seconds)
         await self.stop()
 
-    def reset_timeout(self) -> None:
-        """Cancels the original timeout task and sets it again from the start."""
-        # cancel original if it exists
-        if self._timeout_task:
-            if not self._timeout_task.cancelled():
-                self._timeout_task.cancel()
+    def reset_timeout(self):
+        """
+        Cancels the original timeout task and sets it up again from the start.
+        """
+        # Cancel the original task if it exists
+        if self.timeout_task:
+            if not self.timeout_task.cancelled():
+                self.timeout_task.cancel()
 
-        # recreate the timeout task
-        self._timeout_task = self._bot.loop.create_task(self.timeout())
+        # Recreate the timeout task
+        self.timeout_task = self.bot.loop.create_task(self.timeout())
 
     async def _prepare(self) -> None:
         """Sets up the help session pages, events, message and reactions."""
@@ -451,28 +441,28 @@ class _HelpSession:
 
         # setup listeners
         print("ADDING LISTENERS")
-        self._bot.add_listener(self.on_reaction_add)
+        self.bot.add_listener(self.on_reaction_add)
         print("Next")
-        self._bot.add_listener(self.on_message_delete)
+        self.bot.add_listener(self.on_message_delete)
         print("Next")
 
         # Send the help message
-        await self._update_page()
+        await self.update_page()
         print("Page updated")
         self.add_reactions()
         print("Added reactions")
-        print(self._bot.extra_events)
+        print(self.bot.extra_events)
 
     def add_reactions(self) -> None:
         """Adds the relevant reactions to the help message based on if pagination is required."""
         # if paginating
-        if len(self._pages) > 1:
-            for reaction in REACTIONS:
-                self._bot.loop.create_task(self._message.add_reaction(reaction))
+        if len(self.pages) > 1:
+            for reaction in self.reactions:
+                self.bot.loop.create_task(self.message.add_reaction(reaction))
 
         # if single-page
         else:
-            self._bot.loop.create_task(self._message.add_reaction(DELETE_EMOJI))
+            self.bot.loop.create_task(self.message.add_reaction(DELETE_EMOJI))
 
     def _category_key(self, cmd: Command) -> str:
         """
@@ -526,17 +516,11 @@ class _HelpSession:
         return f"{cmd.name} {' '.join(results)}"
 
     async def _global_help(self, paginator: LinePaginator, bot: Bot):
-        # for cmd in bot.commands:
-        #     await self._command_help(paginator, cmd)
-        # remove hidden commands if session is not wanting hiddens
-        if not self._show_hidden:
-            filtered = [c for c in self.query.commands if not c.hidden]
-        else:
-            filtered = self.query.commands
+        filtered = self.query.commands
 
         # if after filter there are no commands, finish up
         if not filtered:
-            self._pages = paginator.pages
+            self.pages = paginator.pages
             return
 
         # set category to Commands if cog
@@ -567,10 +551,6 @@ class _HelpSession:
 
             # format details for each child command
             for command in cmds:
-
-                # skip if hidden and hide if session is set to
-                if command.hidden and not self._show_hidden:
-                    continue
 
                 # see if the user can run the command
                 strikeout = ''
@@ -635,7 +615,7 @@ class _HelpSession:
             await self._global_help(paginator, self.query)
 
         # Save organised pages to session
-        self._pages = paginator.pages
+        self.pages = paginator.pages
 
     def embed_page(self, page_number: int = 0) -> Embed:
         """Returns an Embed with the requested page formatted within."""
@@ -648,34 +628,33 @@ class _HelpSession:
             title = self.title
 
         embed.set_author(name=title, icon_url="https://cdn.discordapp.com/emojis/512367613339369475.png")
-        embed.description = self._pages[page_number]
+        embed.description = self.pages[page_number]
 
         # add page counter to footer if paginating
-        page_count = len(self._pages)
+        page_count = len(self.pages)
         if page_count > 1:
-            embed.set_footer(text=f'Page {self._current_page+1} / {page_count}')
+            embed.set_footer(text=f'Page {self.current_page + 1} / {page_count}')
 
         return embed
 
-    async def _update_page(self, page_number: int = 0):
+    async def update_page(self, page_number: int = 0):
         """
         Sends the initial message, or changes the existing one to the given page number.
         """
-        self._current_page = page_number
+        self.current_page = page_number
         embed_page = self.embed_page(page_number)
 
-        if not self._message:
-            self._message = await self.destination.send(embed=embed_page)
+        if not self.message:
+            self.message = await self.destination.send(embed=embed_page)
         else:
-            await self._message.edit(embed=embed_page)
+            await self.message.edit(embed=embed_page)
 
     @classmethod
-    async def start(cls, ctx: commands.Context, command: str, **options) -> "_HelpSession":
+    async def start(cls, ctx: commands.Context, command: str) -> "HelpSession":
         """
         Create and begin a help session based on the given context.
         """
-        print("STARTING...")
-        session = cls(ctx, command, **options)
+        session = cls(ctx, command)
         await session._prepare()
         return session
 
@@ -683,97 +662,90 @@ class _HelpSession:
         """
         Stops the help session, removes event listeners and attempts to delete the help message.
         """
-        print("STOPPING...")
-        self._bot.remove_listener(self.on_reaction_add)
-        self._bot.remove_listener(self.on_message_delete)
+        self.bot.remove_listener(self.on_reaction_add)
+        self.bot.remove_listener(self.on_message_delete)
 
         # Ignore if permission issue, or the message doesn't exist
         with suppress(HTTPException, AttributeError):
-            await self._message.delete()
+            await self.message.delete()
 
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         """
         Event handler for when reactions are added on the help message.
         """
         # Ensure it was the relevant session message
-        if reaction.message.id != self._message.id:
+        if reaction.message.id != self.message.id:
             return
 
         # Ensure it was the session author who reacted
-        if user.id != self._author.id:
+        if user.id != self.author.id:
             return
 
-        emoji = str(reaction.emoji) #
-
-        # Check if a valid action
-        if emoji not in REACTIONS:
+        # Only handle valid action emoji-s
+        if str(reaction.emoji) in self.reactions:
+            self.reset_timeout()
+            await self.reactions[str(reaction.emoji)]()
+        else:
             return
-
-        self.reset_timeout()
-
-        # Run relevant action method
-        action = getattr(self, f'{REACTIONS[emoji]}', None)
-        if action:
-            await action()
 
         # Remove the added reaction to prep for re-use
         with suppress(HTTPException):
-            await self._message.remove_reaction(reaction, user)
+            await self.message.remove_reaction(reaction, user)
 
     async def on_message_delete(self, message: discord.Message):
         """
         Closes the help session when the help message is deleted.
         """
-        if message.id == self._message.id:
+        if message.id == self.message.id:
             await self.stop()
 
     @property
-    def _is_first_page(self) -> bool:
+    def is_first_page(self) -> bool:
         """
         Check if session is currently showing the first page.
         """
-        return self._current_page == 0
+        return self.current_page == 0
 
     @property
-    def _is_last_page(self) -> bool:
+    def is_last_page(self) -> bool:
         """
         Check if the session is currently showing the last page.
         """
-        return self._current_page == (len(self._pages) - 1)
+        return self.current_page == (len(self.pages) - 1)
 
-    async def _first_page(self):
+    async def do_first_page(self):
         """
         Event that is called when the user requests the first page.
         """
-        if not self._is_first_page:
-            await self._update_page(0)
+        if not self.is_first_page:
+            await self.update_page(0)
 
-    async def _previous_page(self):
+    async def do_previous_page(self):
         """
         Event that is called when the user requests the previous page.
         """
-        if not self._is_first_page:
-            await self._update_page(self._current_page - 1)
+        if not self.is_first_page:
+            await self.update_page(self.current_page - 1)
 
-    async def _next_page(self):
+    async def do_next_page(self):
         """
         Event that is called when the user requests the next page.
         """
-        if not self._is_last_page:
-            await self._update_page(self._current_page + 1)
+        if not self.is_last_page:
+            await self.update_page(self.current_page + 1)
 
-    async def _last_page(self):
+    async def do_last_page(self):
         """
         Event that is called when the user requests the last page.
         """
-        if not self._is_last_page:
-            await self._update_page(len(self._pages) - 1)
+        if not self.is_last_page:
+            await self.update_page(len(self.pages) - 1)
 
-    async def _delete(self):
+    async def do_delete(self):
         """
         Event that is called when the user requests to stop the help session.
         """
-        await self._message.delete()
+        await self.message.delete()
 
 
 class Help(DiscordCog):
@@ -787,8 +759,8 @@ class Help(DiscordCog):
         TODO: Docs, mention only 1 argument is accepted
         """
         try:
-            await _HelpSession.start(ctx, command)
-        except _HelpQueryNotFound as e:
+            await HelpSession.start(ctx, command)
+        except HelpQueryNotFound as e:
             await self.help_handler(ctx, e)
 
     @help.error
@@ -796,7 +768,7 @@ class Help(DiscordCog):
         """
         TODO: Docs
         """
-        if isinstance(error, _HelpQueryNotFound):
+        if isinstance(error, HelpQueryNotFound):
             embed = Embed()
             embed.colour = Colour.red()
             embed.title = str(error)

@@ -14,10 +14,8 @@ SRC_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "src")
 LOG_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "log")
 TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 
+# Declare the command prefix - each command must have this prefix in front in order to be considered a command
 COMMAND_PREFIX = "!"
-COMMANDS = [
-    "!apply",
-    "!cancel",
-    "!submit"
-]
-TOKEN = ""
+
+with open(_os.path.join(ROOT_DIR, "token.txt")) as f:
+    TOKEN = f.read().strip()
