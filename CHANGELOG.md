@@ -2,7 +2,7 @@
  - Moved string resources to an external `YAML` file
  - Moved token loading to use a local file on the machine
  - Added a new help extension with an interactive help session
- - Added a new info extension with an additional (new members) welcome message
+ - Added a base of the info extension with an additional (new members) welcome message - will be prepared for next version
  - Optimised a bunch of things and added more error checking
  - Adjusted some of the application form strings
  - Added `pyyaml` dependency
