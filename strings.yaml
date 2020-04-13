@@ -26,7 +26,7 @@ strings:
     other_games_short: "Other games"
     time_availability_long: "When do you usually have free time to play games (BST zone for EUs and EST for NAs)?"
     time_availability_short: "Time availability"
-    anything_else_long: "Anything you would like to add (type \"No\" if nothing to add)?"
+    anything_else_long: "Anything you would like to add (past M&B experience, hobbies, etc)?"
     anything_else_short: "Other"
   info_cog:
     welcome: "Welcome to DoF discord, {}! Please type \"!info\" or \"!help\" to learn more about the clan and possible commands!"
