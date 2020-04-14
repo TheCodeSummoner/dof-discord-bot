@@ -17,5 +17,8 @@ TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 # Declare the command prefix - each command must have this prefix in front in order to be considered a command
 COMMAND_PREFIX = "!"
 
+# Declare the maximum number of the lines for the !help command
+MAX_HELP_LINES = 12
+
 with open(_os.path.join(ROOT_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()

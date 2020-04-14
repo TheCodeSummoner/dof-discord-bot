@@ -3,13 +3,13 @@ TODO: Docs, logs
 """
 import discord
 from discord.ext import commands
+from ..constants import *
 from .. import strings
 
 import asyncio
 import itertools
 from collections import namedtuple
 from contextlib import suppress
-from typing import Union
 from ..bot import Bot
 import typing as t
 from ..logger import Log
@@ -333,7 +333,7 @@ class HelpSession:
     the regular description (class docstring) of the first cog found in the category.
     """
 
-    def __init__(self, ctx: commands.Context, command: str = "", max_lines: int = 3):
+    def __init__(self, ctx: commands.Context, command: str = "", max_lines: int = 8):
         # Declare a mapping of emoji to reaction functions
         self.reactions = {
             FIRST_PAGE_EMOJI: self.do_first_page,
@@ -349,8 +349,9 @@ class HelpSession:
 
         # set the query details for the session
         if command:
-            self.query = self._get_query(command)
-            print(self.query)
+            self.query = self.bot.get_command(command)
+            if not self.query:
+                raise HelpQueryNotFound(strings.Help.invalid_query.format(command))
             self.description = self.query.description or self.query.help
         else:
             self.query = ctx.bot
@@ -368,54 +369,6 @@ class HelpSession:
         self.timeout_task = None
         self.reset_timeout()
 
-    def _get_query(self, query: str) -> Union[Command, Cog]:
-        """Attempts to match the provided query with a valid command or cog."""
-        print("GET QUERY", query)
-        command = self.bot.get_command(query)
-        if command:
-            print("RETURNING", command)
-            return command
-
-        # Find all cog categories that match.
-        cog_matches = []
-        description = None
-        for cog in self.bot.cogs.values():
-            if hasattr(cog, "category") and cog.category == query:
-                cog_matches.append(cog)
-                if hasattr(cog, "category_description"):
-                    description = cog.category_description
-
-        # Try to search by cog name if no categories match.
-        if not cog_matches:
-            print(query)
-            cog = self.bot.cogs.get(query)
-            print(cog)
-
-            # Don't consider it a match if the cog has a category.
-            if cog and not hasattr(cog, "category"):
-                cog_matches = [cog]
-
-        if cog_matches:
-            cog = cog_matches[0]
-            cmds = (cog.get_commands() for cog in cog_matches)  # Commands of all cogs
-            print(cog)
-            return Cog(
-                name=cog.category if hasattr(cog, "category") else cog.qualified_name,
-                description=description or cog.description,
-                commands=tuple(itertools.chain.from_iterable(cmds))  # Flatten the list
-            )
-
-        self._handle_not_found(query)
-
-    def _handle_not_found(self, query: str) -> None:
-        """
-        Handles when a query does not match a valid command or cog.
-
-        Will pass on possible close matches along with the `HelpQueryNotFound` exception.
-        """
-        # Combine command and cog names
-        choices = list(self.bot.all_commands) + list(self.bot.cogs)
-        raise HelpQueryNotFound(f'Query "{query}" not found.')
 
     async def timeout(self, seconds: int = 30) -> None:
         """Waits for a set number of seconds, then stops the help session."""
@@ -437,21 +390,18 @@ class HelpSession:
     async def _prepare(self) -> None:
         """Sets up the help session pages, events, message and reactions."""
         # create paginated content
-        await self.build_pages()
+        try:
+            await self.build_pages()
+        except HelpQueryNotFound as e:
+            raise
 
         # setup listeners
-        print("ADDING LISTENERS")
         self.bot.add_listener(self.on_reaction_add)
-        print("Next")
         self.bot.add_listener(self.on_message_delete)
-        print("Next")
 
         # Send the help message
         await self.update_page()
-        print("Page updated")
         self.add_reactions()
-        print("Added reactions")
-        print(self.bot.extra_events)
 
     def add_reactions(self) -> None:
         """Adds the relevant reactions to the help message based on if pagination is required."""
@@ -463,23 +413,6 @@ class HelpSession:
         # if single-page
         else:
             self.bot.loop.create_task(self.message.add_reaction(DELETE_EMOJI))
-
-    def _category_key(self, cmd: Command) -> str:
-        """
-        Returns a cog name of a given command for use as a key for `sorted` and `groupby`.
-
-        A zero width space is used as a prefix for results with no cogs to force them last in ordering.
-        """
-        if cmd.cog:
-            try:
-                if cmd.cog.category:
-                    return f'**{cmd.cog.category}**'
-            except AttributeError:
-                pass
-
-            return f'**{cmd.cog_name}**'
-        else:
-            return "**\u200bNo Category:**"
 
     def _get_command_params(self, cmd: Command) -> str:
         """
@@ -515,60 +448,33 @@ class HelpSession:
 
         return f"{cmd.name} {' '.join(results)}"
 
-    async def _global_help(self, paginator: LinePaginator, bot: Bot):
-        filtered = self.query.commands
+    async def global_help(self, paginator: LinePaginator):
+        all_commands = self.bot.commands
+        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)
+        grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
 
-        # if after filter there are no commands, finish up
-        if not filtered:
-            self.pages = paginator.pages
-            return
+        for category, commands in grouped_by_cog:
+            commands = sorted(commands, key=lambda cmd: cmd.name)
 
-        # set category to Commands if cog
-        if isinstance(self.query, Cog):
-            grouped = (('**Commands:**', self.query.commands),)
-
-        # set category to Subcommands if command
-        elif isinstance(self.query, commands.Command):
-            grouped = (('**Subcommands:**', self.query.commands),)
-
-            # don't show prefix for subcommands
-            prefix = ''
-
-        # otherwise sort and organise all commands into categories
-        else:
-            cat_sort = sorted(filtered, key=self._category_key)
-            grouped = itertools.groupby(cat_sort, key=self._category_key)
-
-        # process each category
-        for category, cmds in grouped:
-            cmds = sorted(cmds, key=lambda c: c.name)
-
-            # if there are no commands, skip category
-            if len(cmds) == 0:
+            # If there are no commands, skip the category
+            if len(commands) == 0:
                 continue
 
-            cat_cmds = []
-
-            # format details for each child command
-            for command in cmds:
-
-                # see if the user can run the command
-                strikeout = ''
-                prefix = "!"
+            # Format details for each child command
+            command_descriptions = []
+            for command in commands:
                 signature = self._get_command_params(command)
-                info = f"{strikeout}**`{prefix}{signature}`**{strikeout}"
-
-                # handle if the command has no docstring
+                info = f"**`{COMMAND_PREFIX}{signature}`**"
                 if command.short_doc:
-                    cat_cmds.append(f'{info}\n*{command.short_doc}*')
+                    command_descriptions.append(f'{info}\n*{command.short_doc}*')
                 else:
-                    cat_cmds.append(f'{info}\n*No details provided.*')
+                    command_descriptions.append(f'{info}\n*No details provided.*')
 
-            # state var for if the category should be added next
+            # State variable for if the category should be added next
             print_cat = 1
             new_page = True
 
-            for details in cat_cmds:
+            for details in command_descriptions:
 
                 # keep details together, paginating early if it won't fit
                 lines_adding = len(details.split('\n')) + print_cat
@@ -583,54 +489,57 @@ class HelpSession:
                 if print_cat:
                     if new_page:
                         paginator.add_line('')
-                    paginator.add_line(category)
                     print_cat = 0
 
                 paginator.add_line(details)
 
-    async def _command_help(self, paginator: LinePaginator, command: commands.Command):
+    async def command_help(self, paginator: LinePaginator, command: commands.Command):
+        """
+        Retrieves command-related to format it correctly.
+        """
         signature = self._get_command_params(command)
-        prefix = "!"
         parent = command.full_parent_name + ' ' if command.parent else ''
-        paginator.add_line(f'**```{prefix}{parent}{signature}```**')
+        paginator.add_line(f'**```{COMMAND_PREFIX}{parent}{signature}```**')
 
-        # show command aliases
+        # Show command aliases
         aliases = ', '.join(f'`{a}`' for a in command.aliases)
         if aliases:
             paginator.add_line(f'**Can also use:** {aliases}\n')
 
     async def build_pages(self) -> None:
-        """Builds the list of content pages to be paginated through in the help message, as a list of str."""
+        """
+        Builds the list of content pages to be paginated through in the help message, as a list of str.
+        """
         # Use LinePaginator to restrict embed line height
-        paginator = LinePaginator(prefix='', suffix='', max_lines=self._max_lines)
+        paginator = LinePaginator(prefix='', suffix='', max_lines=MAX_HELP_LINES)
 
         if self.description:
-            print("adding", self.description)
             paginator.add_line(f'*{self.description}*')
 
         if isinstance(self.query, commands.Command):
-            await self._command_help(paginator, self.query)
-
+            await self.command_help(paginator, self.query)
         elif isinstance(self.query, Bot):
-            await self._global_help(paginator, self.query)
+            await self.global_help(paginator)
 
         # Save organised pages to session
         self.pages = paginator.pages
 
     def embed_page(self, page_number: int = 0) -> Embed:
-        """Returns an Embed with the requested page formatted within."""
+        """
+        Returns an Embed with the requested page formatted within.
+        """
         embed = Embed()
 
-        # if command or cog, add query to title for pages other than first
-        if isinstance(self.query, (commands.Command, Cog)) and page_number > 0:
-            title = f'Command Help | "{self.query.name}"'
+        # If command or cog, add query to the title
+        if isinstance(self.query, commands.Command):
+            title = str.join(" | ", (self.title, self.query.name))
         else:
             title = self.title
 
         embed.set_author(name=title, icon_url="https://cdn.discordapp.com/emojis/512367613339369475.png")
         embed.description = self.pages[page_number]
 
-        # add page counter to footer if paginating
+        # Add page counter to footer if paginating
         page_count = len(self.pages)
         if page_count > 1:
             embed.set_footer(text=f'Page {self.current_page + 1} / {page_count}')
@@ -748,7 +657,7 @@ class HelpSession:
         await self.message.delete()
 
 
-class Help(DiscordCog):
+class HelpCog(DiscordCog):
     """
     TODO: Docs
     """
@@ -782,4 +691,4 @@ def setup(bot: Bot):
     Removes the default help command beforehand.
     """
     bot.remove_command("help")
-    bot.add_cog(Help())
+    bot.add_cog(HelpCog())

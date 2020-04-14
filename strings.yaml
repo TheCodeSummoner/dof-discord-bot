@@ -30,3 +30,5 @@ strings:
     anything_else_short: "Other"
   info_cog:
     welcome: "Welcome to DoF discord, {}! Please type \"!info\" or \"!help\" to learn more about the clan and possible commands!"
+  help_cog:
+    invalid_query: "Command {} not found"

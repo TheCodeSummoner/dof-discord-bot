@@ -107,3 +107,11 @@ class Info(metaclass=_YAMLStringsGetter):
     """
     section = "info_cog"
     welcome: str
+
+
+class Help(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the help session (and the help cog).
+    """
+    section = "help_cog"
+    invalid_query: str
