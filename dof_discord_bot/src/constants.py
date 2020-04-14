@@ -23,5 +23,12 @@ MAX_HELP_LINES = 8
 # Declare the amount of seconds to wait until help session is deleted
 HELP_SESSION_TIMEOUT = 60
 
+# Declare some emojis
+DELETE_EMOJI = "\U0001f5d1"
+FIRST_PAGE_EMOJI = "\u23EE"
+PREVIOUS_PAGE_EMOJI = "\u2B05"
+NEXT_PAGE_EMOJI = "\u27A1"
+LAST_PAGE_EMOJI = "\u23ED"
+
 with open(_os.path.join(ROOT_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()

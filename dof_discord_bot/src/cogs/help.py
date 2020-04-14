@@ -2,34 +2,22 @@
 TODO: Docs, logs
 """
 import discord
+import asyncio
+import itertools
+import contextlib
+import typing
 from discord.ext import commands
 from ..constants import *
 from .. import strings
-
-import asyncio
-import itertools
-from collections import namedtuple
-from contextlib import suppress
 from ..bot import Bot
-import typing as t
 from ..logger import Log
-from discord.ext.commands import Paginator
 
-from discord import Colour, Embed, HTTPException, User
-from discord.ext.commands import Cog as DiscordCog, Command, Context
-
-DELETE_EMOJI = "<:trashcan:>"
-FIRST_EMOJI = "\u23EE"   # [:track_previous:]
-LEFT_EMOJI = "\u2B05"    # [:arrow_left:]
-RIGHT_EMOJI = "\u27A1"   # [:arrow_right:]
-LAST_EMOJI = "\u23ED"    # [:track_next:]
-
-PAGINATION_EMOJI = (FIRST_EMOJI, LEFT_EMOJI, RIGHT_EMOJI, LAST_EMOJI, DELETE_EMOJI)
+PAGINATION_EMOJI = (FIRST_PAGE_EMOJI, PREVIOUS_PAGE_EMOJI, NEXT_PAGE_EMOJI, LAST_PAGE_EMOJI, DELETE_EMOJI)
 class EmptyPaginatorEmbed(Exception):
     """Raised when attempting to paginate with empty contents."""
 
     pass
-class LinePaginator(Paginator):
+class LinePaginator(commands.Paginator):
     """
     A class that aids in paginating code blocks for Discord messages.
     Available attributes include:
@@ -88,20 +76,20 @@ class LinePaginator(Paginator):
     @classmethod
     async def paginate(
         cls,
-        lines: t.List[str],
-        ctx: Context,
+        lines: typing.List[str],
+        ctx: commands.Context,
         embed: discord.Embed,
         prefix: str = "",
         suffix: str = "",
-        max_lines: t.Optional[int] = None,
+        max_lines: typing.Optional[int] = None,
         max_size: int = 500,
         empty: bool = True,
-        restrict_to_user: User = None,
+        restrict_to_user: discord.User = None,
         timeout: int = 300,
         footer_text: str = None,
         url: str = None,
         exception_on_empty_embed: bool = False
-    ) -> t.Optional[discord.Message]:
+    ) -> typing.Optional[discord.Message]:
         """
         Use a paginator and set of reactions to provide pagination over a set of lines.
         The reactions are used to switch page, or to finish with pagination.
@@ -204,7 +192,7 @@ class LinePaginator(Paginator):
                 Log.debug("Got delete reaction")
                 return await message.delete()
 
-            if reaction.emoji == FIRST_EMOJI:
+            if reaction.emoji == FIRST_PAGE_EMOJI:
                 await message.remove_reaction(reaction.emoji, user)
                 current_page = 0
 
@@ -219,7 +207,7 @@ class LinePaginator(Paginator):
                     embed.set_footer(text=f"Page {current_page + 1}/{len(paginator.pages)}")
                 await message.edit(embed=embed)
 
-            if reaction.emoji == LAST_EMOJI:
+            if reaction.emoji == LAST_PAGE_EMOJI:
                 await message.remove_reaction(reaction.emoji, user)
                 current_page = len(paginator.pages) - 1
 
@@ -234,7 +222,7 @@ class LinePaginator(Paginator):
                     embed.set_footer(text=f"Page {current_page + 1}/{len(paginator.pages)}")
                 await message.edit(embed=embed)
 
-            if reaction.emoji == LEFT_EMOJI:
+            if reaction.emoji == PREVIOUS_PAGE_EMOJI:
                 await message.remove_reaction(reaction.emoji, user)
 
                 if current_page <= 0:
@@ -255,7 +243,7 @@ class LinePaginator(Paginator):
 
                 await message.edit(embed=embed)
 
-            if reaction.emoji == RIGHT_EMOJI:
+            if reaction.emoji == NEXT_PAGE_EMOJI:
                 await message.remove_reaction(reaction.emoji, user)
 
                 if current_page >= len(paginator.pages) - 1:
@@ -277,18 +265,8 @@ class LinePaginator(Paginator):
                 await message.edit(embed=embed)
 
         Log.debug("Ending pagination and clearing reactions.")
-        with suppress(discord.NotFound):
+        with contextlib.suppress(discord.NotFound):
             await message.clear_reactions()
-
-
-# Declare unicode-based emojis
-FIRST_PAGE_EMOJI = "\u23EE"
-PREVIOUS_PAGE_EMOJI = "\u2B05"
-NEXT_PAGE_EMOJI = "\u27A1"
-LAST_PAGE_EMOJI = "\u23ED"
-DELETE_EMOJI = "<:trashcan:>"
-
-Cog = namedtuple('Cog', ['name', 'description', 'commands'])
 
 
 class HelpQueryNotFound(discord.DiscordException):
@@ -354,7 +332,9 @@ class HelpSession:
         self.timeout_task = self.bot.loop.create_task(self.timeout())
 
     async def prepare(self):
-        """Sets up the help session pages, events, message and reactions."""
+        """
+        Sets up the help session pages, events, message, and reactions.
+        """
         # Create paginated content
         await self.build_pages()
 
@@ -381,7 +361,7 @@ class HelpSession:
         Retrieves all commands and formats them correctly
         """
         all_commands = self.bot.commands
-        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name) #TODO: Sort by pre-defined order instead
+        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)  # TODO: Sort by pre-defined order instead
         grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
 
         for category, commands in grouped_by_cog:
@@ -435,11 +415,11 @@ class HelpSession:
         # Save organised pages to session
         self.pages = paginator.pages
 
-    def embed_page(self, page_number: int = 0) -> Embed:
+    def embed_page(self, page_number: int = 0) -> discord.Embed:
         """
         Returns an Embed with the requested page formatted within.
         """
-        embed = Embed()
+        embed = discord.Embed()
 
         # If command or cog, add query to the title
         if isinstance(self.query, commands.Command):
@@ -486,7 +466,7 @@ class HelpSession:
         self.bot.remove_listener(self.on_message_delete)
 
         # Ignore if permission issue, or the message doesn't exist
-        with suppress(HTTPException, AttributeError):
+        with contextlib.suppress(discord.HTTPException, AttributeError):
             await self.message.delete()
 
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
@@ -509,7 +489,7 @@ class HelpSession:
             return
 
         # Remove the added reaction to prep for re-use
-        with suppress(HTTPException):
+        with contextlib.suppress(discord.HTTPException):
             await self.message.remove_reaction(reaction, user)
 
     async def on_message_delete(self, message: discord.Message):
@@ -568,7 +548,7 @@ class HelpSession:
         await self.message.delete()
 
 
-class HelpCog(DiscordCog):
+class HelpCog(commands.Cog):
     """
     TODO: Docs
     """
@@ -589,8 +569,8 @@ class HelpCog(DiscordCog):
         TODO: Docs
         """
         if isinstance(error, HelpQueryNotFound):
-            embed = Embed()
-            embed.colour = Colour.red()
+            embed = discord.Embed()
+            embed.colour = discord.Colour.red()
             embed.title = str(error)
             await ctx.send(embed=embed)
 
