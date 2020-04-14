@@ -13,65 +13,39 @@ from ..bot import Bot
 from ..logger import Log
 
 PAGINATION_EMOJI = (FIRST_PAGE_EMOJI, PREVIOUS_PAGE_EMOJI, NEXT_PAGE_EMOJI, LAST_PAGE_EMOJI, DELETE_EMOJI)
-class EmptyPaginatorEmbed(Exception):
-    """Raised when attempting to paginate with empty contents."""
 
+
+class EmptyPaginatorEmbed(Exception):
+    """
+    Raised when attempting to paginate with empty contents.
+    """
     pass
+
+
 class LinePaginator(commands.Paginator):
     """
-    A class that aids in paginating code blocks for Discord messages.
-    Available attributes include:
-    * prefix: `str`
-        The prefix inserted to every page. e.g. three backticks.
-    * suffix: `str`
-        The suffix appended at the end of every page. e.g. three backticks.
-    * max_size: `int`
-        The maximum amount of codepoints allowed in a page.
-    * max_lines: `int`
-        The maximum amount of lines allowed in a page.
+    TODO: Docs
     """
 
-    def __init__(
-        self, prefix: str = '```', suffix: str = '```', max_size: int = 2000, max_lines: int = None
-    ) -> None:
+    def __init__(self, max_lines: int = None, **kwargs):
         """
-        This function overrides the Paginator.__init__ from inside discord.ext.commands.
-        It overrides in order to allow us to configure the maximum number of lines per page.
+        TODO: Docs
         """
-        self.prefix = prefix
-        self.suffix = suffix
-        self.max_size = max_size - len(suffix)
+        super().__init__(**kwargs)
         self.max_lines = max_lines
-        self._current_page = [prefix]
         self.lines_count = 0
-        self._count = len(prefix) + 1  # prefix + newline
-        self._pages = []
 
-    def add_line(self, line: str = '', *, empty: bool = False) -> None:
+    def add_line(self, line: str = '', *, empty: bool = False):
         """
-        Adds a line to the current page.
-        If the line exceeds the `self.max_size` then an exception is raised.
-        This function overrides the `Paginator.add_line` from inside `discord.ext.commands`.
-        It overrides in order to allow us to configure the maximum number of lines per page.
+        TODO: Docs
         """
-        if len(line) > self.max_size - len(self.prefix) - 2:
-            raise RuntimeError('Line exceeds maximum page size %s' % (self.max_size - len(self.prefix) - 2))
-
         if self.max_lines is not None:
             if self.lines_count >= self.max_lines:
                 self.lines_count = 0
                 self.close_page()
-
             self.lines_count += 1
-        if self._count + len(line) + 1 > self.max_size:
-            self.close_page()
 
-        self._count += len(line) + 1
-        self._current_page.append(line)
-
-        if empty:
-            self._current_page.append('')
-            self._count += 1
+        super().add_line(line)
 
     @classmethod
     async def paginate(
@@ -102,14 +76,9 @@ class LinePaginator(commands.Paginator):
         >>> await LinePaginator.paginate([line for line in lines], ctx, embed)
         """
         def event_check(reaction_: discord.Reaction, user_: discord.Member) -> bool:
-            """Make sure that this reaction is what we want to operate on."""
-            no_restrictions = (
-                # Pagination is not restricted
-                not restrict_to_user
-                # The reaction was by a whitelisted user
-                or user_.id == restrict_to_user.id
-            )
-
+            """
+            Make sure that this reaction is what we want to operate on.
+            """
             return (
                 # Conditions for a successful pagination:
                 all((
@@ -119,8 +88,6 @@ class LinePaginator(commands.Paginator):
                     str(reaction_.emoji) in PAGINATION_EMOJI,
                     # Reaction was not made by the Bot
                     user_.id != ctx.bot.user.id,
-                    # There were no restrictions
-                    no_restrictions
                 ))
             )
 
@@ -361,7 +328,7 @@ class HelpSession:
         Retrieves all commands and formats them correctly
         """
         all_commands = self.bot.commands
-        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)  # TODO: Sort by pre-defined order instead
+        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)
         grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
 
         for category, commands in grouped_by_cog:
