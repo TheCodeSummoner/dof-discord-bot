@@ -18,7 +18,10 @@ TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 COMMAND_PREFIX = "!"
 
 # Declare the maximum number of the lines for the !help command
-MAX_HELP_LINES = 12
+MAX_HELP_LINES = 8
+
+# Declare the amount of seconds to wait until help session is deleted
+HELP_SESSION_TIMEOUT = 60
 
 with open(_os.path.join(ROOT_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()

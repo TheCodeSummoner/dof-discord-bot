@@ -32,3 +32,4 @@ strings:
     welcome: "Welcome to DoF discord, {}! Please type \"!info\" or \"!help\" to learn more about the clan and possible commands!"
   help_cog:
     invalid_query: "Command {} not found"
+    help_title: "Command Help"

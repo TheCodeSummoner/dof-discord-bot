@@ -333,19 +333,17 @@ class HelpSession:
     the regular description (class docstring) of the first cog found in the category.
     """
 
-    def __init__(self, ctx: commands.Context, command: str = "", max_lines: int = 8):
+    def __init__(self, ctx: commands.Context, command: str = ""):
         # Declare a mapping of emoji to reaction functions
         self.reactions = {
             FIRST_PAGE_EMOJI: self.do_first_page,
             PREVIOUS_PAGE_EMOJI: self.do_previous_page,
             NEXT_PAGE_EMOJI: self.do_next_page,
             LAST_PAGE_EMOJI: self.do_last_page,
-            DELETE_EMOJI: self.do_delete()
+            DELETE_EMOJI: self.do_delete
         }
-
-        self.ctx = ctx
         self.bot = ctx.bot
-        self.title = "Command Help"
+        self.title = strings.Help.help_title
 
         # set the query details for the session
         if command:
@@ -359,9 +357,6 @@ class HelpSession:
         self.author = ctx.author
         self.destination = ctx.channel
 
-        # set the config for the session
-        self._max_lines = max_lines
-
         # init session states
         self.pages = None
         self.current_page = 0
@@ -369,10 +364,11 @@ class HelpSession:
         self.timeout_task = None
         self.reset_timeout()
 
-
-    async def timeout(self, seconds: int = 30) -> None:
-        """Waits for a set number of seconds, then stops the help session."""
-        await asyncio.sleep(seconds)
+    async def timeout(self):
+        """
+        Waits for a set number of seconds, then stops the help session.
+        """
+        await asyncio.sleep(HELP_SESSION_TIMEOUT)
         await self.stop()
 
     def reset_timeout(self):
@@ -387,15 +383,15 @@ class HelpSession:
         # Recreate the timeout task
         self.timeout_task = self.bot.loop.create_task(self.timeout())
 
-    async def _prepare(self) -> None:
+    async def prepare(self):
         """Sets up the help session pages, events, message and reactions."""
         # create paginated content
         try:
             await self.build_pages()
-        except HelpQueryNotFound as e:
+        except HelpQueryNotFound:
             raise
 
-        # setup listeners
+        # Setup the listeners to allow page browsing
         self.bot.add_listener(self.on_reaction_add)
         self.bot.add_listener(self.on_message_delete)
 
@@ -403,50 +399,15 @@ class HelpSession:
         await self.update_page()
         self.add_reactions()
 
-    def add_reactions(self) -> None:
-        """Adds the relevant reactions to the help message based on if pagination is required."""
-        # if paginating
+    def add_reactions(self):
+        """
+        Adds the relevant reactions to the help message based on if pagination is required.
+        """
         if len(self.pages) > 1:
             for reaction in self.reactions:
                 self.bot.loop.create_task(self.message.add_reaction(reaction))
-
-        # if single-page
         else:
             self.bot.loop.create_task(self.message.add_reaction(DELETE_EMOJI))
-
-    def _get_command_params(self, cmd: Command) -> str:
-        """
-        Returns the command usage signature.
-
-        This is a custom implementation of `command.signature` in order to format the command
-        signature without aliases.
-        """
-        results = []
-        for name, param in cmd.clean_params.items():
-
-            # if argument has a default value
-            if param.default is not param.empty:
-
-                if isinstance(param.default, str):
-                    show_default = param.default
-                else:
-                    show_default = param.default is not None
-
-                # if default is not an empty string or None
-                if show_default:
-                    results.append(f'[{name}={param.default}]')
-                else:
-                    results.append(f'[{name}]')
-
-            # if variable length argument
-            elif param.kind == param.VAR_POSITIONAL:
-                results.append(f'[{name}...]')
-
-            # if required
-            else:
-                results.append(f'<{name}>')
-
-        return f"{cmd.name} {' '.join(results)}"
 
     async def global_help(self, paginator: LinePaginator):
         """
@@ -466,15 +427,14 @@ class HelpSession:
             # Format details for each child command
             command_descriptions = []
             for command in commands:
-                signature = self._get_command_params(command)
-                info = f"**`{COMMAND_PREFIX}{signature}`**"
+                info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"
                 if command.short_doc:
                     command_descriptions.append(f'{info}\n*{command.short_doc}*')
                 else:
                     command_descriptions.append(f'{info}\n*No details provided.*')
 
             for details in command_descriptions:
-                if paginator.lines_count + len(details.split('\n')) > self._max_lines:
+                if paginator.lines_count + len(details.split('\n')) > MAX_HELP_LINES:
                     paginator.lines_count = 0
                     paginator.close_page()
 
@@ -485,24 +445,20 @@ class HelpSession:
         """
         Retrieves command-related information and formats it correctly.
         """
-        signature = self._get_command_params(command)
-        parent = command.full_parent_name + ' ' if command.parent else ''
-        paginator.add_line(f'**```{COMMAND_PREFIX}{parent}{signature}```**')
+        paginator.add_line(f'**```{COMMAND_PREFIX}{str.join(" ", (command.name, command.signature))}```**')
+        paginator.add_line(f'*{command.help}*')
 
         # Show command aliases
         aliases = ', '.join(f'`{a}`' for a in command.aliases)
         if aliases:
             paginator.add_line(f'**Can also use:** {aliases}\n')
 
-    async def build_pages(self) -> None:
+    async def build_pages(self):
         """
         Builds the list of content pages to be paginated through in the help message, as a list of str.
         """
         # Use LinePaginator to restrict embed line height
         paginator = LinePaginator(prefix='', suffix='', max_lines=MAX_HELP_LINES)
-
-        if self.description:
-            paginator.add_line(f'*{self.description}*')
 
         if isinstance(self.query, commands.Command):
             await self.command_help(paginator, self.query)
@@ -552,10 +508,10 @@ class HelpSession:
         Create and begin a help session based on the given context.
         """
         session = cls(ctx, command)
-        await session._prepare()
+        await session.prepare()
         return session
 
-    async def stop(self) -> None:
+    async def stop(self):
         """
         Stops the help session, removes event listeners and attempts to delete the help message.
         """
