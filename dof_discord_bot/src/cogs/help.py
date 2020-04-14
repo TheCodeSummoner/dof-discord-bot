@@ -55,7 +55,7 @@ class LinePaginator(Paginator):
         self.max_size = max_size - len(suffix)
         self.max_lines = max_lines
         self._current_page = [prefix]
-        self._linecount = 0
+        self.lines_count = 0
         self._count = len(prefix) + 1  # prefix + newline
         self._pages = []
 
@@ -70,11 +70,11 @@ class LinePaginator(Paginator):
             raise RuntimeError('Line exceeds maximum page size %s' % (self.max_size - len(self.prefix) - 2))
 
         if self.max_lines is not None:
-            if self._linecount >= self.max_lines:
-                self._linecount = 0
+            if self.lines_count >= self.max_lines:
+                self.lines_count = 0
                 self.close_page()
 
-            self._linecount += 1
+            self.lines_count += 1
         if self._count + len(line) + 1 > self.max_size:
             self.close_page()
 
@@ -449,8 +449,11 @@ class HelpSession:
         return f"{cmd.name} {' '.join(results)}"
 
     async def global_help(self, paginator: LinePaginator):
+        """
+        Retrieves all commands and formats them correctly
+        """
         all_commands = self.bot.commands
-        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)
+        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name) #TODO: Sort by pre-defined order instead
         grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
 
         for category, commands in grouped_by_cog:
@@ -470,32 +473,17 @@ class HelpSession:
                 else:
                     command_descriptions.append(f'{info}\n*No details provided.*')
 
-            # State variable for if the category should be added next
-            print_cat = 1
-            new_page = True
-
             for details in command_descriptions:
-
-                # keep details together, paginating early if it won't fit
-                lines_adding = len(details.split('\n')) + print_cat
-                if paginator._linecount + lines_adding > self._max_lines:
-                    paginator._linecount = 0
-                    new_page = True
+                if paginator.lines_count + len(details.split('\n')) > self._max_lines:
+                    paginator.lines_count = 0
                     paginator.close_page()
 
-                    # new page so print category title again
-                    print_cat = 1
-
-                if print_cat:
-                    if new_page:
-                        paginator.add_line('')
-                    print_cat = 0
-
                 paginator.add_line(details)
+                paginator.add_line("")
 
     async def command_help(self, paginator: LinePaginator, command: commands.Command):
         """
-        Retrieves command-related to format it correctly.
+        Retrieves command-related information and formats it correctly.
         """
         signature = self._get_command_params(command)
         parent = command.full_parent_name + ' ' if command.parent else ''
