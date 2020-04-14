@@ -301,39 +301,19 @@ class HelpQueryNotFound(discord.DiscordException):
 
 class HelpSession:
     """
-    An interactive session for bot and command help output.
-
-    Expected attributes include:
-        * title: str
-            The title of the help message.
-        * query: Union[discord.ext.commands.Bot, discord.ext.commands.Command]
-        * description: str
-            The description of the query.
-        * pages: list[str]
-            A list of the help content split into manageable pages.
-        * message: `discord.Message`
-            The message object that's showing the help contents.
-        * destination: `discord.abc.Messageable`
-            Where the help message is to be sent to.
-
-    Available options kwargs:
-        * cleanup: Optional[bool]
-            Set to `True` to have the message deleted on session end. Defaults to `False`.
-        * only_can_run: Optional[bool]
-            Set to `True` to hide commands the user can't run. Defaults to `False`.
-        * show_hidden: Optional[bool]
-            Set to `True` to include hidden commands. Defaults to `False`.
-        * max_lines: Optional[int]
-            Sets the max number of lines the paginator will add to a single page. Defaults to 20.
-
-    Cogs can be grouped into custom categories. All cogs with the same category will be displayed
-    under a single category name in the help output. Custom categories are defined inside the cogs
-    as a class attribute named `category`. A description can also be specified with the attribute
-    `category_description`. If a description is not found in at least one cog, the default will be
-    the regular description (class docstring) of the first cog found in the category.
+    TODO: Docs
     """
 
     def __init__(self, ctx: commands.Context, command: str = ""):
+        self.author = ctx.author
+        self.destination = ctx.channel
+        self.bot = ctx.bot
+        self.title = strings.Help.help_title
+        self.pages = list()
+        self.current_page = 0
+        self.message = None
+        self.timeout_task = None
+
         # Declare a mapping of emoji to reaction functions
         self.reactions = {
             FIRST_PAGE_EMOJI: self.do_first_page,
@@ -342,26 +322,16 @@ class HelpSession:
             LAST_PAGE_EMOJI: self.do_last_page,
             DELETE_EMOJI: self.do_delete
         }
-        self.bot = ctx.bot
-        self.title = strings.Help.help_title
 
-        # set the query details for the session
+        # Set the query details for the session
         if command:
             self.query = self.bot.get_command(command)
             if not self.query:
                 raise HelpQueryNotFound(strings.Help.invalid_query.format(command))
-            self.description = self.query.description or self.query.help
         else:
             self.query = ctx.bot
-            self.description = self.query.description
-        self.author = ctx.author
-        self.destination = ctx.channel
 
-        # init session states
-        self.pages = None
-        self.current_page = 0
-        self.message = None
-        self.timeout_task = None
+        # Initial timeout reset to set the timer
         self.reset_timeout()
 
     async def timeout(self):
@@ -385,17 +355,14 @@ class HelpSession:
 
     async def prepare(self):
         """Sets up the help session pages, events, message and reactions."""
-        # create paginated content
-        try:
-            await self.build_pages()
-        except HelpQueryNotFound:
-            raise
+        # Create paginated content
+        await self.build_pages()
 
         # Setup the listeners to allow page browsing
         self.bot.add_listener(self.on_reaction_add)
         self.bot.add_listener(self.on_message_delete)
 
-        # Send the help message
+        # Display the first page and add all reactions
         await self.update_page()
         self.add_reactions()
 
