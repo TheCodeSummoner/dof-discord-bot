@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCHarm
+# PyCharm
 .idea/
+
+# Ignore any tokens
+*token*

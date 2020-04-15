@@ -35,7 +35,7 @@ class Bot(commands.Bot):
     """
 
     def __init__(self, command_prefix: str):
-        super().__init__(command_prefix)
+        super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"))
         self._applications = dict()
         self._channels = dict()
         self._load_extensions()
@@ -44,6 +44,8 @@ class Bot(commands.Bot):
         """
         Function used to load all cogs.
         """
+        self.load_extension("dof_discord_bot.src.cogs.help")
+        self.load_extension("dof_discord_bot.src.cogs.info")
         self.load_extension("dof_discord_bot.src.cogs.apply")
         Log.info("Extensions loaded")
 

@@ -1,8 +1,8 @@
 """
 An unorganised collection of non-static constructs, such as classes or utility functions.
 """
-import discord
-from . import strings
+import discord as _discord
+from . import strings as _strings
 
 
 class MemberApplication:
@@ -23,29 +23,29 @@ class MemberApplication:
     See usage example in `ApplicationCog` (*apply.py*)
     """
     questions = [
-        strings.STEAM_PROFILE_LONG,
-        strings.TW_PROFILE_LONG,
-        strings.COUNTRY_LONG,
-        strings.ENGLISH_FLUENCY_LONG,
-        strings.DOF_FIRST_ENCOUNTER_LONG,
-        strings.DOF_WHY_JOIN_LONG,
-        strings.OTHER_GAMES_LONG,
-        strings.TIME_AVAILABILITY_LONG,
-        strings.ANYTHING_ELSE_LONG
+        _strings.Utils.steam_profile_long,
+        _strings.Utils.tw_profile_long,
+        _strings.Utils.country_long,
+        _strings.Utils.english_fluency_long,
+        _strings.Utils.dof_first_encounter_long,
+        _strings.Utils.dof_why_join_long,
+        _strings.Utils.other_games_long,
+        _strings.Utils.time_availability_long,
+        _strings.Utils.anything_else_long
     ]
     _questions_summary = [
-        strings.STEAM_PROFILE_SHORT,
-        strings.TW_PROFILE_SHORT,
-        strings.COUNTRY_SHORT,
-        strings.ENGLISH_FLUENCY_SHORT,
-        strings.DOF_FIRST_ENCOUNTER_SHORT,
-        strings.DOF_WHY_JOIN_SHORT,
-        strings.OTHER_GAMES_SHORT,
-        strings.TIME_AVAILABILITY_SHORT,
-        strings.ANYTHING_ELSE_SHORT
+        _strings.Utils.steam_profile_short,
+        _strings.Utils.tw_profile_short,
+        _strings.Utils.country_short,
+        _strings.Utils.english_fluency_short,
+        _strings.Utils.dof_first_encounter_short,
+        _strings.Utils.dof_why_join_short,
+        _strings.Utils.other_games_short,
+        _strings.Utils.time_availability_short,
+        _strings.Utils.anything_else_short
     ]
 
-    def __init__(self, member: discord.Member):
+    def __init__(self, member: _discord.Member):
         self._member = member
         self._progress = 0
         self._answers = list()
