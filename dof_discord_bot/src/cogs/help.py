@@ -362,7 +362,7 @@ class HelpCog(commands.Cog):
     @commands.command()
     async def help(self, ctx: commands.Context, command: str = ""):
         """
-        Help command displays available commands, or displays command-specific information when used with an additional
+        Help command displays available commands, or displays command-specific information when used with an additional\
         argument.
 
         Some examples of the command:
