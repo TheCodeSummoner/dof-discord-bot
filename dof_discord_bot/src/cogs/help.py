@@ -92,6 +92,8 @@ class HelpSession:
         """
         Create and begin a help session based on the given context.
         """
+        Log.info(f"Starting a help session, initiated by {ctx.author}")
+
         session = cls(ctx, command)
         await session.prepare()
         return session
@@ -100,6 +102,8 @@ class HelpSession:
         """
         Stops the help session, removes event listeners and attempts to delete the help message.
         """
+        Log.info(f"Stopping the help session started by {self.author}")
+
         self.bot.remove_listener(self.on_reaction_add)
         self.bot.remove_listener(self.on_message_delete)
 
@@ -111,6 +115,8 @@ class HelpSession:
         """
         Sets up the help session pages, events, message, and reactions.
         """
+        Log.debug(f"Preparing the session for {self.author}")
+
         # Create paginated content
         await self.build_pages()
 
@@ -140,6 +146,8 @@ class HelpSession:
         """
         Event that is called when the user requests the first page.
         """
+        Log.debug(f"Getting first page for {self.author}")
+
         if not self.is_first_page:
             await self.update_page(0)
 
@@ -147,6 +155,8 @@ class HelpSession:
         """
         Event that is called when the user requests the previous page.
         """
+        Log.debug(f"Getting previous page for {self.author}")
+
         if not self.is_first_page:
             await self.update_page(self.current_page - 1)
 
@@ -154,6 +164,8 @@ class HelpSession:
         """
         Event that is called when the user requests the next page.
         """
+        Log.debug(f"Getting next page for {self.author}")
+
         if not self.is_last_page:
             await self.update_page(self.current_page + 1)
 
@@ -161,6 +173,8 @@ class HelpSession:
         """
         Event that is called when the user requests the last page.
         """
+        Log.debug(f"Getting last page")
+
         if not self.is_last_page:
             await self.update_page(len(self.pages) - 1)
 
@@ -168,6 +182,8 @@ class HelpSession:
         """
         Event that is called when the user requests to stop the help session.
         """
+        Log.debug(f"Deleting the message for {self.author}")
+
         await self.message.delete()
 
     async def timeout(self):
@@ -183,6 +199,8 @@ class HelpSession:
 
         Used mainly to keep the session after users interact with it.
         """
+        Log.debug(f"A user action by {self.author} forced the timeout reset")
+
         # Cancel the original task if it exists
         if self.timeout_task:
             if not self.timeout_task.cancelled():
@@ -195,6 +213,8 @@ class HelpSession:
         """
         Adds the relevant reactions to the help message based on if pagination is required.
         """
+        Log.debug(f"Adding reactions for {self.author} (help session)")
+
         if len(self.pages) > 1:
             for reaction in self.reactions:
                 self.bot.loop.create_task(self.message.add_reaction(reaction))
@@ -220,6 +240,8 @@ class HelpSession:
         """
         Retrieves all commands and formats them correctly
         """
+        Log.debug(f"Displaying global help (all commands) for {self.author}")
+
         all_commands = self.bot.commands
         sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)
         grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
@@ -252,6 +274,8 @@ class HelpSession:
         """
         Retrieves command-related information and formats it correctly.
         """
+        Log.debug(f"Displaying command-specific help about {command.name} for {self.author}")
+
         paginator.add_line(f'**```{COMMAND_PREFIX}{str.join(" ", (command.name, command.signature))}```**')
         paginator.add_line(f'*{command.help}*')
 
@@ -298,6 +322,8 @@ class HelpSession:
         """
         Event handler for when reactions are added on the help message.
         """
+        Log.debug(f"Reaction added by {user.display_name}")
+
         # Ensure it was the relevant session message
         if reaction.message.id != self.message.id:
             return
@@ -315,6 +341,7 @@ class HelpSession:
 
         # Remove the added reaction to prep for re-use
         with contextlib.suppress(discord.HTTPException):
+            Log.debug(f"Reaction by {user.display_name} handled by the session")
             await self.message.remove_reaction(reaction, user)
 
     async def on_message_delete(self, message: discord.Message):
@@ -346,6 +373,9 @@ class HelpCog(commands.Cog):
         The help commands also creates a help session - use arrows to navigate the pages or the wastebasket icon to
         stop the session early and remove it.
         """
+        member = ctx.author
+        Log.debug(f"Detected !help command used by {member.display_name}")
+
         try:
             await HelpSession.start(ctx, command)
         except HelpQueryNotFound as e:
