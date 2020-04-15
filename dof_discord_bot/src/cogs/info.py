@@ -44,8 +44,8 @@ class InformationCog(commands.Cog):
         Info command is used to display DoF-related information.
 
         TODO: Code needed :)
-          Consider adding info subsections - !info clan, !info bot etc.
-          Remember to add the basic message
+          Setup pages - each page will be handled by InfoSession which will inherit from some other class
+          That other class still needs to be created and exposed via utils.py
         """
         member = ctx.author
 
