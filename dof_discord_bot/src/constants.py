@@ -12,6 +12,7 @@ DOF_DISCORD_BOT_DIR = _os.path.join(ROOT_DIR, "dof_discord_bot")
 # Declare paths to the main folders
 SRC_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "src")
 LOG_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "log")
+RES_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "res")
 TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 
 # Declare the command prefix - each command must have this prefix in front in order to be considered a command
@@ -30,5 +31,5 @@ PREVIOUS_PAGE_EMOJI = "\u2B05"
 NEXT_PAGE_EMOJI = "\u27A1"
 LAST_PAGE_EMOJI = "\u23ED"
 
-with open(_os.path.join(ROOT_DIR, "token.txt")) as f:
+with open(_os.path.join(RES_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()

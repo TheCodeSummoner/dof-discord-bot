@@ -7,13 +7,13 @@ Module storing an implementation of a static log class and all values associated
 The config.json file stored within the log folder is used to configure most of the logging functionality, however
 working with this module provides more direct control over the mechanisms.
 """
-from .constants import LOG_DIR as _LOG_DIR
+from .constants import LOG_DIR as _LOG_DIR, RES_DIR as _RES_DIR
 import logging as _logging
 import logging.config as _config
 import json as _json
 import os as _os
 
-_CONFIG_FILE_PATH = _os.path.join(_LOG_DIR, "config.json")
+_CONFIG_FILE_PATH = _os.path.join(_RES_DIR, "config.json")
 _FILE_HANDLERS = {"logging.FileHandler", "dof_discord_bot.log.restricted_file_handler._RestrictedFileHandler",
                   "dof_discord_bot.log.verbose_file_handler._VerboseFileHandler"}
 

@@ -3,10 +3,10 @@ Formattable strings, loaded from a YAML file.
 """
 import os as _os
 import yaml as _yaml
-from .constants import ROOT_DIR as _ROOT_DIR
+from .constants import RES_DIR as _RES_DIR
 from .logger import Log as _Log
 
-with open(_os.path.join(_ROOT_DIR, "strings.yaml"), encoding="UTF-8") as f:
+with open(_os.path.join(_RES_DIR, "strings.yaml"), encoding="UTF-8") as f:
     _CONFIG_YAML = _yaml.safe_load(f)
 
 # Hard code the root section as the yaml file is only used for strings resources
