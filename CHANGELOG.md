@@ -1,4 +1,10 @@
-# Version 1.1.0
+# Version 1.2.0
+- Added content for Info Cog
+- Moved Session and Paginator related code to utils
+- Expanded `LinePaginator` (and added a new `Page` class to support that expansion)
+- Adjusted `HelpSession` to be inheritable - now called a `Session`
+
+## Version 1.1.0
  - Moved string resources to an external `YAML` file
  - Moved token loading to use a local file on the machine
  - Added a new help extension with an interactive help session
