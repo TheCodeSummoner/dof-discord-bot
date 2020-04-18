@@ -132,4 +132,4 @@ dmypy.json
 .idea/
 
 # Ignore any tokens
-dof_discord_bot/src/token.txt
+*token*
