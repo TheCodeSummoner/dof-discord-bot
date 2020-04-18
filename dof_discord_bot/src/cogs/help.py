@@ -40,7 +40,6 @@ class HelpSession(Session):
         """
         Builds the list of content pages to be paginated through in the help message, as a list of str.
         """
-        # Use LinePaginator to restrict embed line height
         paginator = LinePaginator(prefix='', suffix='', max_lines=MAX_HELP_LINES)
 
         if isinstance(self.query, commands.Command):

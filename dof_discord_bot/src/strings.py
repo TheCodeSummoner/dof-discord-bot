@@ -107,6 +107,26 @@ class Info(metaclass=_YAMLStringsGetter):
     """
     section = "info_cog"
     welcome: str
+    bot_welcome: str
+    bot_tutorial: str
+    bot_output: str
+    bot_browse: str
+    rules_welcome: str
+    rules_first: str
+    rules_second: str
+    rules_third: str
+    rules_fourth: str
+    rules_fifth: str
+    rules_sixth: str
+    links_welcome: str
+    links_ts: str
+    links_website: str
+    links_public_steam: str
+    links_private_steam: str
+    authors_welcome: str
+    authors_bertalicious: str
+    authors_support: str
+    authors_link: str
 
 
 class Help(metaclass=_YAMLStringsGetter):
