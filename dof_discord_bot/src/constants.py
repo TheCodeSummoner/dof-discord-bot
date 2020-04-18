@@ -33,9 +33,3 @@ LAST_PAGE_EMOJI = "\u23ED"
 
 with open(_os.path.join(RES_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()
-
-# Bannerlord Characters female
-
-FEMALE_Chars = "Rhagaea\nIra\nElys\nIdrun\nMonchug\nUnqid\nAbagai\nAlynneth\nChalia\nLiena\nAnidha\nDebana\nHelea\n" \
-               "Phaea\nSora\nPhenoria\nALCAEA\nALLYNETH\nASELA\nCHALIA\nDEBANA\nELYS\nHELEA\nLYSICA\nMINA\nNYWIN\n" \
-               "PHAEA\nPHENORIA\nSIGA\nSORA\nSVANA\nZOANA"
