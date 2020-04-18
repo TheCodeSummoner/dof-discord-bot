@@ -32,7 +32,7 @@ NEXT_PAGE_EMOJI = "\u27A1"
 LAST_PAGE_EMOJI = "\u23ED"
 
 with open(_os.path.join(RES_DIR, "token.txt")) as f:
-    TOKEN = ""
+    TOKEN = f.read().strip()
 
 # Bannerlord Characters female
 
