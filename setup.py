@@ -21,9 +21,8 @@ ROOT = os.path.normpath(os.path.dirname(__file__))
 PACKAGE_DATA = [
     os.path.join(ROOT, "dof_discord_bot", "log", "config.json"),
     os.path.join(ROOT, "dof_discord_bot", "res", "strings.yaml"),
-os.path.join(ROOT, "dof_discord_bot", "res", "config.json"),
+    os.path.join(ROOT, "dof_discord_bot", "res", "config.json"),
 ]
-
 
 setuptools.setup(
     name="dof_discord_bot",
