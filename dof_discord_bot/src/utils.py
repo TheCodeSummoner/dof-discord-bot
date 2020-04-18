@@ -2,6 +2,7 @@
 An unorganised collection of non-static constructs, such as classes or utility functions.
 """
 import discord as _discord
+from discord.ext import commands as _commands
 from . import strings as _strings
 
 
@@ -85,3 +86,79 @@ class MemberApplication:
         """
         self._progress += 1
         self._answers.append(answer)
+
+
+class Page:
+    """
+    Page class is used to represent multiple paginator lines, which can be then added all at once.
+    """
+
+    def __init__(self, *lines):
+        """
+        `Lines` can either be a list of strings, or multiple strings which are then packed into a list.
+
+        Keep in mind that a value error will be thrown if a non-string element is found in either case.
+        """
+        if len(lines) == 1 and isinstance(lines[0], list):
+            lines = lines[0]
+
+        self._lines = list()
+        for line in lines:
+            if not isinstance(line, str):
+                raise ValueError(f"Each page line is expected to be a string, not {type(line)}")
+            self._lines.append(line)
+
+    @property
+    def lines(self):
+        """
+        Getter for the page lines.
+        """
+        return self._lines
+
+
+class LinePaginator(_commands.Paginator):
+    """
+    Extended paginator used to restrict the amount of displayed content by checking the number of lines.
+
+    Additionally supports adding a `Page` instance, instead of manually adding each line.
+    """
+
+    def __init__(self, max_lines: int = None, **kwargs):
+        """
+        Max lines argument is used to restrict the maximum amount of content (even though the lines can be as long as
+        needed, as long as they are under the character limit).
+
+        All other keyword-only arguments are passed into the parent constructor.
+        """
+        super().__init__(**kwargs)
+        self.max_lines = max_lines
+        self.lines_count = 0
+
+    def add_line(self, line: str = "", *args, **kwargs):
+        """
+        Extended add_line method from the parent class, added the functionality to also restrict the number of lines.
+        """
+        if self.max_lines is not None:
+            if self.lines_count >= self.max_lines:
+                self.close_page()
+            self.lines_count += 1
+
+        super().add_line(line, *args, **kwargs)
+
+    def add_page(self, page: Page):
+        """
+        New support method to allow adding multiple lines (pages) at once.
+        """
+        for line in page.lines:
+            self.add_line(line)
+        self.close_page()
+
+    def close_page(self):
+        """
+        Extended close_page method from the parent class, added the functionality to reset line count limiter.
+
+        Note that if the paginator was given the line restriction, the pages may be closed early. Don't pass max_lines
+        restriction in the constructor to allow unlimited amount of lines per page.
+        """
+        self.lines_count = 0
+        super().close_page()

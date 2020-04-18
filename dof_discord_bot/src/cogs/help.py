@@ -16,6 +16,7 @@ from ..constants import *
 from .. import strings
 from ..bot import Bot
 from ..logger import Log
+from ..utils import LinePaginator
 
 
 class HelpQueryNotFound(discord.DiscordException):
@@ -24,29 +25,6 @@ class HelpQueryNotFound(discord.DiscordException):
     """
     def __init__(self, arg: str):
         super().__init__(arg)
-
-
-class LinePaginator(commands.Paginator):
-    """
-    TODO: Should be in utils.py, and also extended to support more things. Then write docs.
-    """
-
-    def __init__(self, max_lines: int = None, **kwargs):
-        super().__init__(**kwargs)
-        self.max_lines = max_lines
-        self.lines_count = 0
-
-    def add_line(self, line: str = '', *, empty: bool = False):
-        """
-        Extended add_line method from the parent class, added the functionality to also restrict the number of lines.
-        """
-        if self.max_lines is not None:
-            if self.lines_count >= self.max_lines:
-                self.lines_count = 0
-                self.close_page()
-            self.lines_count += 1
-
-        super().add_line(line)
 
 
 class HelpSession:
