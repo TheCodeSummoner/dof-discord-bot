@@ -40,5 +40,5 @@ LAST_PAGE_EMOJI = "\u23ED"
 # Declare some icons
 DEFAULT_SESSION_ICON = "https://cdn.discordapp.com/emojis/512367613339369475.png"
 
-with open(_os.path.join(RES_DIR, "token-dev.txt")) as f:
+with open(_os.path.join(RES_DIR, "token.txt")) as f:
     TOKEN = f.read().strip()
