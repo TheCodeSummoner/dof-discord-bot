@@ -393,7 +393,7 @@ class Session:
         # Add page counter to footer if paginating
         page_count = len(self.pages)
         if page_count > 1:
-            embed.set_footer(text=f'Page {self.current_page + 1} / {page_count}')
+            embed.set_footer(text=f"Page {self.current_page + 1} / {page_count}")
 
         return embed
 
