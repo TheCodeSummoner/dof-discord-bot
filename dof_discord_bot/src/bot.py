@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 from .logger import Log
 from .utils import MemberApplication
+from .constants import COMMANDS_ORDER
 
 
 class Bot(commands.Bot):
@@ -39,6 +40,7 @@ class Bot(commands.Bot):
         self._applications = dict()
         self._channels = dict()
         self._load_extensions()
+        self._verify_commands_order()
 
     def _load_extensions(self):
         """
@@ -48,6 +50,21 @@ class Bot(commands.Bot):
         self.load_extension("dof_discord_bot.src.cogs.info")
         self.load_extension("dof_discord_bot.src.cogs.apply")
         Log.info("Extensions loaded")
+
+    def _verify_commands_order(self):
+        """
+        Function used to check if the order of all commands has been specified, and alphabetically sort any un-ordered
+        commands.
+        """
+        command_names = {cmd.name for cmd in self.commands}
+
+        # Check that all commands have been "registered" in the ordering list
+        difference = command_names.difference(set(COMMANDS_ORDER))
+        if difference:
+            Log.warning(f"The order of some commands has not been specified. Please specify the order of {difference} "
+                        f"in constants.py - otherwise the commands will be added to the end of the list alphabetically")
+            for command in sorted(difference):
+                COMMANDS_ORDER.append(command)
 
     @property
     def channels(self) -> typing.Dict[str, discord.TextChannel]:

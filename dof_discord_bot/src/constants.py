@@ -21,6 +21,15 @@ COMMAND_PREFIX = "!"
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
 
+# Declare the order of commands to be displayed in the help message
+COMMANDS_ORDER = [
+    "info",
+    "help",
+    "apply",
+    "submit",
+    "cancel"
+]
+
 # Declare some emojis
 DELETE_EMOJI = "\U0001f5d1"
 FIRST_PAGE_EMOJI = "\u23EE"
@@ -31,5 +40,5 @@ LAST_PAGE_EMOJI = "\u23ED"
 # Declare some icons
 DEFAULT_SESSION_ICON = "https://cdn.discordapp.com/emojis/512367613339369475.png"
 
-with open(_os.path.join(RES_DIR, "token.txt")) as f:
+with open(_os.path.join(RES_DIR, "token-dev.txt")) as f:
     TOKEN = f.read().strip()
