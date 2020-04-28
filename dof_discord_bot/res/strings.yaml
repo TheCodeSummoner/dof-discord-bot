@@ -53,3 +53,4 @@ strings:
   help_cog:
     invalid_query: "Command {} not found."
     help_title: "Command Help"
+    help_aliases: "Can also use: {}"
