@@ -50,3 +50,4 @@ if not TOKEN:
     else:
         print(f"Missing token - either declare \"DOF_TOKEN\" environment variable or include the token in the "
               f"\"token.txt\" file at \"{_os.path.join(RES_DIR, 'token.txt')}\"", file=_sys.stderr)
+        exit(1)
