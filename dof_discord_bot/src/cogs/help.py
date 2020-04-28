@@ -4,7 +4,6 @@ Help Cog
 
 Module storing help related functionality.
 """
-import itertools
 import discord
 import typing
 from discord.ext import commands
