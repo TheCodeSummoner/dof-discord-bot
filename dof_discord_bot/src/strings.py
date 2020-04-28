@@ -136,3 +136,4 @@ class Help(metaclass=_YAMLStringsGetter):
     section = "help_cog"
     invalid_query: str
     help_title: str
+    help_aliases: str

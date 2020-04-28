@@ -85,7 +85,8 @@ class HelpSession(Session):
         # Show command aliases
         aliases = ", ".join(f"`{a}`" for a in command.aliases)
         if aliases:
-            paginator.add_line(f"**Can also use:** {aliases}\n")
+            paginator.add_line("")
+            paginator.add_line(strings.Help.help_aliases.format(aliases))
 
 
 class HelpCog(commands.Cog):
@@ -95,7 +96,7 @@ class HelpCog(commands.Cog):
     ALl further help functionality is handled within the `HelpSession` class.
     """
 
-    @commands.command()
+    @commands.command(aliases=["isummontheedofbot"])
     async def help(self, ctx: commands.Context, command: str = ""):
         """
         Help command displays available commands, or displays command-specific information when used with an additional\
