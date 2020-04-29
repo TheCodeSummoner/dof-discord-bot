@@ -44,10 +44,12 @@ class bl_character(commands.Cog):
     @commands.command()
     async def bl_character(self, ctx: commands.Context, command: str = ""):
         if command:
+            # TODO: Add proper checking here - Bert
             if command and getattr(strings.Bl_Characters, command):
                 await ctx.send(getattr(strings.Bl_Characters, command))
             else:
-                await self.bl_character_handler(ctx, HelpQueryNotFound(strings.Help.invalid_query.format(command)))
+                # TODO: Add handler usage here - Bert
+                pass
         else:
 
             await ctx.send(strings.Bl_Characters.introduction)
@@ -57,14 +59,12 @@ class bl_character(commands.Cog):
         """
         Custom handler needed to handle the custom error - the user should be informed about an invalid query.
         """
-        if isinstance(error, HelpQueryNotFound):
-            Log.debug(f"Caught invalid character error - {error}")
-            embed = discord.Embed()
-            embed.colour = discord.Colour.red()
-            embed.title = str(error)
-            await ctx.send(embed=embed)
-        else:
-            raise error
+        # TODO: Add exception checking here - Bert
+        Log.debug(f"Caught invalid character error - {error}")
+        embed = discord.Embed()
+        embed.colour = discord.Colour.red()
+        embed.title = str(error)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
