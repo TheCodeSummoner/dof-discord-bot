@@ -47,10 +47,24 @@ class bl_character(commands.Cog):
             if command and getattr(strings.Bl_Characters, command):
                 await ctx.send(getattr(strings.Bl_Characters, command))
             else:
-                await ctx.send("Character name not found! Please check spelling.")
+                await self.bl_character_handler(ctx, HelpQueryNotFound(strings.Help.invalid_query.format(command)))
         else:
 
             await ctx.send(strings.Bl_Characters.introduction)
+
+    @bl_character.error
+    async def bl_character_handler(self, ctx: commands.Context, error: discord.DiscordException):
+        """
+        Custom handler needed to handle the custom error - the user should be informed about an invalid query.
+        """
+        if isinstance(error, HelpQueryNotFound):
+            Log.debug(f"Caught invalid character error - {error}")
+            embed = discord.Embed()
+            embed.colour = discord.Colour.red()
+            embed.title = str(error)
+            await ctx.send(embed=embed)
+        else:
+            raise error
 
 
 def setup(bot: commands.Bot):
