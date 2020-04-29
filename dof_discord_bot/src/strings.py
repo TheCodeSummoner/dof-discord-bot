@@ -137,18 +137,25 @@ class Help(metaclass=_YAMLStringsGetter):
     invalid_query: str
     help_title: str
     help_aliases: str
-
+# TODO: Too many lines! See PyCharm comments on what the indentation between class definitions should be (grey line)
 
 
 
 class Bl_Characters(metaclass=_YAMLStringsGetter):
     """
-    Character strings for bannerlord characters
+    Character strings for bannerlord characters  # TODO: Adjust this docstring to match the new split between the cog and the faces
     """
     section = "bl_character_cog"
     rhagaea: str
     ira: str
     elys: str
-    invalid_query: str
+    invalid_query: str  # TODO: Adjust the name to be more meaningful, such as invalid_character
+
+    # TODO: The strings should be defined in strings.yaml file, not here! See how I added fields in strings.yaml with
+    #  in them -> You should be declaring them there!
+    #  Additionally, the last part (Rhagaea\nIra\nElys) should not be hardcoded, but instead populated with the .format
+    #  function - but we can leave this until the last step when we actually format the message properly.
+    #  ALso, I would suggest to seprate the introduction, and the "The following characters are available" into
+    #  2 strings instead
     introduction = "Hello! If you wanna receive a certain character code, type in !bl_character Name and you'll receive it. The following characters are available:\n" \
                    "Rhagaea\nIra\nElys"
