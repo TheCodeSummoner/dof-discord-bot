@@ -45,7 +45,7 @@ class bl_character(commands.Cog):
     async def bl_character(self, ctx: commands.Context, command: str = ""):
         if command:
             if command and getattr(strings.Bl_Characters, command):
-                await ctx.send(getattr(strings.Bl_Characters.section, command))
+                await ctx.send(getattr(strings.Bl_Characters, command))
             else:
                 await ctx.send("Character name not found! Please check spelling.")
         else:

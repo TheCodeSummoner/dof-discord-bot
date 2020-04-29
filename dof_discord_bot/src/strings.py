@@ -139,11 +139,16 @@ class Help(metaclass=_YAMLStringsGetter):
     help_aliases: str
 
 
+
+
 class Bl_Characters(metaclass=_YAMLStringsGetter):
     """
     Character strings for bannerlord characters
     """
-    section = "bl_character.cog"
+    section = "bl_character_cog"
+    rhagaea: str
+    ira: str
+    elys: str
     invalid_query: str
-    introduction = "Hello! If you wanna receive a certain character code, type in !bl_character [Name] and you'll receive it. The following characters are available:\n" \
+    introduction = "Hello! If you wanna receive a certain character code, type in !bl_character Name and you'll receive it. The following characters are available:\n" \
                    "Rhagaea\nIra\nElys"
