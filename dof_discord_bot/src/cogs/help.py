@@ -4,14 +4,13 @@ Help Cog
 
 Module storing help related functionality.
 """
-import itertools
 import discord
 import typing
 from discord.ext import commands
 from .. import strings
 from ..bot import Bot
 from ..logger import Log
-from ..constants import MAX_HELP_LINES, COMMAND_PREFIX
+from ..constants import MAX_HELP_LINES, COMMAND_PREFIX, COMMANDS_ORDER
 from ..utils import Session, LinePaginator
 
 
@@ -40,7 +39,7 @@ class HelpSession(Session):
         """
         Builds the list of content pages to be paginated through in the help message, as a list of str.
         """
-        paginator = LinePaginator(prefix='', suffix='', max_lines=MAX_HELP_LINES)
+        paginator = LinePaginator(prefix="", suffix="", max_lines=MAX_HELP_LINES)
 
         if isinstance(self.query, commands.Command):
             await self.command_help(paginator, self.query)
@@ -56,33 +55,22 @@ class HelpSession(Session):
         """
         Log.debug(f"Displaying global help (all commands) for {self.author}")
 
-        all_commands = self.bot.commands
-        sorted_by_cog = sorted(all_commands, key=lambda cmd: cmd.cog_name)
-        grouped_by_cog = itertools.groupby(sorted_by_cog, key=lambda cmd: cmd.cog_name)
+        # Sort the commands by the index in the ordering and add them to the help message
+        for command in sorted(self.bot.commands, key=lambda cmd: COMMANDS_ORDER.index(cmd.name)):
 
-        for category, commands in grouped_by_cog:
-            commands = sorted(commands, key=lambda cmd: cmd.name)
+            # Retrieve command name. signature and docs (description)
+            info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"
+            if command.short_doc:
+                details = f"{info}\n*{command.short_doc}*"
+            else:
+                details = f"{info}\n*No details provided.*"
 
-            # If there are no commands, skip the category
-            if len(commands) == 0:
-                continue
+            if paginator.lines_count + len(details.split("\n")) > MAX_HELP_LINES:
+                paginator.lines_count = 0
+                paginator.close_page()
 
-            # Format details for each child command
-            command_descriptions = []
-            for command in commands:
-                info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"
-                if command.short_doc:
-                    command_descriptions.append(f'{info}\n*{command.short_doc}*')
-                else:
-                    command_descriptions.append(f'{info}\n*No details provided.*')
-
-            for details in command_descriptions:
-                if paginator.lines_count + len(details.split('\n')) > MAX_HELP_LINES:
-                    paginator.lines_count = 0
-                    paginator.close_page()
-
-                paginator.add_line(details)
-                paginator.add_line("")
+            paginator.add_line(details)
+            paginator.add_line("")
 
     async def command_help(self, paginator: LinePaginator, command: commands.Command):
         """
@@ -91,12 +79,13 @@ class HelpSession(Session):
         Log.debug(f"Displaying command-specific help about {command.name} for {self.author}")
 
         paginator.add_line(f'**```{COMMAND_PREFIX}{str.join(" ", (command.name, command.signature))}```**')
-        paginator.add_line(f'*{command.help}*')
+        paginator.add_line(f"*{command.help}*")
 
         # Show command aliases
-        aliases = ', '.join(f'`{a}`' for a in command.aliases)
+        aliases = ", ".join(f"`{a}`" for a in command.aliases)
         if aliases:
-            paginator.add_line(f'**Can also use:** {aliases}\n')
+            paginator.add_line("")
+            paginator.add_line(strings.Help.help_aliases.format(aliases))
 
 
 class HelpCog(commands.Cog):
@@ -106,7 +95,7 @@ class HelpCog(commands.Cog):
     ALl further help functionality is handled within the `HelpSession` class.
     """
 
-    @commands.command()
+    @commands.command(aliases=["isummontheedofbot"])
     async def help(self, ctx: commands.Context, command: str = ""):
         """
         Help command displays available commands, or displays command-specific information when used with an additional\

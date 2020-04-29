@@ -20,7 +20,7 @@ class InfoSession(Session):
         """
         Builds predefined pages and puts them into the paginator.
         """
-        paginator = LinePaginator(prefix='', suffix='')
+        paginator = LinePaginator(prefix="", suffix="")
 
         # Add general info page
         paginator.add_page(Page(
