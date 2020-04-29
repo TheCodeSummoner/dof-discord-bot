@@ -19,7 +19,7 @@ import asyncio
 import itertools
 import contextlib
 from discord.ext import commands
-
+from .. import strings
 from .apply import ApplicationCog
 from .help import HelpQueryNotFound
 from ..constants import *
@@ -28,7 +28,7 @@ from ..bot import Bot
 from ..logger import Log
 
 
-class BlCharacter(commands.Cog):
+class bl_character(commands.Cog):
     """
         Character cog provides html codes for characters in bannerlord
 
@@ -44,13 +44,17 @@ class BlCharacter(commands.Cog):
     @commands.command()
     async def bl_character(self, ctx: commands.Context, command: str = ""):
         if command:
-            print("You used the bl_character command, which currently is under construction")
+            if command and getattr(strings.Bl_Characters, command):
+                await ctx.send(getattr(strings.Bl_Characters.section, command))
+            else:
+                await ctx.send("Character name not found! Please check spelling.")
         else:
-            print("Command not found")
+
+            await ctx.send(strings.Bl_Characters.introduction)
 
 
 def setup(bot: commands.Bot):
     """
     Standard setup, loads the cog.
     """
-    bot.add_cog(ApplicationCog(bot))
+    bot.add_cog(bl_character(bot))
