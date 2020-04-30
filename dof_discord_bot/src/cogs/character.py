@@ -56,13 +56,13 @@ class CharacterCog(commands.Cog):
                """
         if name:
             if name in self.name:
-                await ctx.send(getattr(strings.Bl_Characters, name))
+                await ctx.send(getattr(strings.Characters, name))
             else:
-                await self.character_handler(ctx, CharacterNotFound(strings.Bl_Characters.invalid_query.format(name)))
+                await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_query.format(name)))
         else:
             # TODO: See message regarding this in strings.py - should be multiple messages instead (but we can reformat
             #  this once we create a session) - so treat this as low priority
-            await ctx.send(strings.Bl_Characters.introduction)
+            await ctx.send(strings.Characters.introduction)
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):

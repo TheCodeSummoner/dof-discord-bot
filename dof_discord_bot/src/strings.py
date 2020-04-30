@@ -140,8 +140,7 @@ class Help(metaclass=_YAMLStringsGetter):
 # TODO: Too many lines! See PyCharm comments on what the indentation between class definitions should be (grey line)
 
 
-
-class Bl_Characters(metaclass=_YAMLStringsGetter):
+class Characters(metaclass=_YAMLStringsGetter):
     """
     Character strings for bannerlord characters  # TODO: Adjust this docstring to match the new split between the cog and the faces
     """
