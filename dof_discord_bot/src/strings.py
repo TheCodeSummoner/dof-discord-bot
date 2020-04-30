@@ -137,14 +137,13 @@ class Help(metaclass=_YAMLStringsGetter):
     invalid_query: str
     help_title: str
     help_aliases: str
-# TODO: Too many lines! See PyCharm comments on what the indentation between class definitions should be (grey line)
 
 
 class Characters(metaclass=_YAMLStringsGetter):
     """
-    Character strings for bannerlord characters  # TODO: Adjust this docstring to match the new split between the cog and the faces
+    Strings related to the character session (and the character cog)
     """
-    section = "bl_character_cog"
+    section = "character_cog"
     rhagaea: str
     ira: str
     elys: str

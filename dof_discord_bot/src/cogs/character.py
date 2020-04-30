@@ -24,38 +24,35 @@ class CharacterNotFound(discord.DiscordException):
     """
     Raised when the character-fetching query doesn't match any of the supported characters.
     """
-
     def __init__(self, arg: str):
         super().__init__(arg)
 
 
 class CharacterCog(commands.Cog):
     """
-       Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name
-
-       """
-
+    Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name
+    """
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
 
-    # TODO: I would consider changing the name of this command, to either "character" or maybe even shorter, "face", not
-    #  really sure. "command" argument should be changed to something more meaningful, such as "name" - to represent
-    #  what the other argument actually is (note the command is used as !bl_character <name>, so it would make sense
-    #  to call it "name")
+        # Fetch the characters by checking if the class annotations start with the face code specific string
+        self.characters = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
+
     @commands.command()
     async def character(self, ctx: commands.Context, name: str = ""):
         """
-               Face command provides character after short explanation what the user needs to do.
+        Face command provides character after short explanation what the user needs to do.
 
-               Some examples of the command:
+        Some examples of the command:
 
-                   1. !face -> explains the user how to get a face and which names are available
-                   2. !face name -> returns the specific face for the input name
+        # TODO: Outdated! Fix it!
+           1. !face -> explains the user how to get a face and which names are available
+           2. !face name -> returns the specific face for the input name
 
-               """
+        """
         if name:
-            if name in self.name:
+            if name in self.characters:
                 await ctx.send(getattr(strings.Characters, name))
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_query.format(name)))
