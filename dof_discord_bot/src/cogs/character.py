@@ -11,7 +11,6 @@ TODO
 5. Verify the command works as expected (output ok and error-case ok)
 6. Figure out formatting
 
-TODO: See the warning message when you run the code - this should be self-explanatory and quickly fix-able
 
 """
 import discord

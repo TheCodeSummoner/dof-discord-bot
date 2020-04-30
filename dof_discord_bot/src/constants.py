@@ -36,7 +36,8 @@ COMMANDS_ORDER = [
     "help",
     "apply",
     "submit",
-    "cancel"
+    "cancel",
+    "character"
 ]
 
 # Declare some emojis
