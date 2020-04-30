@@ -16,7 +16,7 @@ TODO: See the warning message when you run the code - this should be self-explan
 """
 import discord
 from discord.ext import commands
-from .. import strings
+from .. import strings, Bot
 from ..logger import Log
 
 
@@ -35,36 +35,37 @@ class CharacterCog(commands.Cog):
 
        """
 
-    def __init__(self, arg: str):
-        super().__init__(arg)
+    def __init__(self, bot: Bot):
+        super().__init__()
+        self.bot = bot
 
     # TODO: I would consider changing the name of this command, to either "character" or maybe even shorter, "face", not
     #  really sure. "command" argument should be changed to something more meaningful, such as "name" - to represent
     #  what the other argument actually is (note the command is used as !bl_character <name>, so it would make sense
     #  to call it "name")
     @commands.command()
-    async def face(self, ctx: commands.Context, name: str = ""):
+    async def character(self, ctx: commands.Context, name: str = ""):
         """
                Face command provides character after short explanation what the user needs to do.
 
                Some examples of the command:
 
                    1. !face -> explains the user how to get a face and which names are available
-                   2. !help face - returns the specific face for the input name
+                   2. !face name -> returns the specific face for the input name
 
                """
         if name:
             if name in self.name:
                 await ctx.send(getattr(strings.Bl_Characters, name))
             else:
-                await self.face_handler(ctx, CharacterNotFound(strings.Bl_Characters.invalid_query.format(name)))
+                await self.character_handler(ctx, CharacterNotFound(strings.Bl_Characters.invalid_query.format(name)))
         else:
             # TODO: See message regarding this in strings.py - should be multiple messages instead (but we can reformat
             #  this once we create a session) - so treat this as low priority
             await ctx.send(strings.Bl_Characters.introduction)
 
-    @face.error
-    async def face_handler(self, ctx: commands.Context, error: discord.DiscordException):
+    @character.error
+    async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
         Custom handler needed to handle the custom error - the user should be informed about an invalid character.
         """

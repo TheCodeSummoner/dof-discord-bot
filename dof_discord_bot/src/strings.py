@@ -157,5 +157,5 @@ class Bl_Characters(metaclass=_YAMLStringsGetter):
     #  function - but we can leave this until the last step when we actually format the message properly.
     #  ALso, I would suggest to seprate the introduction, and the "The following characters are available" into
     #  2 strings instead
-    introduction = "Hello! If you wanna receive a certain character code, type in !bl_character Name and you'll receive it. The following characters are available:\n" \
+    introduction = "Hello! If you wanna receive a certain character code, type in !character Name and you'll receive it. The following characters are available:\n" \
                    "Rhagaea\nIra\nElys"
