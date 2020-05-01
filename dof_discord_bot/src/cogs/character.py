@@ -1,9 +1,9 @@
 """
 
 Character Cog
-========
+=============
 
-Module storing character related functionality.
+Module storing character code fetching functionality.
 """
 import discord
 from discord.ext import commands
