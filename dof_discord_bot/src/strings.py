@@ -147,7 +147,7 @@ class Characters(metaclass=_YAMLStringsGetter):
     rhagaea: str
     ira: str
     elys: str
-    invalid_query: str  # TODO: Adjust the name to be more meaningful, such as invalid_character
+    invalid_character: str  # TODO: Adjust the name to be more meaningful, such as invalid_character
 
     # TODO: The strings should be defined in strings.yaml file, not here! See how I added fields in strings.yaml with
     #  in them -> You should be declaring them there!
