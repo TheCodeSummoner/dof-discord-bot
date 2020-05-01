@@ -6,28 +6,50 @@ Module storing character code fetching functionality.
 """
 import discord
 from discord.ext import commands
-from .. import strings, Bot
+from .. import strings, Bot, Session, LinePaginator, Page, MAX_CHARACTER_LINES
 from ..logger import Log
+
+# Fetch the characters by checking if the class annotations start with the face code specific string
+CHARACTERS = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
 
 
 class CharacterNotFound(discord.DiscordException):
     """
     Raised when the character-fetching query doesn't match any of the supported characters.
     """
+
     def __init__(self, arg: str):
         super().__init__(arg)
+
+
+class CharacterSession(Session):
+    """
+    Info Session handling properly displaying info command contents in an interactive, per-user session.
+    """
+
+    async def build_pages(self):
+        """
+        Builds predefined pages and puts them into the paginator.
+        """
+        paginator = LinePaginator(prefix="", suffix="", max_lines=MAX_CHARACTER_LINES)
+        paginator.add_line(strings.Characters.introduction)
+        paginator.add_line("")
+        paginator.add_line(strings.Characters.available_characters)
+        for name in CHARACTERS:
+            paginator.add_line("• " + name.capitalize())
+
+        # Save organised pages to session
+        self.pages = paginator.pages
 
 
 class CharacterCog(commands.Cog):
     """
     Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
     """
+
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
-
-        # Fetch the characters by checking if the class annotations start with the face code specific string
-        self.characters = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
 
     @commands.command()
     async def character(self, ctx: commands.Context, name: str = ""):
@@ -40,13 +62,16 @@ class CharacterCog(commands.Cog):
            2. !character <name> -> returns the specific character code using the input name
         """
         if name:
-            if name in self.characters:
-                await ctx.send(getattr(strings.Characters, name))
+            name = name.lower()
+            if name in CHARACTERS:
+                embed = discord.Embed()
+                embed.colour = discord.Colour.green()
+                embed.title = getattr(strings.Characters, name)
+                await ctx.send(embed=embed)
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
-            await ctx.send(strings.Characters.introduction)
-            await ctx.send(strings.Characters.available_characters.format(self.characters))
+            await CharacterSession.start(ctx, strings.Characters.title)
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):

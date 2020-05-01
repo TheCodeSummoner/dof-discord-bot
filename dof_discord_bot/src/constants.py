@@ -52,3 +52,4 @@ DEFAULT_SESSION_ICON = "https://cdn.discordapp.com/emojis/512367613339369475.png
 
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
+MAX_CHARACTER_LINES = 8

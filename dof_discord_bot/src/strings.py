@@ -147,7 +147,7 @@ class Characters(metaclass=_YAMLStringsGetter):
     rhagaea: str
     ira: str
     elys: str
-
+    title: str
     invalid_character: str
     introduction: str
     available_characters: str
