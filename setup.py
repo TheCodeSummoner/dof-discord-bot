@@ -27,7 +27,7 @@ PACKAGE_DATA = [
 setuptools.setup(
     name="dof_discord_bot",
     description="Defender's of Faith discord bot",
-    version="1.2.0",
+    version="1.3.0",
     author="Florianski Kacper",
     maintainer="Florianski Kacper",
     maintainer_email="kacper.florianski@gmail.com",
