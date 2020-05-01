@@ -46,8 +46,8 @@ class CharacterCog(commands.Cog):
         Some examples of the command:
 
         # TODO: Outdated! Fix it!
-           1. !face -> explains the user how to get a face and which names are available
-           2. !face name -> returns the specific face for the input name
+           1. !character -> explains the user how to get a face and which names are available
+           2. !character name -> returns the specific face for the input name
 
         """
         if name:
