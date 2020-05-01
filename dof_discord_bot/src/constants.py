@@ -16,11 +16,19 @@ LOG_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "log")
 RES_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "res")
 TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 
+# Retrieve the token - either it will be an environment variable, or will be in the text file
+TOKEN = _os.getenv("DOF_TOKEN", "")
+if not TOKEN:
+    if _os.path.exists(_os.path.join(RES_DIR, "token.txt")):
+        with open(_os.path.join(RES_DIR, "token.txt")) as f:
+            TOKEN = f.read().strip()
+    else:
+        print(f"Missing token - either declare \"DOF_TOKEN\" environment variable or include the token in the "
+              f"\"token.txt\" file at \"{_os.path.join(RES_DIR, 'token.txt')}\"", file=_sys.stderr)
+        exit(1)
+
 # Declare the command prefix - each command must have this prefix in front in order to be considered a command
 COMMAND_PREFIX = "!"
-
-# Declare the maximum number of the lines for the !help command
-MAX_HELP_LINES = 8
 
 # Declare the order of commands to be displayed in the help message
 COMMANDS_ORDER = [
@@ -28,7 +36,8 @@ COMMANDS_ORDER = [
     "help",
     "apply",
     "submit",
-    "cancel"
+    "cancel",
+    "character"
 ]
 
 # Declare some emojis
@@ -40,14 +49,10 @@ LAST_PAGE_EMOJI = "\u23ED"
 
 # Declare some icons
 DEFAULT_SESSION_ICON = "https://cdn.discordapp.com/emojis/512367613339369475.png"
+BANNERLORD_CHARACTER_ICON = "https://cdn.discordapp.com/emojis/705858278005145601.png"
 
-# Retrieve the token - either it will be an environment variable, or will be in the text file
-TOKEN = _os.getenv("DOF_TOKEN", "")
-if not TOKEN:
-    if _os.path.exists(_os.path.join(RES_DIR, "token.txt")):
-        with open(_os.path.join(RES_DIR, "token.txt")) as f:
-            TOKEN = f.read().strip()
-    else:
-        print(f"Missing token - either declare \"DOF_TOKEN\" environment variable or include the token in the "
-              f"\"token.txt\" file at \"{_os.path.join(RES_DIR, 'token.txt')}\"", file=_sys.stderr)
-        exit(1)
+# Declare the maximum number of the lines for the !help command
+MAX_HELP_LINES = 8
+
+# Declare the maximum number of the lines for the !character command
+MAX_CHARACTER_LINES = 10

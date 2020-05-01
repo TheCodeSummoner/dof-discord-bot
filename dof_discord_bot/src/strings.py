@@ -137,3 +137,29 @@ class Help(metaclass=_YAMLStringsGetter):
     invalid_query: str
     help_title: str
     help_aliases: str
+
+
+class Characters(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the character session (and the character cog)
+    """
+    section = "character_cog"
+    title: str
+    invalid_character: str
+    introduction: str
+    available_characters: str
+    rhagaea: str
+    ira: str
+    elys: str
+    monchug: str
+    unqid: str
+    abagai: str
+    alynneth: str
+    chalia: str
+    liena: str
+    anidha: str
+    debana: str
+    helea: str
+    phaea: str
+    sora: str
+    phenoria: str

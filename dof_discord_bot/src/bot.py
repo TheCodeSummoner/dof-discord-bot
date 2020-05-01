@@ -49,6 +49,7 @@ class Bot(commands.Bot):
         self.load_extension("dof_discord_bot.src.cogs.help")
         self.load_extension("dof_discord_bot.src.cogs.info")
         self.load_extension("dof_discord_bot.src.cogs.apply")
+        self.load_extension("dof_discord_bot.src.cogs.character")
         Log.info("Extensions loaded")
 
     def _verify_commands_order(self):
