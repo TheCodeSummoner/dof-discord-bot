@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands
 from .. import strings
 from ..utils import Session, LinePaginator
-from ..constants import MAX_CHARACTER_LINES
+from ..constants import MAX_CHARACTER_LINES, BANNERLORD_CHARACTER_ICON
 from ..bot import Bot
 from ..logger import Log
 
@@ -79,7 +79,7 @@ class CharacterCog(commands.Cog):
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
-            await CharacterSession.start(ctx, strings.Characters.title)
+            await CharacterSession.start(ctx, strings.Characters.title, icon=BANNERLORD_CHARACTER_ICON)
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):

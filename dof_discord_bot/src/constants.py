@@ -49,6 +49,7 @@ LAST_PAGE_EMOJI = "\u23ED"
 
 # Declare some icons
 DEFAULT_SESSION_ICON = "https://cdn.discordapp.com/emojis/512367613339369475.png"
+BANNERLORD_CHARACTER_ICON = "https://cdn.discordapp.com/emojis/705858278005145601.png"
 
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
