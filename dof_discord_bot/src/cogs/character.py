@@ -40,7 +40,7 @@ class CharacterSession(Session):
         paginator.add_line(strings.Characters.available_characters)
 
         # Add (formatted) names
-        for name in CHARACTERS:
+        for name in sorted(CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
         # Save organised pages to the session
