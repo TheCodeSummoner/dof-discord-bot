@@ -147,13 +147,8 @@ class Characters(metaclass=_YAMLStringsGetter):
     rhagaea: str
     ira: str
     elys: str
-    invalid_character: str  # TODO: Adjust the name to be more meaningful, such as invalid_character
+
+    # TODO: Forgot to change invalid_query in strings.yaml :)
+    invalid_character: str
     introduction: str
     availableCharactersString: str
-
-    # TODO: The strings should be defined in strings.yaml file, not here! See how I added fields in strings.yaml with
-    #  in them -> You should be declaring them there!
-    #  Additionally, the last part (Rhagaea\nIra\nElys) should not be hardcoded, but instead populated with the .format
-    #  function - but we can leave this until the last step when we actually format the message properly.
-    #  ALso, I would suggest to seprate the introduction, and the "The following characters are available" into
-    #     #  2 strings instead

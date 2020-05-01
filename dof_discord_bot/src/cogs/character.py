@@ -1,17 +1,10 @@
 """
+# TODO: Fix description - wrong cog :D
+
 Help Cog
 ========
+
 Module storing help related functionality.
-
-TODO
-1. Get the command
-2. Get the command working with and without parameters to print a different message
-3. Get some sample faces in the code
-4. Get the error message (face not found)
-5. Verify the command works as expected (output ok and error-case ok)
-6. Figure out formatting
-
-
 """
 import discord
 from discord.ext import commands
@@ -29,7 +22,7 @@ class CharacterNotFound(discord.DiscordException):
 
 class CharacterCog(commands.Cog):
     """
-    Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name
+    Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
     """
     def __init__(self, bot: Bot):
         super().__init__()
@@ -41,14 +34,12 @@ class CharacterCog(commands.Cog):
     @commands.command()
     async def character(self, ctx: commands.Context, name: str = ""):
         """
-        Face command provides character after short explanation what the user needs to do.
+        Provides a character code (you can copy the code into the character edition screen in Bannerlord).
 
         Some examples of the command:
 
-        #
-           1. !character -> explains the user how to get a character code and which names are available
-           2. !character name -> returns the specific character code for the input name
-
+           1. !character -> explains how to get a character code and which names are available
+           2. !character <name> -> returns the specific character code using the input name
         """
         if name:
             if name in self.characters:
@@ -56,10 +47,11 @@ class CharacterCog(commands.Cog):
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_query.format(name)))
         else:
-            # TODO: See message regarding this in strings.py - should be multiple messages instead (but we can reformat
-            #  this once we create a session) - so treat this as low priority
             await ctx.send(strings.Characters.introduction)
-            await ctx.send(strings.Characters.availableCharacterString)
+
+            # TODO: availableCharacterString should be snake_case, not CamelCase !
+            #  Needs changing in here, strings.py and strings.yaml
+            await ctx.send(strings.Characters.availableCharacterString.format(self.characters))
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):
