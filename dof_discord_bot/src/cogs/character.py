@@ -51,6 +51,8 @@ class CharacterCog(commands.Cog):
 
             # TODO: availableCharacterString should be snake_case, not CamelCase !
             #  Needs changing in here, strings.py and strings.yaml
+            #  Also, in python you don't generally tell what the data type is in the variable, so the variable should
+            #  instead be available_characters (we know it's a string because it's in the strings module!)
             await ctx.send(strings.Characters.availableCharacterString.format(self.characters))
 
     @character.error
