@@ -59,6 +59,7 @@ class CharacterCog(commands.Cog):
             # TODO: See message regarding this in strings.py - should be multiple messages instead (but we can reformat
             #  this once we create a session) - so treat this as low priority
             await ctx.send(strings.Characters.introduction)
+            await ctx.send(strings.Characters.availableCharacterString)
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):
