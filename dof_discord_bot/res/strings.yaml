@@ -56,7 +56,7 @@ strings:
     help_aliases: "Can also use: {}"
   character_cog:
     invalid_query: "TODO {}"
-    introduction: "TODO"
+    introduction: "Hello! If you wanna receive a certain character code, type in !character Name and you'll receive it."
     availableCharactersString: "The following names are available:"
     rhagaea: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="001C080CD1140004E192E13736D6C6925C66C4E2962C41147E6D84599DD5A5590197761309C7A76B00000000000000000000000000000000000000003F3C40C3  />'
     ira: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="00112C0B40FC3005F674E1A797D6A6935C6664F2AA5E0801BCC5456A9DD5A5590187761308C6AC4200000000000000000000000000000000000000005D1C20C4"  />'
