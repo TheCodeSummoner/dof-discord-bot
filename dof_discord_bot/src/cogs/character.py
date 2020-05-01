@@ -6,7 +6,10 @@ Module storing character code fetching functionality.
 """
 import discord
 from discord.ext import commands
-from .. import strings, Bot, Session, LinePaginator, Page, MAX_CHARACTER_LINES
+from .. import strings
+from ..utils import Session, LinePaginator
+from ..constants import MAX_CHARACTER_LINES
+from ..bot import Bot
 from ..logger import Log
 
 # Fetch the characters by checking if the class annotations start with the face code specific string
@@ -17,14 +20,13 @@ class CharacterNotFound(discord.DiscordException):
     """
     Raised when the character-fetching query doesn't match any of the supported characters.
     """
-
     def __init__(self, arg: str):
         super().__init__(arg)
 
 
 class CharacterSession(Session):
     """
-    Info Session handling properly displaying info command contents in an interactive, per-user session.
+    Character Session allowing retrieving the Bannerlord character codes.
     """
 
     async def build_pages(self):
@@ -32,13 +34,16 @@ class CharacterSession(Session):
         Builds predefined pages and puts them into the paginator.
         """
         paginator = LinePaginator(prefix="", suffix="", max_lines=MAX_CHARACTER_LINES)
-        paginator.add_line(strings.Characters.introduction)
-        paginator.add_line("")
+
+        # Add the introduction and the available characters header
+        paginator.add_line(strings.Characters.introduction + "\n")
         paginator.add_line(strings.Characters.available_characters)
+
+        # Add (formatted) names
         for name in CHARACTERS:
             paginator.add_line("• " + name.capitalize())
 
-        # Save organised pages to session
+        # Save organised pages to the session
         self.pages = paginator.pages
 
 
@@ -46,7 +51,6 @@ class CharacterCog(commands.Cog):
     """
     Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
     """
-
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
@@ -62,7 +66,11 @@ class CharacterCog(commands.Cog):
            2. !character <name> -> returns the specific character code using the input name
         """
         if name:
+
+            # Make sure commands such as "!character Rhagaea" work
             name = name.lower()
+
+            # Embed the character code in a nicely visible "box"
             if name in CHARACTERS:
                 embed = discord.Embed()
                 embed.colour = discord.Colour.green()
