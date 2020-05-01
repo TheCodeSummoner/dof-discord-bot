@@ -125,6 +125,7 @@ class Info(metaclass=_YAMLStringsGetter):
     links_private_steam: str
     authors_welcome: str
     authors_bertalicious: str
+    authors_white_noise: str
     authors_support: str
     authors_link: str
 

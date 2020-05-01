@@ -48,6 +48,7 @@ strings:
     links_private_steam: "**Private Steam group:** *https://steamcommunity.com/groups/defendersoffaith5*"
     authors_welcome: "This bot is an outcome of multiple hours voluntarily spent coding. Here is the list of authors:"
     authors_bertalicious: "**Lead developer:** *Bertalicious*"
+    authors_white_noise: "**Developer:** *White Noise*"
     authors_support: "The project is open source, so please support it if you can, by reporting any bugs found and submitting bot-related suggestions."
     authors_link: "Check out the code at *https://github.com/TheCodeSummoner/dof-discord-bot*"
   help_cog:

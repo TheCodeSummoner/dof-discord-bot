@@ -63,6 +63,7 @@ class InfoSession(Session):
             strings.Info.authors_welcome,
             "",
             strings.Info.authors_bertalicious,
+            strings.Info.authors_white_noise,
             "",
             strings.Info.authors_support,
             "",
