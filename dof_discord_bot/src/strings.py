@@ -148,7 +148,6 @@ class Characters(metaclass=_YAMLStringsGetter):
     ira: str
     elys: str
 
-    # TODO: Forgot to change invalid_query in strings.yaml :)
     invalid_character: str
     introduction: str
-    availableCharactersString: str
+    available_characters: str

@@ -1,10 +1,9 @@
 """
-# TODO: Fix description - wrong cog :D
 
-Help Cog
+Character Cog
 ========
 
-Module storing help related functionality.
+Module storing character related functionality.
 """
 import discord
 from discord.ext import commands
@@ -45,15 +44,10 @@ class CharacterCog(commands.Cog):
             if name in self.characters:
                 await ctx.send(getattr(strings.Characters, name))
             else:
-                await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_query.format(name)))
+                await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
             await ctx.send(strings.Characters.introduction)
-
-            # TODO: availableCharacterString should be snake_case, not CamelCase !
-            #  Needs changing in here, strings.py and strings.yaml
-            #  Also, in python you don't generally tell what the data type is in the variable, so the variable should
-            #  instead be available_characters (we know it's a string because it's in the strings module!)
-            await ctx.send(strings.Characters.availableCharacterString.format(self.characters))
+            await ctx.send(strings.Characters.available_characters.format(self.characters))
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):
