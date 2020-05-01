@@ -55,7 +55,7 @@ strings:
     help_title: "Command Help"
     help_aliases: "Can also use: {}"
   character_cog:
-    invalid_character: "TODO {}"
+    invalid_character: "Character {} not found"
     introduction: "Hello! If you wanna receive a certain Bannerlord character code, type in !character <name>."
     available_characters: "The following names are available: {}"
     rhagaea: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="001C080CD1140004E192E13736D6C6925C66C4E2962C41147E6D84599DD5A5590197761309C7A76B00000000000000000000000000000000000000003F3C40C3  />'
