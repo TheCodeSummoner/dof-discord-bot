@@ -1,4 +1,13 @@
-# Version 1.2.0
+# Version 1.3.0
+- Added commands ordering in the help message
+- Cleared log folder to only contain log files (and the `.keep` file)
+- Fixed verbose log formatting
+- Adjusted aliases string in the command help message
+- Added alternative token configuration
+- Added help alias (as per Shinrog's request)
+- Added Bannerlord character code fetching
+
+## Version 1.2.0
 - Added content for Info Cog
 - Moved Session and Paginator related code to utils
 - Expanded `LinePaginator` (and added a new `Page` class to support that expansion)
