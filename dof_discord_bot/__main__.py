@@ -1,6 +1,7 @@
 """
 Dof Discord Bot
 ===============
+TODO: Move to README and delete
 
 Prerequisites
 -------------

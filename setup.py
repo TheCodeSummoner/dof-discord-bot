@@ -13,7 +13,7 @@ Of course, alternatively, you can execute the code pulled from github directly.
 """
 import os
 import setuptools
-from . import dof_discord_bot
+from __meta__ import *
 
 # Fetch the root folder to specify absolute paths to the files to include
 ROOT = os.path.normpath(os.path.dirname(__file__))
@@ -26,13 +26,13 @@ PACKAGE_DATA = [
 ]
 
 setuptools.setup(
-    name=dof_discord_bot.__name__,
-    description=dof_discord_bot.__description__,
-    version=dof_discord_bot.__version__,
-    author=dof_discord_bot.__lead__,
-    maintainer=dof_discord_bot.__lead__,
-    maintainer_email=dof_discord_bot.__email__,
-    url=dof_discord_bot.__url__,
+    name=NAME,
+    description=DESCRIPTION,
+    version=VERSION,
+    author=LEAD,
+    maintainer=LEAD,
+    maintainer_email=EMAIL,
+    url=URL,
     license="MIT License",
     packages=setuptools.find_namespace_packages(),
     package_data={"dof_discord_bot": PACKAGE_DATA},
