@@ -1,18 +1,23 @@
 """
 TODO
 """
-from dof_discord_bot.src import Bot, COMMAND_PREFIX, TOKEN
+import json as _json
+import os as _os
+from dof_discord_bot.src import Bot as _Bot, COMMAND_PREFIX as _PREFIX, TOKEN as _TOKEN, RES_DIR as _RES_DIR
 
-__name__ = "dof-discord-bot"
-__version__ = "1.4.0"
-__description__ = "Defenders of Faith's discord bot"
-__lead__ = "Florianski Kacper"
-__email__ = "kacper.florianski@gmail.com"
-__url__ = "https://github.com/TheCodeSummoner/dof-discord-bot"
+with open(_os.path.join(_RES_DIR, "meta.json")) as f:
+    metadata = _json.load(f)
+
+__name__ = metadata["__name__"]
+__version__ = metadata["__version__"]
+__description__ = metadata["__description__"]
+__lead__ = metadata["__lead__"]
+__email__ = metadata["__email__"]
+__url__ = metadata["__url__"]
 
 
 def run():
     """
     TODO
     """
-    Bot(COMMAND_PREFIX).run(TOKEN)
+    _Bot(_PREFIX).run(_TOKEN)

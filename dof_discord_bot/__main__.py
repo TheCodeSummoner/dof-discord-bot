@@ -24,9 +24,7 @@ Or, if you really want to run the module directly, just execute this file::
 
     python <some_path>/__main__.py
 """
-from .src import Bot, COMMAND_PREFIX, TOKEN
+from dof_discord_bot import run
 
 if __name__ == '__main__':
-
-    # If you fail to run the code, check if the token is loaded in constants.py
-    Bot(COMMAND_PREFIX).run(TOKEN)
+    run()

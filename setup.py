@@ -12,6 +12,7 @@ The installation performs the following:
 Of course, alternatively, you can execute the code pulled from github directly.
 """
 import os
+import json
 import setuptools
 
 
@@ -32,12 +33,20 @@ ROOT = os.path.normpath(os.path.dirname(__file__))
 # Specify which files should be added to the installation
 PACKAGE_DATA = [
     os.path.join(ROOT, "dof_discord_bot", "res", "strings.yaml"),
+    os.path.join(ROOT, "dof_discord_bot", "res", "meta.json"),
     os.path.join(ROOT, "dof_discord_bot", "res", "config.json"),
     os.path.join(ROOT, "dof_discord_bot", "log", ".keep"),
 ]
 
-__name__, __description__, __version__, __lead__, __email__, __url__ = \
-    get_meta_information(os.path.join(ROOT, "dof_discord_bot", "__init__.py"))
+with open(os.path.join(ROOT, "dof_discord_bot", "res", "meta.json")) as f:
+    metadata = json.load(f)
+
+__name__ = metadata["__name__"]
+__version__ = metadata["__version__"]
+__description__ = metadata["__description__"]
+__lead__ = metadata["__lead__"]
+__email__ = metadata["__email__"]
+__url__ = metadata["__url__"]
 
 setuptools.setup(
     name=__name__,
