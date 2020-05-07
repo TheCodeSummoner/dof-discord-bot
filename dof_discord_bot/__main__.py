@@ -23,7 +23,7 @@ Or, if you really want to run the module directly, just execute this file::
 
     python <some_path>/__main__.py
 """
-from dof_discord_bot.src import *
+from .src import Bot, COMMAND_PREFIX, TOKEN
 
 if __name__ == '__main__':
 

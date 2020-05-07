@@ -196,6 +196,7 @@ class Session:
 
         Timeout defines after how long of no interaction should the session be ended.
         """
+        self.ctx = ctx
         self.bot = ctx.bot
         self.author = ctx.author
         self.destination = ctx.channel
