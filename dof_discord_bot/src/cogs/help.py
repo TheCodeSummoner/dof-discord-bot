@@ -11,7 +11,7 @@ from .. import strings
 from ..bot import Bot
 from ..logger import Log
 from ..constants import MAX_HELP_LINES, COMMAND_PREFIX, COMMANDS_ORDER
-from ..utils import Session, LinePaginator
+from ..utils import Session, LinePaginator, MessageEmbed
 
 
 class HelpQueryNotFound(discord.DiscordException):
@@ -137,10 +137,7 @@ class HelpCog(commands.Cog):
         """
         if isinstance(error, HelpQueryNotFound):
             Log.debug(f"Caught invalid query error - {error}")
-            embed = discord.Embed()
-            embed.colour = discord.Colour.red()
-            embed.title = str(error)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=MessageEmbed(str(error), negative=True))
         else:
             raise error
 

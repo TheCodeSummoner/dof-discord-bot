@@ -430,3 +430,13 @@ class Session:
         """
         if message.id == self.message.id:
             await self.stop()
+
+
+class MessageEmbed(_discord.Embed):
+    """
+    Helper class to shortcut creation of embeds
+    """
+    def __init__(self, message: str, negative: bool = False):
+        super().__init__()
+        self.title = message
+        self.colour = _discord.Colour.red() if negative else _discord.Colour.green()
