@@ -13,7 +13,18 @@ Of course, alternatively, you can execute the code pulled from github directly.
 """
 import os
 import setuptools
-from __meta__ import *
+
+
+def get_meta_information(path: str) -> tuple:
+    """
+    TODO
+    """
+    with open(path) as f:
+        content = f.read()
+        fields = tuple(content[content.find(field):].split("\n")[0][len(field) + 3:].replace("\"", "").strip()
+                       for field in ["__name__", "__description__", "__version__", "__lead__", "__email__", "__url__"])
+        return fields
+
 
 # Fetch the root folder to specify absolute paths to the files to include
 ROOT = os.path.normpath(os.path.dirname(__file__))
@@ -25,14 +36,17 @@ PACKAGE_DATA = [
     os.path.join(ROOT, "dof_discord_bot", "log", ".keep"),
 ]
 
+__name__, __description__, __version__, __lead__, __email__, __url__ = \
+    get_meta_information(os.path.join(ROOT, "dof_discord_bot", "__init__.py"))
+
 setuptools.setup(
-    name=NAME,
-    description=DESCRIPTION,
-    version=VERSION,
-    author=LEAD,
-    maintainer=LEAD,
-    maintainer_email=EMAIL,
-    url=URL,
+    name=__name__,
+    description=__description__,
+    version=__version__,
+    author=__lead__,
+    maintainer=__lead__,
+    maintainer_email=__email__,
+    url=__url__,
     license="MIT License",
     packages=setuptools.find_namespace_packages(),
     package_data={"dof_discord_bot": PACKAGE_DATA},
