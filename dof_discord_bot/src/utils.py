@@ -17,7 +17,7 @@ class MemberApplication:
     """
     Member application class storing information about each applicant and the application stage.
 
-    Functions
+    Functions TODO
     ---------
 
     The following list shortly summarises each function:

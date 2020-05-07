@@ -1,6 +1,6 @@
 """
 Information Cog
-===============
+===============TODO
 
 Module storing DoF info-related and welcome functionalities.
 """
@@ -79,7 +79,7 @@ class InformationCog(commands.Cog):
     Information Cog is a discord extension providing a set of DoF-related informational commands and listeners.
 
     Listeners
-    ---------
+    ---------TODO
 
         * on_member_join - Listen to new members joining DoF discord and greet them properly
 
@@ -110,6 +110,34 @@ class InformationCog(commands.Cog):
 
         Log.debug(f"Detected !info command used by {member.display_name}")
         await InfoSession.start(ctx, "Information")
+
+    @commands.command()
+    async def version(self, ctx: commands.Context):
+        """
+        TODO
+        """
+
+
+
+    # TODO: In this version, you must have either "test" or "test3" role
+    @commands.command()
+    @commands.has_any_role("test", "test3")
+    async def test_role(self, ctx):
+        ch = ctx.channel
+        permissions = ch.permissions_for(ctx.author)
+        await ctx.send("You have the role - permissions are {}".format(permissions))
+
+    # TODO: In this version, you must have the permissions
+    @commands.command()
+    @commands.has_permissions(stream=True)
+    async def test_permissions(self, ctx):
+        ch = ctx.channel
+        permissions = ch.permissions_for(ctx.author)
+        await ctx.send("You have permissions - {}".format([p for p in permissions]))
+
+    print(test_permissions.__dict__)
+    test_permissions.permissions = {"stream": True}
+    print(test_permissions.permissions)
 
 
 def setup(bot: commands.Bot):

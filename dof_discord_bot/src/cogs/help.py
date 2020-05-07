@@ -1,6 +1,6 @@
 """
 Help Cog
-========
+========TODO
 
 Module storing help related functionality.
 """
@@ -57,6 +57,10 @@ class HelpSession(Session):
 
         # Sort the commands by the index in the ordering and add them to the help message
         for command in sorted(self.bot.commands, key=lambda cmd: COMMANDS_ORDER.index(cmd.name)):
+            try:
+                print(command.permissions)
+            except AttributeError:
+                pass
 
             # Retrieve command name. signature and docs (description)
             info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"

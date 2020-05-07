@@ -1,6 +1,6 @@
 """
 Dof Discord Bot
-===============
+=============== TODO
 
 Source code packages which gets installed as dof-bot through setup.py.
 """

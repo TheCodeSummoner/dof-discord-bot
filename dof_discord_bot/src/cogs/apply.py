@@ -1,6 +1,6 @@
 """
 Application Cog
-===============
+===============TODO
 
 Module storing DoF member application related functionality.
 """
@@ -16,7 +16,7 @@ class ApplicationCog(commands.Cog):
     """
     Application Cog is a discord extension providing a set of application-related commands and listeners.
 
-    Listeners
+    Listeners TODO
     ---------
 
         * on_message - Listen to direct messages and collect application information

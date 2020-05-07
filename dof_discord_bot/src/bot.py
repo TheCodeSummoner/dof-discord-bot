@@ -1,6 +1,6 @@
 """
 Dof Discord Bot
-===============
+===============TODO
 
 Module storing the bot master class - an extended version of Discord's commands bot.
 """
@@ -17,7 +17,7 @@ class Bot(commands.Bot):
     Dof discord bot class, storing all crucial functionality of the bot.
 
     Functions
-    ---------
+    ---------TODO
 
     The following list shortly summarises each function:
 
@@ -36,6 +36,7 @@ class Bot(commands.Bot):
     """
 
     def __init__(self, command_prefix: str):
+        print("running me!")
         super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"))
         self._applications = dict()
         self._channels = dict()

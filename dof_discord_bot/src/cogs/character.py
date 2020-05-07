@@ -1,6 +1,6 @@
 """
 Character Cog
-=============
+=============TODO
 
 Module storing character code fetching functionality.
 """
@@ -51,6 +51,7 @@ class CharacterCog(commands.Cog):
     """
     Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
     """
+
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
