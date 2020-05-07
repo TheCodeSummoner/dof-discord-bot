@@ -13,7 +13,7 @@ Of course, alternatively, you can execute the code pulled from github directly.
 """
 import os
 import setuptools
-import dof_discord_bot
+from . import dof_discord_bot
 
 # Fetch the root folder to specify absolute paths to the files to include
 ROOT = os.path.normpath(os.path.dirname(__file__))
