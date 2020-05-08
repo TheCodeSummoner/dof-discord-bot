@@ -41,11 +41,13 @@ setuptools.setup(
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
     ],
     install_requires=[
         "discord",
         "pyyaml"
     ],
-    python_requires=">=3.8.1",
+    python_requires=">=3.6",
 )

@@ -11,7 +11,7 @@ To deploy the system to your own discord server, follow the standard Discord dev
 
 ### Prerequisites
 
-1. You must have Python 3 installed. You can get it from the [official website][4].
+1. You must have Python 3.6 or higher installed. You can get it from the [official website][4].
 2. You must provide a Discord token - either through an environment variable `DOF_TOKEN` or by creating the `token.txt`
 file in `res` directory - for more information following the instructions when attempting to run the bot without the
 token.
@@ -89,5 +89,5 @@ resource about Python discord API.
 [2]: https://dofesports.wixsite.com/defenders-of-faith
 [3]: https://forums.taleworlds.com/index.php?threads/dof-defenders-of-faith-international-clan-decade-of-faith-we-are-recruiting.417098/
 [4]: https://www.python.org/downloads/
-[5]: LICENSE.md
+[5]: LICENSE
 [6]: https://github.com/python-discord/bot
