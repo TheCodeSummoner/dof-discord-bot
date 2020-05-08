@@ -57,10 +57,13 @@ class HelpSession(Session):
 
         # Sort the commands by the index in the ordering and add them to the help message
         for command in sorted(self.bot.commands, key=lambda cmd: COMMANDS_ORDER.index(cmd.name)):
+
+            # Skip any commands which can't be run
             try:
-                print(command.permissions)
-            except AttributeError:
-                pass
+                await command.can_run(self.ctx)
+            except commands.CheckFailure:
+                Log.debug(f"{self.author} is not allowed to use the {command.name} command")
+                continue
 
             # Retrieve command name. signature and docs (description)
             info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"
@@ -81,6 +84,14 @@ class HelpSession(Session):
         Retrieves command-related information and formats it correctly.
         """
         Log.debug(f"Displaying command-specific help about {command.name} for {self.author}")
+
+        # Skip any commands which can't be run
+        try:
+            await command.can_run(self.ctx)
+        except commands.CheckFailure as e:
+            Log.debug(f"{self.author} is not allowed to use the {command.name} command")
+            await self.ctx.send(embed=MessageEmbed(str(e), negative=True))
+            return
 
         paginator.add_line(f'**```{COMMAND_PREFIX}{str.join(" ", (command.name, command.signature))}```**')
         paginator.add_line(f"*{command.help}*")

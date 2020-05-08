@@ -250,18 +250,24 @@ class Session:
         # Create paginated content
         await self.build_pages()
 
-        # Setup the listeners to allow page browsing
-        self.bot.add_listener(self.on_reaction_add)
-        self.bot.add_listener(self.on_message_delete)
+        # Only continue if there are pages to display - otherwise stop the session early
+        if self.pages:
 
-        # Display the first page
-        await self.update_page()
+            # Setup the listeners to allow page browsing
+            self.bot.add_listener(self.on_reaction_add)
+            self.bot.add_listener(self.on_message_delete)
 
-        # Initial timeout reset to set the timer
-        self.reset_timeout()
+            # Display the first page
+            await self.update_page()
 
-        # Add the reactions once the message is visible
-        self.add_reactions()
+            # Initial timeout reset to set the timer
+            self.reset_timeout()
+
+            # Add the reactions once the message is visible
+            self.add_reactions()
+
+        else:
+            await self.stop()
 
     @_abc.abstractmethod
     async def build_pages(self):

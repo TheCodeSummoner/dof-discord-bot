@@ -132,26 +132,6 @@ class InformationCog(commands.Cog):
         else:
             raise
 
-    # TODO: In this version, you must have either "test" or "test3" role
-    @commands.command()
-    @commands.has_any_role("test", "test3")
-    async def test_role(self, ctx):
-        ch = ctx.channel
-        permissions = ch.permissions_for(ctx.author)
-        await ctx.send("You have the role - permissions are {}".format(permissions))
-
-    # TODO: In this version, you must have the permissions
-    @commands.command()
-    @commands.has_permissions(stream=True)
-    async def test_permissions(self, ctx):
-        ch = ctx.channel
-        permissions = ch.permissions_for(ctx.author)
-        await ctx.send("You have permissions - {}".format([p for p in permissions]))
-
-    print(test_permissions.__dict__)
-    test_permissions.permissions = {"stream": True}
-    print(test_permissions.permissions)
-
 
 def setup(bot: commands.Bot):
     """
