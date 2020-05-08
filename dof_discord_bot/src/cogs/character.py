@@ -1,7 +1,4 @@
 """
-Character Cog
-=============TODO
-
 Module storing character code fetching functionality.
 """
 import discord

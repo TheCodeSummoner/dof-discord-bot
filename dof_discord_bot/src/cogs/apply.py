@@ -1,7 +1,4 @@
 """
-Application Cog
-===============TODO
-
 Module storing DoF member application related functionality.
 """
 import discord
@@ -16,17 +13,13 @@ class ApplicationCog(commands.Cog):
     """
     Application Cog is a discord extension providing a set of application-related commands and listeners.
 
-    Listeners TODO
-    ---------
+    Upon applying, an applicant is added to the bot's applications-in-progress list. The application can then be
+    interacted with in the following 3 ways:
 
-        * on_message - Listen to direct messages and collect application information
-
-    Commands
-    --------
-
-        * apply - Start a new DoF member application or display information about the current one
-        * submit - Submit a finished application (uses submit_application function)
-        * cancel - Cancel an in-progress application
+        - Answer a question to progress
+        - Type !apply to check the progress
+        - Type !cancel to cancel the application
+        - Type !submit to attempt application's submission
     """
 
     def __init__(self, bot: Bot):

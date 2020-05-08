@@ -1,5 +1,5 @@
 """
-TODO
+Dof discord bot package - exposes some meta information and a helper command to run the code.
 """
 import json as _json
 import os as _os
@@ -18,6 +18,6 @@ __url__ = metadata["__url__"]
 
 def run():
     """
-    TODO
+    Helper function to easily run the bot.
     """
     _Bot(_PREFIX).run(_TOKEN)

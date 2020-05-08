@@ -1,7 +1,4 @@
 """
-Dof Discord Bot
-===============TODO
-
 Module storing the bot master class - an extended version of Discord's commands bot.
 """
 import typing
@@ -16,27 +13,12 @@ class Bot(commands.Bot):
     """
     Dof discord bot class, storing all crucial functionality of the bot.
 
-    Functions
-    ---------TODO
-
-    The following list shortly summarises each function:
-
-        * channels - get guild channels
-        * applications - get applications
-        * on_ready - inform about successfully logging in, and discover channels
-        * _discover_channels - helper to find all guild-related channels and save them
-        * _load_extensions - load the cogs
-
-    Usage
-    -----
-
     You should create the bot and run it with a token, as follows:
 
         Bot(command_prefix="!").run(TOKEN)
     """
 
     def __init__(self, command_prefix: str):
-        print("running me!")
         super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"))
         self._applications = dict()
         self._channels = dict()
@@ -91,7 +73,7 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """
-        Upon logging, the bot will inform about it's user name and id, as well as discover all guild channels.
+        Upon logging, the bot will inform about its user name and id, as well as discover all guild channels.
         """
         Log.info(f"Logged on as {self.user}")
         self._discover_channels()

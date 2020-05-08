@@ -17,18 +17,7 @@ class MemberApplication:
     """
     Member application class storing information about each applicant and the application stage.
 
-    Functions TODO
-    ---------
-
-    The following list shortly summarises each function:
-
-        * progress - get application progress
-        * question - get current question
-        * answers - get current answers
-        * finished - is the application finished
-        * add_answer - register a new answer
-
-    See usage example in `ApplicationCog` (*apply.py*)
+    See usage example in `ApplicationCog` (`apply.py`)
     """
     questions = [
         _strings.Utils.steam_profile_long,

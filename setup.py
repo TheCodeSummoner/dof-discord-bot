@@ -1,31 +1,17 @@
 """
-Dof Discord Bot
-===============
-
 The installation performs the following:
 
-    1. Install all dependencies
-    2. Get the top level `dof_discord_bot` package
-    3. Copy all sources
-    4. Copy some additional files
+    - Get all meta-information
+    - Install all dependencies
+    - Get the top level `dof_discord_bot` package
+    - Copy all sources
+    - Copy some additional files
 
 Of course, alternatively, you can execute the code pulled from github directly.
 """
 import os
 import json
 import setuptools
-
-
-def get_meta_information(path: str) -> tuple:
-    """
-    TODO
-    """
-    with open(path) as f:
-        content = f.read()
-        fields = tuple(content[content.find(field):].split("\n")[0][len(field) + 3:].replace("\"", "").strip()
-                       for field in ["__title__", "__description__", "__version__", "__lead__", "__email__", "__url__"])
-        return fields
-
 
 # Fetch the root folder to specify absolute paths to the files to include
 ROOT = os.path.normpath(os.path.dirname(__file__))
@@ -41,21 +27,14 @@ PACKAGE_DATA = [
 with open(os.path.join(ROOT, "dof_discord_bot", "res", "meta.json")) as f:
     metadata = json.load(f)
 
-__title__ = metadata["__title__"]
-__version__ = metadata["__version__"]
-__description__ = metadata["__description__"]
-__lead__ = metadata["__lead__"]
-__email__ = metadata["__email__"]
-__url__ = metadata["__url__"]
-
 setuptools.setup(
-    name=__title__,
-    description=__description__,
-    version=__version__,
-    author=__lead__,
-    maintainer=__lead__,
-    maintainer_email=__email__,
-    url=__url__,
+    name=metadata["__title__"],
+    description=metadata["__description__"],
+    version=metadata["__version__"],
+    author=metadata["__lead__"],
+    maintainer=metadata["__lead__"],
+    maintainer_email=metadata["__email__"],
+    url=metadata["__url__"],
     license="MIT License",
     packages=setuptools.find_namespace_packages(),
     package_data={"dof_discord_bot": PACKAGE_DATA},

@@ -1,10 +1,7 @@
 """
-Logger
-======TODO
-
 Module storing an implementation of a static log class and all values associated with it.
 
-The config.json file stored within the log folder is used to configure most of the logging functionality, however
+The config.json file stored within the res folder is used to configure most of the logging functionality, however
 working with this module provides more direct control over the mechanisms.
 """
 from .constants import LOG_DIR as _LOG_DIR, RES_DIR as _RES_DIR
@@ -60,20 +57,6 @@ class Log:
     Static logging class which uses a Python's built-in logger object for the actual logging tasks.
 
     Uses the :class:`LogError` class to handle errors and let the calling function handle them.
-
-    Functions
-    ---------
-
-    The following list shortly summarises each function:
-
-        * reconfigure - a method to change the files' location
-        * debug - a method to log a debug message
-        * info - a method to log an info message
-        * warning - a method to log a warning message
-        * error - a method to log an error message
-
-    Usage
-    -----
 
     This class is static and should be used by directly calling the classmethods, as follows::
 

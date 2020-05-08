@@ -1,7 +1,4 @@
 """
-Help Cog
-========TODO
-
 Module storing help related functionality.
 """
 import discord
@@ -25,6 +22,8 @@ class HelpQueryNotFound(discord.DiscordException):
 class HelpSession(Session):
     """
     Help Session handling properly displaying help command contents in an interactive, per-user session.
+
+    The session will end early if there are no pages to display.
     """
 
     # noinspection PyUnresolvedReferences
@@ -106,6 +105,9 @@ class HelpSession(Session):
 class HelpCog(commands.Cog):
     """
     Help Cog is a discord extension providing the !help command and an associated error handler.
+
+    The command will either return a session, or display an error message if it can not be created (for example due
+    to missing permissions to run a command - no need to display any help about it).
 
     ALl further help functionality is handled within the `HelpSession` class.
     """

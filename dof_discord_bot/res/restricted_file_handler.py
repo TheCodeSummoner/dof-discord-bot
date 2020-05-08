@@ -1,8 +1,5 @@
 """
-Restricted File Handler TODO
-=======================
-
-Helper module storing the class to load in the logging config files.
+Helper module storing the class to be used within the logging config files.
 """
 import logging as _logging
 

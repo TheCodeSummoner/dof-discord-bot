@@ -75,16 +75,6 @@ class InfoSession(Session):
 class InformationCog(commands.Cog):
     """
     Information Cog is a discord extension providing a set of DoF-related informational commands and listeners.
-
-    Listeners
-    ---------TODO
-
-        * on_member_join - Listen to new members joining DoF discord and greet them properly
-
-    Commands
-    --------
-
-        * info - Start a new DoF member application or display information about the current one
     """
 
     def __init__(self, bot: Bot):
@@ -113,7 +103,7 @@ class InformationCog(commands.Cog):
     @commands.has_role("Defender")
     async def version(self, ctx: commands.Context):
         """
-        TODO
+        Version command is a Defender-only command used to display the current version of the bot.
         """
         member: discord.Member = ctx.author
 
