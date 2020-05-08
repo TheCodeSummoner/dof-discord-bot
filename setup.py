@@ -32,6 +32,7 @@ setuptools.setup(
     description=metadata["__description__"],
     version=metadata["__version__"],
     author=metadata["__lead__"],
+    author_email=["__email__"],
     maintainer=metadata["__lead__"],
     maintainer_email=metadata["__email__"],
     url=metadata["__url__"],
