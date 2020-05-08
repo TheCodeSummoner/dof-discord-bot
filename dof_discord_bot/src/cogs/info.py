@@ -2,7 +2,7 @@
 Module storing DoF info-related and welcome functionalities, as well as bot-related informational commands.
 """
 import discord
-from dof_discord_bot import __version__, __name__
+from dof_discord_bot import __version__, __title__
 from discord.ext import commands
 from .. import strings
 from ..bot import Bot
@@ -119,7 +119,7 @@ class InformationCog(commands.Cog):
 
         Log.debug(f"Detected !version command used by {member.display_name}")
         Log.debug(f"{member.display_name}'s roles are {(role.name for role in member.roles)}")
-        await ctx.send(embed=MessageEmbed(f"{__name__} v{__version__}"))
+        await ctx.send(embed=MessageEmbed(f"{__title__} v{__version__}"))
 
     @version.error
     async def version_handler(self, ctx: commands.Context, error: discord.DiscordException):

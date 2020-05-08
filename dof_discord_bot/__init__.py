@@ -8,7 +8,7 @@ from dof_discord_bot.src import Bot as _Bot, COMMAND_PREFIX as _PREFIX, TOKEN as
 with open(_os.path.join(_RES_DIR, "meta.json")) as f:
     metadata = _json.load(f)
 
-__name__ = metadata["__name__"]
+__title__ = metadata["__title__"]
 __version__ = metadata["__version__"]
 __description__ = metadata["__description__"]
 __lead__ = metadata["__lead__"]

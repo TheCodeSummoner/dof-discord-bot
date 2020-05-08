@@ -23,7 +23,7 @@ def get_meta_information(path: str) -> tuple:
     with open(path) as f:
         content = f.read()
         fields = tuple(content[content.find(field):].split("\n")[0][len(field) + 3:].replace("\"", "").strip()
-                       for field in ["__name__", "__description__", "__version__", "__lead__", "__email__", "__url__"])
+                       for field in ["__title__", "__description__", "__version__", "__lead__", "__email__", "__url__"])
         return fields
 
 
@@ -41,7 +41,7 @@ PACKAGE_DATA = [
 with open(os.path.join(ROOT, "dof_discord_bot", "res", "meta.json")) as f:
     metadata = json.load(f)
 
-__name__ = metadata["__name__"]
+__title__ = metadata["__title__"]
 __version__ = metadata["__version__"]
 __description__ = metadata["__description__"]
 __lead__ = metadata["__lead__"]
@@ -49,7 +49,7 @@ __email__ = metadata["__email__"]
 __url__ = metadata["__url__"]
 
 setuptools.setup(
-    name=__name__,
+    name=__title__,
     description=__description__,
     version=__version__,
     author=__lead__,
