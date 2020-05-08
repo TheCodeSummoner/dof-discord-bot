@@ -78,7 +78,7 @@ To contribute you can raise GitHub issues, submit a pull request with some code 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md][5] file for details
+This project is licensed under the MIT License - see the [license][5] file for details
 
 ## Acknowledgments
 
