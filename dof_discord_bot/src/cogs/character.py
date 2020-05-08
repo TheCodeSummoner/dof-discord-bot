@@ -1,13 +1,10 @@
 """
-Character Cog
-=============
-
 Module storing character code fetching functionality.
 """
 import discord
 from discord.ext import commands
 from .. import strings
-from ..utils import Session, LinePaginator
+from ..utils import Session, LinePaginator, MessageEmbed
 from ..constants import MAX_CHARACTER_LINES, BANNERLORD_CHARACTER_ICON
 from ..bot import Bot
 from ..logger import Log
@@ -51,6 +48,7 @@ class CharacterCog(commands.Cog):
     """
     Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
     """
+
     def __init__(self, bot: Bot):
         super().__init__()
         self.bot = bot
@@ -72,10 +70,7 @@ class CharacterCog(commands.Cog):
 
             # Embed the character code in a nicely visible "box"
             if name in CHARACTERS:
-                embed = discord.Embed()
-                embed.colour = discord.Colour.green()
-                embed.title = getattr(strings.Characters, name)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=MessageEmbed(getattr(strings.Characters, name)))
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
@@ -88,10 +83,7 @@ class CharacterCog(commands.Cog):
         """
         if isinstance(error, CharacterNotFound):
             Log.debug(f"Caught invalid character error - {error}")
-            embed = discord.Embed()
-            embed.colour = discord.Colour.red()
-            embed.title = str(error)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=MessageEmbed(str(error), negative=True))
         else:
             raise
 

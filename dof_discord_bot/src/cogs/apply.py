@@ -1,7 +1,4 @@
 """
-Application Cog
-===============
-
 Module storing DoF member application related functionality.
 """
 import discord
@@ -16,17 +13,13 @@ class ApplicationCog(commands.Cog):
     """
     Application Cog is a discord extension providing a set of application-related commands and listeners.
 
-    Listeners
-    ---------
+    Upon applying, an applicant is added to the bot's applications-in-progress list. The application can then be
+    interacted with in the following 3 ways:
 
-        * on_message - Listen to direct messages and collect application information
-
-    Commands
-    --------
-
-        * apply - Start a new DoF member application or display information about the current one
-        * submit - Submit a finished application (uses submit_application function)
-        * cancel - Cancel an in-progress application
+        - Answer a question to progress
+        - Type !apply to check the progress
+        - Type !cancel to cancel the application
+        - Type !submit to attempt application's submission
     """
 
     def __init__(self, bot: Bot):
@@ -67,7 +60,6 @@ class ApplicationCog(commands.Cog):
                 else:
                     await member.send(f"{self.bot.applications[member].question}")
 
-    @commands.dm_only()
     @commands.command()
     async def apply(self, ctx: commands.Context):
         """
@@ -81,6 +73,12 @@ class ApplicationCog(commands.Cog):
         """
         member = ctx.author
         Log.debug(f"Detected !apply command used by {member.display_name}")
+
+        # Apply command is a dm-only command. Not using dm_only check to allow other checks in help command.
+        if ctx.guild is not None:
+            Log.debug(f"Detected !apply command in a non-dm context, from {member.display_name}")
+            await member.send(strings.Application.dm_only.format("!apply", "start"))
+            return
 
         if member not in self.bot.applications:
             Log.info(f"Received new application request from {member.display_name}")
@@ -96,19 +94,6 @@ class ApplicationCog(commands.Cog):
                                   .format(self.bot.applications[member].progress, len(MemberApplication.questions),
                                           self.bot.applications[member].question))
 
-    @apply.error
-    async def apply_handler(self, ctx: commands.Context, error: discord.DiscordException):
-        """
-        Since apply is a direct-message-only command, an error handler is required to respond to the command calls
-        outside of a DM context.
-        """
-        member = ctx.author
-
-        if isinstance(error, commands.PrivateMessageOnly):
-            Log.debug(f"Detected !apply command in a non-dm context, from {member.display_name}")
-            await member.send(strings.Application.dm_only.format("!apply", "start"))
-
-    @commands.dm_only()
     @commands.command()
     async def submit(self, ctx: commands.Context):
         """
@@ -122,6 +107,12 @@ class ApplicationCog(commands.Cog):
         member = ctx.author
         Log.debug(f"Detected !submit command used by {member.display_name}")
 
+        # Submit command is a dm-only command. Not using dm_only check to allow other checks in help command.
+        if ctx.guild is not None:
+            Log.debug(f"Detected !submit command in a non-dm context, from {member.display_name}")
+            await member.send(strings.Application.dm_only.format("!submit", "submit"))
+            return
+
         if member in self.bot.applications and self.bot.applications[member].finished:
             Log.info(f"Received application submission request from {member.display_name}")
 
@@ -131,19 +122,6 @@ class ApplicationCog(commands.Cog):
         else:
             await member.send(strings.Application.unfinished.format(member.display_name))
 
-    @submit.error
-    async def submit_handler(self, ctx: commands.Context, error: discord.DiscordException):
-        """
-        Since submit is a direct-message-only command, an error handler is required to respond to the command calls
-        outside of a DM context.
-        """
-        member = ctx.author
-
-        if isinstance(error, commands.PrivateMessageOnly):
-            Log.debug(f"Detected !submit command in a non-dm context, from {member.display_name}")
-            await member.send(strings.Application.dm_only.format("!submit", "submit"))
-
-    @commands.dm_only()
     @commands.command()
     async def cancel(self, ctx: commands.Context):
         """
@@ -157,24 +135,18 @@ class ApplicationCog(commands.Cog):
         member = ctx.author
         Log.debug(f"Detected !cancel command used by {member.display_name}")
 
+        # Cancel command is a dm-only command. Not using dm_only check to allow other checks in help command.
+        if ctx.guild is not None:
+            Log.debug(f"Detected !cancel command in a non-dm context, from {member.display_name}")
+            await member.send(strings.Application.dm_only.format("!cancel", "cancel"))
+            return
+
         if member in self.bot.applications:
             Log.info(f"Received application cancellation request from {member.display_name}")
             await member.send(strings.Application.cancelled.format(member.display_name))
             del self.bot.applications[member]
         else:
             await member.send(strings.Application.not_started.format(member.display_name))
-
-    @cancel.error
-    async def cancel_handler(self, ctx: commands.Context, error: discord.DiscordException):
-        """
-        Since cancel is a direct-message-only command, an error handler is required to respond to the command calls
-        outside of a DM context.
-        """
-        member = ctx.author
-
-        if isinstance(error, commands.PrivateMessageOnly):
-            Log.debug(f"Detected !cancel command in a non-dm context, from {member.display_name}")
-            await member.send(strings.Application.dm_only.format("!cancel", "cancel"))
 
     async def submit_application(self, member: discord.Member):
         """

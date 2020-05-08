@@ -1,4 +1,13 @@
-# Version 1.3.0
+# Version 1.4.0
+- Added version command
+- Added main `README.md`
+- Added meta-information to the package (populated from an external file)
+- Added a way to run the code through the package
+- Adjusted the code to support restricted commands (e.g. admin-only)
+- Adjusted some docstrings
+- Fixed session parent class to support cases when there are no pages to display
+
+## Version 1.3.0
 - Added commands ordering in the help message
 - Cleared log folder to only contain log files (and the `.keep` file)
 - Fixed verbose log formatting

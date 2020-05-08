@@ -1,8 +1,5 @@
 """
-Dof Discord Bot
-===============
-
-Source code packages which gets installed as dof-bot through setup.py.
+Source code package exposing everything to the higher package level.
 """
 from .bot import Bot
 from .constants import *

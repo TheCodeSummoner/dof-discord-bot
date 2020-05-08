@@ -1,14 +1,11 @@
 """
-Verbose File Handler
-====================
+Helper module storing the class to be used within the logging config files.
 
-Helper module storing the class to load in the logging config files.
+Additionally, amends the following logging record fields to give more relevant information:
 
-Additionally amends the following logging record fields to give more relevant information:
-
-    * `filename' - file from where the message was logged
-    * `function' - function within which the message was logged
-    * `lineno' - line number of the log statement
+    - `filename' - file from where the message was logged
+    - `function' - function within which the message was logged
+    - `lineno' - line number of the log statement
 """
 import logging as _logging
 import inspect as _inspect

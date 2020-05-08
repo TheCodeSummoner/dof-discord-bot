@@ -17,18 +17,7 @@ class MemberApplication:
     """
     Member application class storing information about each applicant and the application stage.
 
-    Functions
-    ---------
-
-    The following list shortly summarises each function:
-
-        * progress - get application progress
-        * question - get current question
-        * answers - get current answers
-        * finished - is the application finished
-        * add_answer - register a new answer
-
-    See usage example in `ApplicationCog` (*apply.py*)
+    See usage example in `ApplicationCog` (`apply.py`)
     """
     questions = [
         _strings.Utils.steam_profile_long,
@@ -196,6 +185,7 @@ class Session:
 
         Timeout defines after how long of no interaction should the session be ended.
         """
+        self.ctx = ctx
         self.bot = ctx.bot
         self.author = ctx.author
         self.destination = ctx.channel
@@ -249,18 +239,24 @@ class Session:
         # Create paginated content
         await self.build_pages()
 
-        # Setup the listeners to allow page browsing
-        self.bot.add_listener(self.on_reaction_add)
-        self.bot.add_listener(self.on_message_delete)
+        # Only continue if there are pages to display - otherwise stop the session early
+        if self.pages:
 
-        # Display the first page
-        await self.update_page()
+            # Setup the listeners to allow page browsing
+            self.bot.add_listener(self.on_reaction_add)
+            self.bot.add_listener(self.on_message_delete)
 
-        # Initial timeout reset to set the timer
-        self.reset_timeout()
+            # Display the first page
+            await self.update_page()
 
-        # Add the reactions once the message is visible
-        self.add_reactions()
+            # Initial timeout reset to set the timer
+            self.reset_timeout()
+
+            # Add the reactions once the message is visible
+            self.add_reactions()
+
+        else:
+            await self.stop()
 
     @_abc.abstractmethod
     async def build_pages(self):
@@ -429,3 +425,13 @@ class Session:
         """
         if message.id == self.message.id:
             await self.stop()
+
+
+class MessageEmbed(_discord.Embed):
+    """
+    Helper class to shortcut creation of embeds
+    """
+    def __init__(self, message: str, negative: bool = False):
+        super().__init__()
+        self.title = message
+        self.colour = _discord.Colour.red() if negative else _discord.Colour.green()

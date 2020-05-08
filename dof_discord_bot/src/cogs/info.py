@@ -1,15 +1,13 @@
 """
-Information Cog
-===============
-
-Module storing DoF info-related and welcome functionalities.
+Module storing DoF info-related and welcome functionalities, as well as bot-related informational commands.
 """
 import discord
+from dof_discord_bot import __version__, __title__
 from discord.ext import commands
 from .. import strings
 from ..bot import Bot
 from ..logger import Log
-from ..utils import Session, Page, LinePaginator
+from ..utils import Session, Page, LinePaginator, MessageEmbed
 
 
 class InfoSession(Session):
@@ -77,16 +75,6 @@ class InfoSession(Session):
 class InformationCog(commands.Cog):
     """
     Information Cog is a discord extension providing a set of DoF-related informational commands and listeners.
-
-    Listeners
-    ---------
-
-        * on_member_join - Listen to new members joining DoF discord and greet them properly
-
-    Commands
-    --------
-
-        * info - Start a new DoF member application or display information about the current one
     """
 
     def __init__(self, bot: Bot):
@@ -110,6 +98,29 @@ class InformationCog(commands.Cog):
 
         Log.debug(f"Detected !info command used by {member.display_name}")
         await InfoSession.start(ctx, "Information")
+
+    @commands.command()
+    @commands.has_role("Defender")
+    async def version(self, ctx: commands.Context):
+        """
+        Version command is a Defender-only command used to display the current version of the bot.
+        """
+        member: discord.Member = ctx.author
+
+        Log.debug(f"Detected !version command used by {member.display_name}")
+        Log.debug(f"{member.display_name}'s roles are {(role.name for role in member.roles)}")
+        await ctx.send(embed=MessageEmbed(f"{__title__} v{__version__}"))
+
+    @version.error
+    async def version_handler(self, ctx: commands.Context, error: discord.DiscordException):
+        """
+        Custom handler needed to handle the custom error - the user should be informed about an invalid character.
+        """
+        if isinstance(error, commands.MissingRole):
+            Log.debug(f"Caught missing role error - {error}")
+            await ctx.send(embed=MessageEmbed(str(error), negative=True))
+        else:
+            raise
 
 
 def setup(bot: commands.Bot):

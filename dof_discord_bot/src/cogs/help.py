@@ -1,7 +1,4 @@
 """
-Help Cog
-========
-
 Module storing help related functionality.
 """
 import discord
@@ -11,7 +8,7 @@ from .. import strings
 from ..bot import Bot
 from ..logger import Log
 from ..constants import MAX_HELP_LINES, COMMAND_PREFIX, COMMANDS_ORDER
-from ..utils import Session, LinePaginator
+from ..utils import Session, LinePaginator, MessageEmbed
 
 
 class HelpQueryNotFound(discord.DiscordException):
@@ -25,6 +22,8 @@ class HelpQueryNotFound(discord.DiscordException):
 class HelpSession(Session):
     """
     Help Session handling properly displaying help command contents in an interactive, per-user session.
+
+    The session will end early if there are no pages to display.
     """
 
     # noinspection PyUnresolvedReferences
@@ -58,6 +57,13 @@ class HelpSession(Session):
         # Sort the commands by the index in the ordering and add them to the help message
         for command in sorted(self.bot.commands, key=lambda cmd: COMMANDS_ORDER.index(cmd.name)):
 
+            # Skip any commands which can't be run
+            try:
+                await command.can_run(self.ctx)
+            except commands.CheckFailure:
+                Log.debug(f"{self.author} is not allowed to use the {command.name} command")
+                continue
+
             # Retrieve command name. signature and docs (description)
             info = f"**`{COMMAND_PREFIX}{str.join(' ', (command.name, command.signature))}`**"
             if command.short_doc:
@@ -78,6 +84,14 @@ class HelpSession(Session):
         """
         Log.debug(f"Displaying command-specific help about {command.name} for {self.author}")
 
+        # Skip any commands which can't be run
+        try:
+            await command.can_run(self.ctx)
+        except commands.CheckFailure as e:
+            Log.debug(f"{self.author} is not allowed to use the {command.name} command")
+            await self.ctx.send(embed=MessageEmbed(str(e), negative=True))
+            return
+
         paginator.add_line(f'**```{COMMAND_PREFIX}{str.join(" ", (command.name, command.signature))}```**')
         paginator.add_line(f"*{command.help}*")
 
@@ -91,6 +105,9 @@ class HelpSession(Session):
 class HelpCog(commands.Cog):
     """
     Help Cog is a discord extension providing the !help command and an associated error handler.
+
+    The command will either return a session, or display an error message if it can not be created (for example due
+    to missing permissions to run a command - no need to display any help about it).
 
     ALl further help functionality is handled within the `HelpSession` class.
     """
@@ -133,10 +150,7 @@ class HelpCog(commands.Cog):
         """
         if isinstance(error, HelpQueryNotFound):
             Log.debug(f"Caught invalid query error - {error}")
-            embed = discord.Embed()
-            embed.colour = discord.Colour.red()
-            embed.title = str(error)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=MessageEmbed(str(error), negative=True))
         else:
             raise error
 
