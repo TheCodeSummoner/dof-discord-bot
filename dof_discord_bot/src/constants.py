@@ -34,6 +34,7 @@ COMMAND_PREFIX = "!"
 COMMANDS_ORDER = [
     "info",
     "help",
+    "version",
     "apply",
     "submit",
     "cancel",
