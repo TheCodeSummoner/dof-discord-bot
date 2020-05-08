@@ -15,7 +15,7 @@ To deploy the system to your own discord server, follow the standard Discord dev
 2. You must provide a Discord token - either through an environment variable `DOF_TOKEN` or by creating the `token.txt`
 file in `res` directory - for more information following the instructions when attempting to run the bot without the
 token.
-3. You must either install the package (see below) or make sure to install all dependencies (see `setup.py`)
+3. You must either install the package (see below) or make sure to install all dependencies (see `setup.py`).
 
 ### Installing
 
@@ -31,7 +31,7 @@ To check that it has been successfully installed, check that you can import and 
 or run the following command:
 
 ```
-python -c "import dof_discord_bot; print(f"{dof_discord_bot.__title__} v{__version__}")
+python -c "import dof_discord_bot; print(f'{dof_discord_bot.__title__} v{dof_discord_bot.__version__}')"
 ```
 
 ### Usage
