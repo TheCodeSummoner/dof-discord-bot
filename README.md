@@ -82,7 +82,7 @@ This project is licensed under the MIT License - see the [LICENSE.md][5] file fo
 
 ## Acknowledgments
 
-* Thanks to the [Python discord bot][6] for open-sourcing their code and therefore providing an excellent learning
+Thanks to the [Python discord bot][6] for open-sourcing their code and therefore providing an excellent learning
 resource about Python discord API.
 
 [1]: https://discord.com/invite/BRRfqqZ
