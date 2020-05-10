@@ -29,7 +29,7 @@ strings:
     anything_else_long: "Anything you would like to add (past M&B experience, hobbies, etc)?"
     anything_else_short: "Other"
   info_cog:
-    welcome: 'Welcome to DoF discord, {}! To join DoF, type "!apply". To learn more about the clan and possible commands please type "!info" or "!help".'
+    welcome: 'Welcome to DoF discord, {}! To join DoF, type "!apply". To learn more about the clan and possible commands, please type "!info" or "!help".'
     bot_welcome: "Welcome! I am a bot created to help you interact with DoF."
     bot_tutorial: "To talk to me, you must use commands. Each command will start with the \"!\" prefix, and you can type \"!help\" to learn about all of them."
     bot_output: "I will always answer a command and send you a message. Usually in the same channel you've typed the command, but sometimes in a different channel or as a direct message."
@@ -58,7 +58,7 @@ strings:
   character_cog:
     invalid_character: "Character {} not found"
     title: "Bannerlord Characters"
-    introduction: "Hello! If you wanna receive a certain Bannerlord character code, type in !character <name>."
+    introduction: "If you want to receive a certain Bannerlord character code, type in !character <name>."
     available_characters: "The following names are available:"
     male_characters:
       monchug: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0016F40B5800268ACCA95BFCEA862009B656AEBCFDCC537655CD894433ABA6C90197761309B4782A00000000000000000000000000000000000000005F3C7105"  />'
