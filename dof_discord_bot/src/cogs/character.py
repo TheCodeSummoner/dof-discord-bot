@@ -10,6 +10,7 @@ from ..bot import Bot
 from ..logger import Log
 
 # Fetch the characters by checking if the class annotations start with the face code specific string
+# TODO: Split this into female, male and custom characters
 CHARACTERS = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
 
 
@@ -25,7 +26,9 @@ class CharacterSession(Session):
     """
     Character Session allowing retrieving the Bannerlord character codes.
     """
-
+    # TODO: Adjust how the pages are built, maybe predefined 3 pages with no line limit? Or maybe keep the line limit?
+    #  There may be a lot of characters so probably worth keeping the line limit. Is it worth manually splitting the pages before each
+    #  female/male/custom characters switch? Not sure - experiment and see which looks reasonable
     async def build_pages(self):
         """
         Builds predefined pages and puts them into the paginator.
@@ -34,8 +37,11 @@ class CharacterSession(Session):
 
         # Add the introduction and the available characters header
         paginator.add_line(strings.Characters.introduction + "\n")
+
+        # TODO: Below should be changed to say something like "Here are available male characters" - and also reproduced for each section (female, male and custom)
         paginator.add_line(strings.Characters.available_characters)
 
+        # TODO: Below will have to be changed similarly to the above - need to handle female male and custom
         # Add (formatted) names
         for name in sorted(CHARACTERS):
             paginator.add_line("• " + name.capitalize())

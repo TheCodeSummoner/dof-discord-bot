@@ -18,6 +18,7 @@ class _YAMLStringsGetter(type):
     Implements a custom metaclass used for accessing configuration data by simply accessing class attributes.
 
     `section` specifies the YAML configuration section (or "key") in which the configuration lives, and must be set.
+    'subsection' specifies an optional section within the parent section. Use it to access nested values.
 
     Example Usage:
 
@@ -35,17 +36,20 @@ class _YAMLStringsGetter(type):
         import strings
         print(strings.Application.new_application)
     """
+    section: str
+    subsection: str = None
 
     def __getattr__(cls, name):
         name = name.lower()
-
         try:
-            if cls.section is not None:
+            if cls.subsection is not None:
+                return _CONFIG_YAML[_MAIN_YAML_SECTION][cls.section][cls.subsection][name]
+            elif cls.section is not None:
                 return _CONFIG_YAML[_MAIN_YAML_SECTION][cls.section][name]
             else:
                 raise KeyError("Can not access the values without providing a \"section\" key")
         except KeyError:
-            dotted_path = '.'.join((cls.section, name))
+            dotted_path = ".".join((cls.subsection, cls.section, name) if cls.subsection else (cls.section, name))
             _Log.error(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
             raise
 
@@ -149,10 +153,17 @@ class Characters(metaclass=_YAMLStringsGetter):
     invalid_character: str
     introduction: str
     available_characters: str
+
+
+class FemaleCharacters(metaclass=_YAMLStringsGetter):
+    """
+    Female Bannerlord character codes.
+    """
+    section = "character_cog"
+    subsection = "female_characters"
     rhagaea: str
     ira: str
     elys: str
-    monchug: str
     unqid: str
     abagai: str
     alynneth: str
@@ -164,3 +175,20 @@ class Characters(metaclass=_YAMLStringsGetter):
     phaea: str
     sora: str
     phenoria: str
+
+
+class MaleCharacters(metaclass=_YAMLStringsGetter):
+    """
+    Male Bannerlord character codes.
+    """
+    section = "character_cog"
+    subsection = "male_characters"
+    monchug: str
+
+
+class CustomCharacters(metaclass=_YAMLStringsGetter):
+    """
+    Custom Bannerlord character codes.
+    """
+    section = "character_cog"
+    subsection = "custom_characters"
