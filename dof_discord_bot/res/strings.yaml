@@ -59,7 +59,9 @@ strings:
     invalid_character: "Character {} not found"
     title: "Bannerlord Characters"
     introduction: "If you want to receive a certain Bannerlord character code, type in !character <name>."
-    available_characters: "The following names are available:"
+    available_male_characters: "The following male characters are available:"
+    available_female_characters: "The following female characters are available:"
+    available_custom_characters: "The following custom characters are available:"
     male_characters:
       monchug: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0016F40B5800268ACCA95BFCEA862009B656AEBCFDCC537655CD894433ABA6C90197761309B4782A00000000000000000000000000000000000000005F3C7105"  />'
     female_characters:
