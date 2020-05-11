@@ -4,13 +4,12 @@ Module storing character code fetching functionality.
 import discord
 from discord.ext import commands
 from .. import strings
-from ..utils import Session, LinePaginator, MessageEmbed
-from ..constants import MAX_CHARACTER_LINES, BANNERLORD_CHARACTER_ICON
+from ..utils import Session, LinePaginator, MessageEmbed, Page
+from ..constants import BANNERLORD_CHARACTER_ICON
 from ..bot import Bot
 from ..logger import Log
 
-# Fetch the characters by checking if the class annotations start with the face code specific string
-# TODO: Split this into female, male and custom characters
+# Fetch the characters by checking if the class annotations start with the character code specific string
 FEMALE_CHARACTERS = {char[0] for char in strings.FemaleCharacters if char[1].startswith("<BodyProperties")}
 MALE_CHARACTERS = {char[0] for char in strings.MaleCharacters if char[1].startswith("<BodyProperties")}
 CUSTOM_CHARACTERS = {char[0] for char in strings.CustomCharacters if char[1].startswith("<BodyProperties")}
@@ -30,38 +29,35 @@ class CharacterSession(Session):
     Character Session allowing retrieving the Bannerlord character codes.
     """
 
-    # TODO: Adjust how the pages are built, maybe predefined 3 pages with no line limit? Or maybe keep the line limit?
-    #  There may be a lot of characters so probably worth keeping the line limit. Is it worth manually splitting the pages before each
-    #  female/male/custom characters switch? Not sure - experiment and see which looks reasonable
     async def build_pages(self):
         """
         Builds predefined pages and puts them into the paginator.
         """
-        paginator = LinePaginator(prefix="", suffix="", max_lines= 6)
+        paginator = LinePaginator(prefix="", suffix="")
 
-        # Add the introduction and the available characters header
-        paginator.add_line(strings.Characters.introduction + "\n")
+        # Add the introduction, then each section will have a separate header and list of characters
+        paginator.add_page(Page(
+            strings.Characters.introduction,
+            "",
+            strings.Characters.explanation,
+            "",
+            strings.Characters.example_success,
+            "",
+            "```" + strings.FemaleCharacters.rhagaea + "```"
+        ))
 
-        # TODO: Below should be changed to say something like "Here are available male characters" - and also reproduced for each section (female, male and custom)
-        paginator.add_line(strings.Characters.available_male_characters)
-
-        # TODO: Below will have to be changed similarly to the above - need to handle female male and custom
-        # Add (formatted) names
-        for name in sorted(MALE_CHARACTERS):
+        paginator.add_line(strings.Characters.available_custom_characters)
+        for name in sorted(CUSTOM_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
-
         paginator.close_page()
 
         paginator.add_line(strings.Characters.available_female_characters)
-
         for name in sorted(FEMALE_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
-
         paginator.close_page()
 
-        paginator.add_line(strings.Characters.available_custom_characters)
-
-        for name in sorted(CUSTOM_CHARACTERS):
+        paginator.add_line(strings.Characters.available_male_characters)
+        for name in sorted(MALE_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
         # Save organised pages to the session
@@ -77,7 +73,7 @@ class CharacterCog(commands.Cog):
         super().__init__()
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=["characters"])
     async def character(self, ctx: commands.Context, name: str = ""):
         """
         Provides a character code (you can copy the code into the character edition screen in Bannerlord).

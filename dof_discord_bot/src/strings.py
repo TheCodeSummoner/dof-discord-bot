@@ -152,6 +152,8 @@ class Characters(metaclass=_YAMLStringsGetter):
     title: str
     invalid_character: str
     introduction: str
+    explanation: str
+    example_success: str
     available_male_characters: str
     available_female_characters: str
     available_custom_characters: str

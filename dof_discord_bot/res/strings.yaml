@@ -1,13 +1,13 @@
 strings:
   apply_cog:
-    new_application: "Thank you for being interested in joining DoF, {} :)\nPlease answer each question to submit an application (don't worry, you will have a chance to review your application before submission).\nYou can cancel your application at any time by typing \"!cancel\".\nYou can check your application progress at any time by typing \"!apply\"."
-    completed: "You have completed the application - here is what you've written:\n{}\nWould you like to submit this application? Type !submit to submit it, or !cancel to cancel the application."
+    new_application: "Thank you for being interested in joining DoF, {} :)\nPlease answer each question to submit an application (don't worry, you will have a chance to review your application before submission).\nYou can cancel your application at any time by typing `!cancel`.\nYou can check your application progress at any time by typing `!apply`."
+    completed: "You have completed the application - here is what you've written:\n{}\nWould you like to submit this application? Type `!submit` to submit it, or `!cancel` to cancel the application."
     check_progress: "You are currently on step {} out of {}.\nCurrent question is: {}."
     dm_only: "Hi! I've' noticed you've tried to use the {} command, but it can only be used as a direct message.\nIf you would like to {} a DoF application, please type the command again here."
     submitted: "Application from {} successfully submitted."
-    unfinished: "Couldn't find a finished application from {} - please check you have completed an application by using the \"!apply\" command."
+    unfinished: "Couldn't find a finished application from {} - please check you have completed an application by using the `!apply` command."
     cancelled: "Application from {} successfully cancelled."
-    not_started: "Couldn't find a started application from {} - please make sure you have started an application by using the \"!apply\" command."
+    not_started: "Couldn't find a started application from {} - please make sure you have started an application by using the `!apply` command."
     submit: "New application from {}:\n\n{}"
   utils_module:
     steam_profile_long: "What is your Steam profile link?"
@@ -29,9 +29,9 @@ strings:
     anything_else_long: "Anything you would like to add (past M&B experience, hobbies, etc)?"
     anything_else_short: "Other"
   info_cog:
-    welcome: 'Welcome to DoF discord, {}! To join DoF, type "!apply". To learn more about the clan and possible commands, please type "!info" or "!help".'
+    welcome: "Welcome to DoF discord, {}! To join DoF, type `!apply`. To learn more about the clan and possible commands, please type `!info` or `!help`."
     bot_welcome: "Welcome! I am a bot created to help you interact with DoF."
-    bot_tutorial: "To talk to me, you must use commands. Each command will start with the \"!\" prefix, and you can type \"!help\" to learn about all of them."
+    bot_tutorial: "To talk to me, you must use commands. Each command will start with the \"!\" prefix, and you can type `!help` to learn about all of them."
     bot_output: "I will always answer a command and send you a message. Usually in the same channel you've typed the command, but sometimes in a different channel or as a direct message."
     bot_browse: "Occasionally there will multiple icons on the bottom of a bot message - you can use them to change the pages and browse all available content."
     rules_welcome: "Here are the Rules we expect every DoF member as well as the members of this discord to follow:"
@@ -58,7 +58,9 @@ strings:
   character_cog:
     invalid_character: "Character {} not found"
     title: "Bannerlord Characters"
-    introduction: "If you want to receive a certain Bannerlord character code, type in !character <name>."
+    introduction: "This command retrieves character codes which can be pasted into Bannerlord's character creation/modification screen."
+    explanation: "Each page is associated with a section (custom, female or male) and contains a list of character names. If you want to receive the code for a certain character, simply type `!character <name>.`"
+    example_success: 'A successful command will return an xml element that starts with `<BodyProperties` - you can copy the entire thing and paste it in Bannerlord. Here is a sample output for Rhagaea:'
     available_male_characters: "The following male characters are available:"
     available_female_characters: "The following female characters are available:"
     available_custom_characters: "The following custom characters are available:"

@@ -54,6 +54,3 @@ BANNERLORD_CHARACTER_ICON = "https://cdn.discordapp.com/emojis/70585827800514560
 
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
-
-# Declare the maximum number of the lines for the !character command
-MAX_CHARACTER_LINES = 10
