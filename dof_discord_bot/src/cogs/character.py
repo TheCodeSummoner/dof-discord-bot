@@ -37,7 +37,7 @@ class CharacterSession(Session):
         """
         Builds predefined pages and puts them into the paginator.
         """
-        paginator = LinePaginator(prefix="", suffix="", max_lines=MAX_CHARACTER_LINES)
+        paginator = LinePaginator(prefix="", suffix="")
 
         # Add the introduction and the available characters header
         paginator.add_line(strings.Characters.introduction + "\n")
