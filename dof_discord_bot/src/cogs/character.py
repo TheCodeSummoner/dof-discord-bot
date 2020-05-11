@@ -12,8 +12,8 @@ from ..logger import Log
 # Fetch the characters by checking if the class annotations start with the face code specific string
 # TODO: Split this into female, male and custom characters
 FEMALE_CHARACTERS = {char[0] for char in strings.FemaleCharacters if char[1].startswith("<BodyProperties")}
-MALE_CHARACTERS = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
-CUSTOM_CHARACTERS = {char[0] for char in strings.Characters if char[1].startswith("<BodyProperties")}
+MALE_CHARACTERS = {char[0] for char in strings.MaleCharacters if char[1].startswith("<BodyProperties")}
+CUSTOM_CHARACTERS = {char[0] for char in strings.CustomCharacters if char[1].startswith("<BodyProperties")}
 
 
 class CharacterNotFound(discord.DiscordException):
