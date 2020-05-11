@@ -20,6 +20,7 @@ class CharacterNotFound(discord.DiscordException):
     """
     Raised when the character-fetching query doesn't match any of the supported characters.
     """
+
     def __init__(self, arg: str):
         super().__init__(arg)
 
@@ -28,6 +29,7 @@ class CharacterSession(Session):
     """
     Character Session allowing retrieving the Bannerlord character codes.
     """
+
     # TODO: Adjust how the pages are built, maybe predefined 3 pages with no line limit? Or maybe keep the line limit?
     #  There may be a lot of characters so probably worth keeping the line limit. Is it worth manually splitting the pages before each
     #  female/male/custom characters switch? Not sure - experiment and see which looks reasonable
@@ -42,9 +44,6 @@ class CharacterSession(Session):
 
         # TODO: Below should be changed to say something like "Here are available male characters" - and also reproduced for each section (female, male and custom)
         paginator.add_line(strings.Characters.available_male_characters)
-
-
-
 
         # TODO: Below will have to be changed similarly to the above - need to handle female male and custom
         # Add (formatted) names
