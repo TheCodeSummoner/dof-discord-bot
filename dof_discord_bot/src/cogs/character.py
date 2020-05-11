@@ -50,12 +50,17 @@ class CharacterSession(Session):
         for name in sorted(MALE_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
+        paginator.close_page()
+
         paginator.add_line(strings.Characters.available_female_characters)
 
         for name in sorted(FEMALE_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
+        paginator.close_page()
+
         paginator.add_line(strings.Characters.available_custom_characters)
+
         for name in sorted(CUSTOM_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
