@@ -196,3 +196,4 @@ class CustomCharacters(metaclass=_YAMLStringsGetter):
     """
     section = "character_cog"
     subsection = "custom_characters"
+    celtic_babe: str
