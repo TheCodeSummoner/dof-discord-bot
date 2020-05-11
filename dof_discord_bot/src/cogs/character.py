@@ -41,11 +41,23 @@ class CharacterSession(Session):
         paginator.add_line(strings.Characters.introduction + "\n")
 
         # TODO: Below should be changed to say something like "Here are available male characters" - and also reproduced for each section (female, male and custom)
-        paginator.add_line(strings.Characters.available_characters)
+        paginator.add_line(strings.Characters.available_male_characters)
+
+
+
 
         # TODO: Below will have to be changed similarly to the above - need to handle female male and custom
         # Add (formatted) names
-        for name in sorted(CHARACTERS):
+        for name in sorted(MALE_CHARACTERS):
+            paginator.add_line("• " + name.capitalize())
+
+        paginator.add_line(strings.Characters.available_female_characters)
+
+        for name in sorted(FEMALE_CHARACTERS):
+            paginator.add_line("• " + name.capitalize())
+
+        paginator.add_line(strings.Characters.available_custom_characters)
+        for name in sorted(CUSTOM_CHARACTERS):
             paginator.add_line("• " + name.capitalize())
 
         # Save organised pages to the session
@@ -77,8 +89,12 @@ class CharacterCog(commands.Cog):
             name = name.lower()
 
             # Embed the character code in a nicely visible "box"
-            if name in CHARACTERS:
-                await ctx.send(embed=MessageEmbed(getattr(strings.Characters, name)))
+            if name in MALE_CHARACTERS:
+                await ctx.send(embed=MessageEmbed(getattr(strings.MaleCharacters, name)))
+            elif name in FEMALE_CHARACTERS:
+                await ctx.send(embed=MessageEmbed(getattr(strings.FemaleCharacters, name)))
+            elif name in CUSTOM_CHARACTERS:
+                await ctx.send(embed=MessageEmbed(getattr(strings.CustomCharacters, name)))
             else:
                 await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
