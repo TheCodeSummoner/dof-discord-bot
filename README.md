@@ -85,9 +85,12 @@ This project is licensed under the MIT License - see the [license][5] file for d
 Thanks to the [Python discord bot][6] for open-sourcing their code and therefore providing an excellent learning
 resource about Python discord API.
 
+Thanks to this [Nexus mod][7] for providing free to use GoT Bannerlord character presets.
+
 [1]: https://discord.com/invite/BRRfqqZ
 [2]: https://dofesports.wixsite.com/defenders-of-faith
 [3]: https://forums.taleworlds.com/index.php?threads/dof-defenders-of-faith-international-clan-decade-of-faith-we-are-recruiting.417098/
 [4]: https://www.python.org/downloads/
 [5]: LICENSE
 [6]: https://github.com/python-discord/bot
+[7]: https://www.nexusmods.com/mountandblade2bannerlord/mods/872

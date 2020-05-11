@@ -58,7 +58,7 @@ strings:
   character_cog:
     invalid_character: "Character {} not found"
     title: "Bannerlord Characters"
-    introduction: "This command retrieves character codes which can be pasted into Bannerlord's character creation/modification screen."
+    introduction: "This command retrieves character presets which can be pasted into Bannerlord's character creation/modification screen."
     explanation: "Each page is associated with a section (custom, female or male) and contains a list of character names. If you want to receive the code for a certain character, simply type `!character <name>.`"
     example_success: 'A successful command will return an xml element that starts with `<BodyProperties` - you can copy the entire thing and paste it in Bannerlord. Here is a sample output for Rhagaea:'
     available_male_characters: "The following male characters are available:"
@@ -82,3 +82,13 @@ strings:
       sora: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="001C7C0CC000300FDC6662592917B5B3767976B85C48461074C689747445647B0197761309F4133300000000000000000000000000000000000000006D2420C4"  />'
       phenoria: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="001C8C0E5100000E898A66AD68536A946A54A8C8781D1B037A4989CB9898D4780197761309F413370000000000000000000000000000000000000000213C30C4" />'
     custom_characters:
+      stannis_baratheon: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0000B00D40CC25CD01811B5A081A0A81909B8AA505894F09AEB641698B8303550111F613088886040000000000000100000000000000187700000000650C3082"  />'
+      tyrion_lannister: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="00006004DDCC23940F811B5A0817008690AF8A7500A8FF61AEB641698B8303570816D61300888604000000605000014000000000000010770000000064042083"  />'
+      khal_drogo: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="001CD80E97FC34C90F811B5A350B1B8390B98AA5A98BAF0FAEB641098B8903C20180F613088886030000000000000000000000000000187700000000650C30C2"  />'
+      sandor_clegane: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="000BD80ADCFC13820E813B5A820B0B8A86AD66A023EBFF71EEB641EF830120A83A82C6130CA86F00ABCB000FCD0C00780000000000001C7700000000658440C2"  />'
+      tywin_lannister: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0000440000FC134F0E910F0FF139107045F990002E7C40719068400F7C900F663A8256130BDA310686660000670300780000000000001B7700000000337C40C2"  />'
+      bronn_of_the_blackwater: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="000B240AC0FC034400813F97801976C4405806A023E84FB1E7A428EC748120663782761308CA880A5253000346070078000000000000187700000000390430C6"  />'
+      jon_snow: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0000FC0E80CC035400811B9A020530A310FF85034199DBA0AFE6E956812503500816A61307C64607466410605020004000000000000017770000000064DC4082"  />'
+      joffrey_baratheon: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="000030024014200D678A53E52308008F949B8F35149AFF726E180F208B8307350100961306C4C04B000000000000000000000000000016770000000064DC3082"  />'
+      tormund_giantsbane: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="0000000740142444B68117FF651AF0F660D0EB6A6686FD09AEB648698C6316170180F613088886030000000000000000000000000000187700000000650C40C2"  />'
+      hodor: '<BodyProperties version="4" age="25.84" weight="0.5" build="0.5"  key="000030000014100DCF8A53E5230F007B909B8F35149AFF720E1F00208B830735FEF8F6130FF9F6FFFFFF488EFF0FFFEF0000000000001F770000000065FC1082"  />'
