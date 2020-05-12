@@ -91,5 +91,3 @@ resource about Python discord API.
 [4]: https://www.python.org/downloads/
 [5]: LICENSE
 [6]: https://github.com/python-discord/bot
-
-test
