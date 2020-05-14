@@ -165,57 +165,26 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     """
     section = "character_cog"
     subsection = "female_characters"
-    terra: str
-    varra: str
-    zerosica: str
-    phenoria: str
-    vendelia: str
-    melkea: str
-    lysica: str
     rhagaea: str
-    martira: str
-    jathea: str
-    zoana: str
-    sora: str
-    chalia: str
-    nadea: str
-    mina: str
-    phaea: str
     ira: str
-    helea: str
-    debana: str
-    panalea: str
-    asta: str
-    siga: str
-    erta: str
-    valla: str
-    idrun: str
-    svana: str
-    jinda: str
-    maraa: str
-    ruma: str
-    anidha: str
-    arwa: str
-    manan: str
-    philenora: str
-    elthild: str
-    calatild: str
     elys: str
-    liena: str
-    silvind: str
-    elbet: str
-    asela: str
-    nywin: str
-    alcaea: str
-    corein: str
-    alynneth: str
-    wythuin: str
-    anat: str
-    mesui: str
-    alijin: str
-    bolat: str
-    yana: str
+    unqid: str
     abagai: str
+    alynneth: str
+    chalia: str
+    liena: str
+    anidha: str
+    debana: str
+    helea: str
+    phaea: str
+    sora: str
+    phenoria: str
+    manan: str
+    ruma: str
+    arwa: str
+    svana: str
+    erta: str
+    godun: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
