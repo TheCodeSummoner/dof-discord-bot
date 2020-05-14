@@ -6,6 +6,7 @@
 - Adjusted the code to support restricted commands (e.g. admin-only)
 - Adjusted some docstrings
 - Fixed session parent class to support cases when there are no pages to display
+- Expanded the `!character` command as well as added more character presets
 
 ## Version 1.3.0
 - Added commands ordering in the help message
