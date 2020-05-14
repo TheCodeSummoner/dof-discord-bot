@@ -179,6 +179,12 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     phaea: str
     sora: str
     phenoria: str
+    manan: str
+    ruma: str
+    arwa: str
+    svana: str
+    erta: str
+    godun: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
