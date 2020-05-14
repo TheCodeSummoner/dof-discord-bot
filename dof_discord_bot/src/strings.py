@@ -258,3 +258,13 @@ class CustomCharacters(metaclass=_YAMLStringsGetter):
     section = "character_cog"
     subsection = "custom_characters"
     celtic_babe: str
+    stannis_baratheon: str
+    tyrion_lannister: str
+    khal_drogo: str
+    sandor_clegane: str
+    tywin_lannister: str
+    bronn_of_the_blackwater: str
+    jon_snow: str
+    joffrey_baratheon: str
+    tormund_giantsbane: str
+    hodor: str
