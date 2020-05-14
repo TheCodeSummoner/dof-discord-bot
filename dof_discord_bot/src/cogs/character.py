@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from .. import strings
 from ..utils import Session, LinePaginator, MessageEmbed, Page
-from ..constants import BANNERLORD_CHARACTER_ICON
+from ..constants import BANNERLORD_CHARACTER_ICON, DONT_CAPITALISE
 from ..bot import Bot
 from ..logger import Log
 
@@ -68,7 +68,7 @@ class CharacterSession(Session):
         """
         Helper function used to format a name so it appears properly in the message.
         """
-        return "• " + " ".join(part.capitalize() if part not in ("of", "the") else part for part in name.split("_"))
+        return "• " + " ".join(part.capitalize() if part not in DONT_CAPITALISE else part for part in name.split("_"))
 
 
 class CharacterCog(commands.Cog):

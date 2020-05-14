@@ -54,3 +54,6 @@ BANNERLORD_CHARACTER_ICON = "https://cdn.discordapp.com/emojis/70585827800514560
 
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
+
+# Declare the constant to avoid capitalisation of some words in !character command
+DONT_CAPITALISE = {"of", "the", "by"}
