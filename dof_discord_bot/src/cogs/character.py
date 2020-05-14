@@ -2,17 +2,39 @@
 Module storing character code fetching functionality.
 """
 import discord
+import typing
 from discord.ext import commands
 from .. import strings
 from ..utils import Session, LinePaginator, MessageEmbed, Page
-from ..constants import BANNERLORD_CHARACTER_ICON, DONT_CAPITALISE
+from ..constants import BANNERLORD_CHARACTER_ICON, DONT_CAPITALISE, \
+    FEMALE_CHARACTER_SPACE, FEMALE_CHARACTERS_PER_LINE, \
+    MALE_CHARACTER_SPACE, MALE_CHARACTERS_PER_LINE, \
+    CUSTOM_CHARACTER_SPACE, CUSTOM_CHARACTERS_PER_LINE
 from ..bot import Bot
 from ..logger import Log
 
+
+def split(iterable: typing.Iterable, chunks: int) -> typing.List[typing.List]:
+    """
+    Helper function to split an iterable into a number of chunks in a tuple.
+    """
+    new_items = [[]]
+    for item in iterable:
+        if len(new_items[-1]) == chunks:
+            new_items.append([])
+        new_items[-1].append(item)
+    return new_items
+
+
 # Fetch the characters by checking if the class annotations start with the character code specific string
+CUSTOM_CHARACTERS = {char[0] for char in strings.CustomCharacters if char[1].startswith("<BodyProperties")}
 FEMALE_CHARACTERS = {char[0] for char in strings.FemaleCharacters if char[1].startswith("<BodyProperties")}
 MALE_CHARACTERS = {char[0] for char in strings.MaleCharacters if char[1].startswith("<BodyProperties")}
-CUSTOM_CHARACTERS = {char[0] for char in strings.CustomCharacters if char[1].startswith("<BodyProperties")}
+
+# Create lists which store the characters in smaller chunks, so that multiple characters can be displayed same line
+CUSTOM_CHARACTERS_SPLIT = split(sorted(CUSTOM_CHARACTERS), CUSTOM_CHARACTERS_PER_LINE)
+FEMALE_CHARACTERS_SPLIT = split(sorted(FEMALE_CHARACTERS), FEMALE_CHARACTERS_PER_LINE)
+MALE_CHARACTERS_SPLIT = split(sorted(MALE_CHARACTERS), MALE_CHARACTERS_PER_LINE)
 
 
 class CharacterNotFound(discord.DiscordException):
@@ -47,18 +69,24 @@ class CharacterSession(Session):
         ))
 
         paginator.add_line(strings.Characters.available_custom_characters)
-        for name in sorted(CUSTOM_CHARACTERS):
-            paginator.add_line(self._format_name(name))
+        paginator.add_line("```")
+        for characters in CUSTOM_CHARACTERS_SPLIT:
+            paginator.add_line("".join(f"{self._format_name(char):<{CUSTOM_CHARACTER_SPACE}}" for char in characters))
+        paginator.add_line("```")
         paginator.close_page()
 
         paginator.add_line(strings.Characters.available_female_characters)
-        for name in sorted(FEMALE_CHARACTERS):
-            paginator.add_line(self._format_name(name))
+        paginator.add_line("```")
+        for characters in FEMALE_CHARACTERS_SPLIT:
+            paginator.add_line("".join(f"{self._format_name(char):<{FEMALE_CHARACTER_SPACE}}" for char in characters))
+        paginator.add_line("```")
         paginator.close_page()
 
         paginator.add_line(strings.Characters.available_male_characters)
-        for name in sorted(MALE_CHARACTERS):
-            paginator.add_line(self._format_name(name))
+        paginator.add_line("```")
+        for characters in MALE_CHARACTERS_SPLIT:
+            paginator.add_line("".join(f"{self._format_name(char):<{MALE_CHARACTER_SPACE}}" for char in characters))
+        paginator.add_line("```")
 
         # Save organised pages to the session
         self.pages = paginator.pages
