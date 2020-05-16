@@ -170,6 +170,10 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     bolat: str
     yana: str
     abagai: str
+    alynneth: str
+    wythuin: str
+    anat: str
+    mesui: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
@@ -193,6 +197,22 @@ class MaleCharacters(metaclass=_YAMLStringsGetter):
     achaku: str
     kinteg: str
     mehir: str
+    muinser: str
+    raonul: str
+    pryndor: str
+    luichan: str
+    aeron: str
+    aradwyr: str
+    branoc: str
+    fenagan: str
+    siaramus: str
+    carfyd: str
+    fiarad: str
+    monchug: str
+    bagai: str
+    tulag: str
+    khada: str
+    suran: str
 
 
 class CustomCharacters(metaclass=_YAMLStringsGetter):
