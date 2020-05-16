@@ -166,25 +166,10 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     section = "character_cog"
     subsection = "female_characters"
     rhagaea: str
-    ira: str
-    elys: str
-    unqid: str
+    alijin: str
+    bolat: str
+    yana: str
     abagai: str
-    alynneth: str
-    chalia: str
-    liena: str
-    anidha: str
-    debana: str
-    helea: str
-    phaea: str
-    sora: str
-    phenoria: str
-    manan: str
-    ruma: str
-    arwa: str
-    svana: str
-    erta: str
-    godun: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
@@ -193,62 +178,21 @@ class MaleCharacters(metaclass=_YAMLStringsGetter):
     """
     section = "character_cog"
     subsection = "male_characters"
-    monchug: str
-    ascyron: str
-    manteos: str
-    chason: str
-    andros: str
-    encurion: str
-    arcor: str
-    tasynor: str
-    pharon: str
-    temion: str
-    zeno: str
-    tulag: str
-    oragur: str
-    anat: str
-    mesui: str
-    alijin: str
-    bolat: str
+    chaghan: str
+    esur: str
+    nayantai: str
+    temun: str
     bortu: str
-    chagan: str
-    yana: str
+    oragur: str
+    hurunag: str
+    akrum: str
+    ilatar: str
     kanujan: str
-    abalytos: str
-    sichanis: str
-    asela: str
-    ingalther: str
-    elbet: str
-    wythuin: str
-    qahin: str
-    silvind: str
-    unthery: str
-    calatild: str
-    thomund: str
-    lasand: str
-    maraa: str
-    adram: str
-    addas: str
-    obron: str
-    jinda: str
-    lysica: str
-    crotor: str
-    suruq: str
-    ghuzid: str
-    thamza: str
-    caladog: str
-    aradwyr: str
-    melidir: str
-    alcaea: str
-    nywin: str
-    ergeon: str
-    carfyd: str
-    pryndor: str
-    branoc: str
-    siaramus: str
-    aeron: str
-    culharn: str
-    fiarad: str
+    taslur: str
+    ulman: str
+    achaku: str
+    kinteg: str
+    mehir: str
 
 
 class CustomCharacters(metaclass=_YAMLStringsGetter):
@@ -268,3 +212,9 @@ class CustomCharacters(metaclass=_YAMLStringsGetter):
     joffrey_baratheon: str
     tormund_giantsbane: str
     hodor: str
+    looter_hero: str
+    sea_raiders_hero: str
+    mountain_bandits_hero: str
+    forest_bandits_hero: str
+    desert_bandits_hero: str
+    steppe_bandits_hero: str
