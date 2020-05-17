@@ -5,8 +5,9 @@ import typing
 import discord
 from discord.ext import commands
 from .logger import Log
-from .utils import MemberApplication
+from .utils import MemberApplication, MessageEmbed
 from .constants import COMMANDS_ORDER
+from . import strings
 
 
 class Bot(commands.Bot):
@@ -77,3 +78,46 @@ class Bot(commands.Bot):
         """
         Log.info(f"Logged on as {self.user}")
         self._discover_channels()
+
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel: typing.Union[discord.VoiceChannel, discord.TextChannel]):
+        """
+        Listener used to keep the channels dictionary up to date and avoid name clashes.
+        """
+        if channel.name in self._channels:
+            Log.error(f"Attempted to create an already existing channel - name clash detected for {channel}")
+            await self.channels["dof-general"].send(embed=MessageEmbed(
+                strings.General.failed_create_channel.format(channel), negative=True))
+            await channel.delete()
+        else:
+            Log.info(f"Channel {channel} created")
+            self._channels[channel.name] = channel
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel: typing.Union[discord.VoiceChannel, discord.TextChannel]):
+        """
+        Listener used to keep the channels dictionary up to date.
+        """
+        Log.info(f"Channel {channel} deleted")
+        del self._channels[channel.name]
+
+    @commands.Cog.listener()
+    async def on_guild_channel_update(self, before: typing.Union[discord.VoiceChannel, discord.TextChannel],
+                                      after: typing.Union[discord.VoiceChannel, discord.TextChannel]):
+        """
+        Listener used to keep the channels dictionary up to date and avoid name clashes.
+        """
+        if after.name == before.name:
+            Log.info(f"Channel {before} updated")
+            self._channels[before.name] = after
+        else:
+            if after.name in self._channels:
+                Log.error(f"Attempted to rename {before} channel to {after} - {after} already exists")
+                await self.channels["dof-general"].send(embed=MessageEmbed(
+                    strings.General.failed_rename_channel.format(before, after), negative=True))
+                await after.edit(name=before.name)
+                self._channels[before.name] = after
+            else:
+                Log.info(f"Channel {before} updated to {after}")
+                self._channels[after.name] = after
+                del self._channels[before.name]
