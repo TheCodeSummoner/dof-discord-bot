@@ -62,7 +62,7 @@ class _YAMLStringsGetter(type):
 
 class General(metaclass=_YAMLStringsGetter):
     """
-    Strings related to the member application process (and the application cog).
+    Strings related to the most general, discord-related features (e.g. handling channel changes).
     """
     section = "general"
     failed_create_channel: str
