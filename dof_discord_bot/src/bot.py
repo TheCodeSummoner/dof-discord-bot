@@ -112,7 +112,7 @@ class Bot(commands.Bot):
             self._channels[before.name] = after
         else:
             if after.name in self._channels:
-                Log.error(f"Attempted to rename {before.name} channel to {after.name} - {after.name} already exists")
+                Log.error(f"Attempted to rename {before} channel to {after} - {after} already exists")
                 await self.channels["dof-general"].send(embed=MessageEmbed(
                     strings.General.failed_rename_channel.format(before, after), negative=True))
                 await after.edit(name=before.name)
