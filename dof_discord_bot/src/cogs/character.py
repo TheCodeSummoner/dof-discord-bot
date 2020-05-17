@@ -125,7 +125,7 @@ class CharacterCog(commands.Cog):
             # Make sure commands such as "!character Rhagaea" or "!character Stannis Baratheon" work
             name_formatted = "_".join(part.lower() for part in name) if len(name) > 1 else name[0].lower()
             name = " ".join(part for part in name) if len(name) > 1 else name[0]
-            Log.debug(f"Retrieving {name_formatted} preset for {member.display_name}")
+            Log.debug(f"Retrieving \"{name_formatted}\" character preset, requested by {member.display_name}")
 
             # Embed the character code in a nicely visible "box"
             if name_formatted in MALE_CHARACTERS:
