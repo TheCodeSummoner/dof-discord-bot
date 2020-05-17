@@ -192,6 +192,35 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     calatild: str
     elthild: str
     philenora: str
+    panalea: str
+    ira: str
+    helea: str
+    debana: str
+    mina: str
+    phaea: str
+    sora: str
+    chalia: str
+    zoana: str
+    jathea: str
+    martira: str
+    rhagaea: str
+    lysica: str
+    melkea: str
+    vendelia: str
+    phenoria: str
+    zerosica: str
+    varra: str
+    anidha: str
+    arwa: str
+    manan: str
+    ruma: str
+    maraa: str
+    jinda: str
+    svana: str
+    idrun: str
+    erta: str
+    siga: str
+    asta: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
@@ -259,6 +288,108 @@ class MaleCharacters(metaclass=_YAMLStringsGetter):
     alary: str
     unthery: str
     aldric: str
+    derthert: str
+    qahin: str
+    hashan: str
+    ukhai: str
+    karith: str
+    talas: str
+    awdhan: str
+    ghuzid: str
+    suruq: str
+    iyalas: str
+    nuqar: str
+    thamza: str
+    dhiyul: str
+    addas: str
+    usair: str
+    haqan: str
+    tais: str
+    adram: str
+    tariq: str
+    lashonek: str
+    galden: str
+    alvar: str
+    unqid: str
+    tovir: str
+    svedorn: str
+    fafen: str
+    vashorki: str
+    ratagost: str
+    yorig: str
+    vyldur: str
+    sven: str
+    vidar: str
+    isvan: str
+    lek: str
+    simir: str
+    mimir: str
+    urik: str
+    godun: str
+    raganvad: str
+    olek: str
+    sechanis: str
+    abalytos: str
+    tharos: str
+    niphon: str
+    ascyron: str
+    oros: str
+    honoratus: str
+    zeno: str
+    pharon: str
+    maximin: str
+    crotor: str
+    apys: str
+    phadon: str
+    garios: str
+    penton: str
+    manteos: str
+    lucon: str
+    urkhun: str
+    solun: str
+    kuyug: str
+    undul: str
+    nimr: str
+    olek_the_old: str
+    baranor: str
+    serandon: str
+    seranor: str
+    sejaron: str
+    turiados: str
+    joron: str
+    sichanis: str
+    vipon: str
+    ovagos: str
+    altenos: str
+    saratis: str
+    achios: str
+    tynops: str
+    desporion: str
+    tasynor: str
+    miron: str
+    lantanor: str
+    olypos: str
+    gyphor: str
+    nicasor: str
+    milos: str
+    encurion: str
+    chason: str
+    nemos: str
+    ulbos: str
+    obron: str
+    belithor: str
+    arcor: str
+    arion: str
+    sanion: str
+    eutropius: str
+    temion: str
+    meritor: str
+    patyr: str
+    thephilos: str
+    eronyx: str
+    jastion: str
+    tadeos: str
+    andros: str
 
 
 class CustomCharacters(metaclass=_YAMLStringsGetter):

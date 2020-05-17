@@ -60,10 +60,10 @@ DONT_CAPITALISE = {"of", "the", "by"}
 
 # Declare how many characters per line should be displayed in the !character command
 CUSTOM_CHARACTERS_PER_LINE = 2
-FEMALE_CHARACTERS_PER_LINE = 3
-MALE_CHARACTERS_PER_LINE = 3
+FEMALE_CHARACTERS_PER_LINE = 4
+MALE_CHARACTERS_PER_LINE = 4
 
 # Declare how much space a character should take in the !character command
 CUSTOM_CHARACTER_SPACE = 30
-FEMALE_CHARACTER_SPACE = 20
-MALE_CHARACTER_SPACE = 20
+FEMALE_CHARACTER_SPACE = 12
+MALE_CHARACTER_SPACE = 12

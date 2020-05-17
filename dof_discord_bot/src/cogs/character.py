@@ -55,7 +55,7 @@ class CharacterSession(Session):
         """
         Builds predefined pages and puts them into the paginator.
         """
-        paginator = LinePaginator(prefix="", suffix="")
+        paginator = LinePaginator(prefix="", suffix="", max_size=4096)
 
         # Add the introduction, then each section will have a separate header and list of characters
         paginator.add_page(Page(
