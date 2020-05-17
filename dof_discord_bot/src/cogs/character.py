@@ -118,10 +118,14 @@ class CharacterCog(commands.Cog):
            1. `!character` -> explains how to get a character code and which names are available
            2. `!character <name>` -> returns the specific character code using the input name
         """
+        member = ctx.author
+        Log.debug(f"Detected !character command used by {member.display_name}")
+
         if name:
             # Make sure commands such as "!character Rhagaea" or "!character Stannis Baratheon" work
             name_formatted = "_".join(part.lower() for part in name) if len(name) > 1 else name[0].lower()
             name = " ".join(part for part in name) if len(name) > 1 else name[0]
+            Log.debug(f"Retrieving {name_formatted} preset for {member.display_name}")
 
             # Embed the character code in a nicely visible "box"
             if name_formatted in MALE_CHARACTERS:
