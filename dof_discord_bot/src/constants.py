@@ -55,5 +55,15 @@ BANNERLORD_CHARACTER_ICON = "https://cdn.discordapp.com/emojis/70585827800514560
 # Declare the maximum number of the lines for the !help command
 MAX_HELP_LINES = 8
 
-# Declare the maximum number of the lines for the !character command
-MAX_CHARACTER_LINES = 10
+# Declare the constant to avoid capitalisation of some words in !character command
+DONT_CAPITALISE = {"of", "the", "by"}
+
+# Declare how many characters per line should be displayed in the !character command
+CUSTOM_CHARACTERS_PER_LINE = 2
+FEMALE_CHARACTERS_PER_LINE = 4
+MALE_CHARACTERS_PER_LINE = 4
+
+# Declare how much space a character should take in the !character command
+CUSTOM_CHARACTER_SPACE = 30
+FEMALE_CHARACTER_SPACE = 12
+MALE_CHARACTER_SPACE = 12
