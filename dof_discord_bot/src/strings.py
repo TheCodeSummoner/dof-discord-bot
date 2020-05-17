@@ -183,6 +183,15 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     wythuin: str
     anat: str
     mesui: str
+    alcaea: str
+    nywin: str
+    asela: str
+    silvind: str
+    liena: str
+    elys: str
+    calatild: str
+    elthild: str
+    philenora: str
 
 
 class MaleCharacters(metaclass=_YAMLStringsGetter):
@@ -222,6 +231,34 @@ class MaleCharacters(metaclass=_YAMLStringsGetter):
     tulag: str
     khada: str
     suran: str
+    bestein: str
+    culharn: str
+    sein: str
+    melidir: str
+    ergeon: str
+    caladog: str
+    ecarand: str
+    vartin: str
+    peric: str
+    lucand: str
+    hecard: str
+    belgir: str
+    servic: str
+    ospir: str
+    varmund: str
+    morcan: str
+    elbet: str
+    ingalther: str
+    erdurand: str
+    morcon: str
+    morcon: str
+    romund: str
+    lasand: str
+    thomund: str
+    furnhard: str
+    alary: str
+    unthery: str
+    aldric: str
 
 
 class CustomCharacters(metaclass=_YAMLStringsGetter):

@@ -87,6 +87,8 @@ resource about Python discord API.
 
 Thanks to this [Nexus mod][7] for providing free to use GoT Bannerlord character presets.
 
+Thanks to Rawex for helping out with the characters for `!character` command.
+
 [1]: https://discord.com/invite/BRRfqqZ
 [2]: https://dofesports.wixsite.com/defenders-of-faith
 [3]: https://forums.taleworlds.com/index.php?threads/dof-defenders-of-faith-international-clan-decade-of-faith-we-are-recruiting.417098/
