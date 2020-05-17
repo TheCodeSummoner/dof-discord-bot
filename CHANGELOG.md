@@ -7,6 +7,7 @@
 - Adjusted some docstrings
 - Fixed session parent class to support cases when there are no pages to display
 - Added channel listeners to handle channel updates properly
+- Expanded the `!character` command as well as added more character presets
 
 ## Version 1.3.0
 - Added commands ordering in the help message
