@@ -64,6 +64,15 @@ class _YAMLStringsGetter(type):
             yield name, getattr(cls, name)
 
 
+class General(metaclass=_YAMLStringsGetter):
+    """
+    Strings related to the most general, discord-related features (e.g. handling channel changes).
+    """
+    section = "general"
+    failed_create_channel: str
+    failed_rename_channel: str
+
+
 class Application(metaclass=_YAMLStringsGetter):
     """
     Strings related to the member application process (and the application cog).
