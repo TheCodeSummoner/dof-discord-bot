@@ -25,6 +25,7 @@ class Bot(commands.Bot):
         self._channels = dict()
         self._load_extensions()
         self._verify_commands_order()
+        self._channels_being_updated = set()
 
     def _load_extensions(self):
         """
@@ -52,7 +53,7 @@ class Bot(commands.Bot):
                 COMMANDS_ORDER.append(command)
 
     @property
-    def channels(self) -> typing.Dict[str, discord.TextChannel]:
+    def channels(self) -> typing.Dict[str, typing.Union[discord.TextChannel, discord.VoiceChannel]]:
         """
         Getter to retrieve a mapping of channel name to channel instance.
         """
@@ -65,12 +66,22 @@ class Bot(commands.Bot):
         """
         return self._applications
 
+    @property
+    def guild(self) -> discord.Guild:
+        """
+        Getter to retrieve DoF Discord server.
+        """
+        return self.guilds[0]
+
     def _discover_channels(self):
         """
         Helper function used to discover all channels and store them in a dict.
         """
         for channel in self.get_all_channels():
-            self._channels[channel.name] = channel
+
+            # Add channels directly - no need to add the lists of text and voice channels
+            if channel.name not in {"Text Channels", "Voice Channels"}:
+                self._channels[channel.name] = channel
 
     async def on_ready(self):
         """
@@ -88,6 +99,7 @@ class Bot(commands.Bot):
             Log.error(f"Attempted to create an already existing channel - name clash detected for {channel}")
             await self.channels["dof-general"].send(embed=MessageEmbed(
                 strings.General.failed_create_channel.format(channel), negative=True))
+            self._channels_being_updated.add(channel)
             await channel.delete()
         else:
             Log.info(f"Channel {channel} created")
@@ -99,7 +111,12 @@ class Bot(commands.Bot):
         Listener used to keep the channels dictionary up to date.
         """
         Log.info(f"Channel {channel} deleted")
-        del self._channels[channel.name]
+
+        # Make sure to only delete the channels that aren't part of reverting the creation process
+        if channel not in self._channels_being_updated:
+            del self._channels[channel.name]
+        else:
+            self._channels_being_updated.remove(channel)
 
     @commands.Cog.listener()
     async def on_guild_channel_update(self, before: typing.Union[discord.VoiceChannel, discord.TextChannel],
@@ -107,17 +124,26 @@ class Bot(commands.Bot):
         """
         Listener used to keep the channels dictionary up to date and avoid name clashes.
         """
+        # Avoid handling channel updates started by this function
+        if after in self._channels_being_updated:
+            self._channels_being_updated.remove(after)
+            return
+
+        # Exit early if the name hasn't been changed - safe to update
         if after.name == before.name:
             Log.info(f"Channel {before} updated")
             self._channels[before.name] = after
+            return
+
+        # Revert any changes that create name clashes by editing the channel name to what it was
+        if after.name in self._channels:
+            Log.error(f"Attempted to rename {before} channel to {after} - {after} already exists")
+            await self.channels["dof-general"].send(embed=MessageEmbed(
+                strings.General.failed_rename_channel.format(before, after), negative=True))
+            self._channels_being_updated.add(after)
+            await after.edit(name=before.name, reason=strings.General.update_reason)
+            self._channels[before.name] = after
         else:
-            if after.name in self._channels:
-                Log.error(f"Attempted to rename {before} channel to {after} - {after} already exists")
-                await self.channels["dof-general"].send(embed=MessageEmbed(
-                    strings.General.failed_rename_channel.format(before, after), negative=True))
-                await after.edit(name=before.name)
-                self._channels[before.name] = after
-            else:
-                Log.info(f"Channel {before} updated to {after}")
-                self._channels[after.name] = after
-                del self._channels[before.name]
+            Log.info(f"Channel {before} updated to {after}")
+            self._channels[after.name] = after
+            del self._channels[before.name]

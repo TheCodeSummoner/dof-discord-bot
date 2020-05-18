@@ -2,6 +2,7 @@ strings:
   general:
     failed_create_channel: "Can't create channel \"{}\" - already exists"
     failed_rename_channel: "Can't rename \"{}\" to \"{}\" - already exists"
+    update_reason: "Automated update to avoid name clashes"
   apply_cog:
     new_application: "Thank you for being interested in joining DoF, {} :)\nPlease answer each question to submit an application (don't worry, you will have a chance to review your application before submission).\nYou can cancel your application at any time by typing `!cancel`.\nYou can check your application progress at any time by typing `!apply`."
     completed: "You have completed the application - here is what you've written:\n{}\nWould you like to submit this application? Type `!submit` to submit it, or `!cancel` to cancel the application."

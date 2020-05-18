@@ -71,6 +71,7 @@ class General(metaclass=_YAMLStringsGetter):
     section = "general"
     failed_create_channel: str
     failed_rename_channel: str
+    update_reason: str
 
 
 class Application(metaclass=_YAMLStringsGetter):
