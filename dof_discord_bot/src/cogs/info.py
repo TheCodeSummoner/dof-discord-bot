@@ -108,7 +108,7 @@ class InformationCog(commands.Cog):
         member: discord.Member = ctx.author
 
         Log.debug(f"Detected !version command used by {member.display_name}")
-        Log.debug(f"{member.display_name}'s roles are {(role.name for role in member.roles)}")
+        Log.debug(f"{member.display_name}'s roles are {tuple(role.name for role in member.roles)}")
         await ctx.send(embed=MessageEmbed(f"{__title__} v{__version__}"))
 
     @version.error

@@ -24,7 +24,7 @@ class LogError(Exception):
 
 def _configure(config_file_path: str = _CONFIG_FILE_PATH, log_directory: str = _LOG_DIR):
     """
-    Helper function to configure the built-in logging module and retrieve a logger object.
+    Helper function to configure the built-in logging module.
 
     Uses a JSON configuration file.
 
