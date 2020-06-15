@@ -10,6 +10,7 @@ import random as _random
 import string as _string
 import typing as _typing
 import discord as _discord
+import pytest as _pytest
 from discord.ext import commands as _commands
 
 # Make sure dof_discord_bot package can be found
@@ -17,7 +18,6 @@ _sys.path.append(_os.path.join(_os.path.dirname(__file__), "..", ".."))
 from dof_discord_bot.src.bot import Bot as _Bot  # noqa
 from dof_discord_bot.src.constants import COMMAND_PREFIX as _PREFIX, TOKEN as _DOF_BOT_TOKEN  # noqa
 from dof_discord_bot.src.logger import Log as _Log  # noqa
-
 
 # Declare some useful directories
 _TEST_CHANNEL_NAME = "test-" + "".join(_random.choice(_string.ascii_lowercase) for _ in range(16))
@@ -32,7 +32,7 @@ testing_bot = _commands.Bot("")
 # Find the testing bot token in the environment
 _TESTING_BOT_TOKEN = _os.getenv("DOF_TESTING_TOKEN", "")
 if not _TESTING_BOT_TOKEN:
-    print(f"Missing token - please declare \"DOF_TESTING_TOKEN\" environment variable", file=_sys.stderr)
+    _pytest.exit(f"Missing token - please declare \"DOF_TESTING_TOKEN\" environment variable")
 
 
 async def process_commands_by_bot(message):
@@ -81,7 +81,7 @@ def get_test_channel() -> _discord.TextChannel:
     return testing_bot.get_channel(dof_bot.channels[_TEST_CHANNEL_NAME].id)
 
 
-def _run_bots(timeout: int = 60, delay: int = 3):
+def _run_bots(timeout: int = 15, delay: int = 3):
     """
     Run both bots simultaneously and wait for them to connect.
 
@@ -121,7 +121,7 @@ def _run_bots(timeout: int = 60, delay: int = 3):
     _Log.info("Both bots started and running")
 
 
-def _stop_bots(timeout: int = 60, delay: int = 3):
+def _stop_bots(timeout: int = 15, delay: int = 3):
     """
     Send the stop
     """
@@ -156,5 +156,3 @@ def _remove_testing_channel():
     Function used to remove the channel used for integration testing.
     """
     call(dof_bot.channels[_TEST_CHANNEL_NAME].delete())
-
-
