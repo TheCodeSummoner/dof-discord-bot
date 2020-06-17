@@ -11,6 +11,7 @@ import string as _string
 import typing as _typing
 import discord as _discord
 import pytest as _pytest
+import inspect as _inspect
 from discord.ext import commands as _commands
 
 # Make sure dof_discord_bot package can be found
@@ -49,6 +50,49 @@ async def process_commands_by_bot(message):
 dof_bot.process_commands = process_commands_by_bot
 
 
+def threaded_async(func: _typing.Callable):
+    """
+    Helper decorator used to resolve future in a thread-safe manner.
+    """
+    future: _typing.Coroutine = func()
+
+    def _call():
+        """
+        Inner function used to resolve the future correctly.
+        """
+        _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
+
+    return _call
+
+
+async def wait_for(func: _typing.Callable, on_timeout: _typing.Callable, timeout: int = 10, delay: int = 1):
+    """
+    Helper function used to wait for a function to complete or timeout if it takes to long.
+
+    `func` is the function which will be called every loop cycle (waiting time between the cycles is defined by the
+    `delay` argument), unless it takes more than `timeout` seconds, in which case the `on_timeout` function will be
+    called and the loop will end.
+
+    Note that the code can handle both synchronous and asynchronous `func` and `on_timeout` functions.
+    """
+    current_time = _time.time()
+    while True:
+        if _time.time() - current_time > timeout:
+            if _inspect.iscoroutinefunction(on_timeout):
+                await on_timeout()
+            else:
+                on_timeout()
+            break
+        else:
+            if _inspect.iscoroutinefunction(func):
+                if await func() is True:
+                    break
+            else:
+                if func() is True:
+                    break
+            await _asyncio.sleep(delay)
+
+
 def setup():
     """
     Global setup function.
@@ -67,21 +111,6 @@ def teardown():
     _remove_testing_channel()
     _stop_bots()
     _Log.info("Environment torn down")
-
-
-def threaded_async(func: _typing.Callable):
-    """
-    Helper decorator used to resolve future in a thread-safe manner.
-    """
-    future: _typing.Coroutine = func()
-
-    def _call():
-        """
-        Inner function used to resolve the future correctly.
-        """
-        _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
-
-    return _call
 
 
 def get_test_channel() -> _discord.TextChannel:
