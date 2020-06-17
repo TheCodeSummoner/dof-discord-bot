@@ -1,4 +1,9 @@
-# Version 1.4.0
+# Version 1.4.1
+- Added integration tests framework
+- Added a few basic tests
+- Fixed internal logging and docstrings
+
+## Version 1.4.0
 - Added version command
 - Added main `README.md`
 - Added meta-information to the package (populated from an external file)
