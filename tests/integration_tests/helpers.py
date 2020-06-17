@@ -67,7 +67,7 @@ def threaded_async(func: _typing.Callable):
 
 async def wait_for(func: _typing.Callable, on_timeout: _typing.Callable, timeout: int = 10, delay: int = 1):
     """
-    Helper function used to wait for a function to complete or timeout if it takes to long.
+    Helper function used to wait for a function to complete or timeout if it takes too long.
 
     `func` is the function which will be called every loop cycle (waiting time between the cycles is defined by the
     `delay` argument), unless it takes more than `timeout` seconds, in which case the `on_timeout` function will be
