@@ -1,5 +1,5 @@
 """
-Helper file containing setup/teardown relevant functions, also used to expose some common testing constructs.
+Helper file containing setup/teardown relevant functions, as well as some common testing constructs.
 """
 import os as _os
 import sys as _sys
