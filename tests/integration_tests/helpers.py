@@ -180,7 +180,7 @@ def _stop_bots(timeout: int = 3, delay: int = 3):
     _asyncio.run_coroutine_threadsafe(testing_bot.close(), testing_bot.loop).result()
 
     current_time = _time.time()
-    while not dof_bot.is_closed() and not testing_bot.is_closed():
+    while dof_bot.is_ready() or testing_bot.is_ready():
         if _time.time() - current_time > timeout:
             _Log.error("Timed out waiting for bots to close, manual cleanup may be needed")
             break
