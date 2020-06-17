@@ -41,3 +41,6 @@ def pytest_unconfigure(config: PyTestConfig):
     """
     helpers.teardown()
     Log.info("Pytest unconfiguration hook finished successfully")
+
+    # An explicit kill of current process to ensure clean exit in case of errors when stopping the code
+    os.kill(os.getpid(), 9)

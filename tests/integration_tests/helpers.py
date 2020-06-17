@@ -1,5 +1,5 @@
 """
-Helper file used to expose common constructs and setup/teardown relevant items on each run.
+Helper file containing setup/teardown relevant functions, also used to expose some common testing constructs.
 """
 import os as _os
 import sys as _sys
@@ -60,7 +60,7 @@ def threaded_async(func: _typing.Callable):
         """
         Inner function used to resolve the future correctly.
         """
-        _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
+        return _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
 
     return _call
 
@@ -73,23 +73,27 @@ async def wait_for(func: _typing.Callable, on_timeout: _typing.Callable, timeout
     `delay` argument), unless it takes more than `timeout` seconds, in which case the `on_timeout` function will be
     called and the loop will end.
 
+    To terminate the loop early (and avoid timeout), return a value within `func`. If evaluation of this value is True,
+    then that value will be returned. Similarly, result of `on_timeout` will be returned after `timeout` seconds.
+
     Note that the code can handle both synchronous and asynchronous `func` and `on_timeout` functions.
     """
     current_time = _time.time()
     while True:
         if _time.time() - current_time > timeout:
             if _inspect.iscoroutinefunction(on_timeout):
-                await on_timeout()
+                return await on_timeout()
             else:
-                on_timeout()
-            break
+                return on_timeout()
         else:
             if _inspect.iscoroutinefunction(func):
-                if await func() is True:
-                    break
+                result = await func()
+                if result:
+                    return result
             else:
-                if func() is True:
-                    break
+                result = func()
+                if result:
+                    return result
             await _asyncio.sleep(delay)
 
 
@@ -99,7 +103,9 @@ def setup():
     """
     _Log.info("Setting up testing environment")
     _run_bots()
-    _create_testing_channel()
+    if not _create_testing_channel():
+        _stop_bots()
+        _pytest.exit("Failed to create the test channel")
     _Log.info("Environment set up")
 
 
@@ -120,7 +126,7 @@ def get_test_channel() -> _discord.TextChannel:
     return testing_bot.get_channel(dof_bot.channels[_TEST_CHANNEL_NAME].id)
 
 
-def _run_bots(timeout: int = 30, delay: int = 3):
+def _run_bots(timeout: int = 15, delay: int = 3):
     """
     Run both bots simultaneously and wait for them to connect.
 
@@ -150,8 +156,7 @@ def _run_bots(timeout: int = 30, delay: int = 3):
     current_time = _time.time()
     while not dof_bot.is_ready() and not testing_bot.is_ready():
         if _time.time() - current_time > timeout:
-            _Log.error("Timed out waiting for bots to start")
-            return
+            _pytest.exit("Timed out waiting for bots to start")
 
         _Log.debug(f"Starting bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
         _Log.debug(f"Starting bots, testing-bot state - ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
@@ -160,7 +165,7 @@ def _run_bots(timeout: int = 30, delay: int = 3):
     _Log.info("Both bots started and running")
 
 
-def _stop_bots(timeout: int = 30, delay: int = 3):
+def _stop_bots(timeout: int = 3, delay: int = 3):
     """
     Stop both bots
 
@@ -176,8 +181,8 @@ def _stop_bots(timeout: int = 30, delay: int = 3):
     current_time = _time.time()
     while not dof_bot.is_closed() and not testing_bot.is_closed():
         if _time.time() - current_time > timeout:
-            _Log.error("Timed out waiting for bots to close")
-            return
+            _Log.error("Timed out waiting for bots to close, manual cleanup may be needed")
+            break
 
         _Log.debug(f"Stopping bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
         _Log.debug(f"Stopping bots, testing-bot state - ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
@@ -191,9 +196,21 @@ async def _create_testing_channel():
     """
     Function used to create a discord channel which will be used for integration testing
     """
+    def channel_to_get_detected():
+        """
+        DoF bot must detect the channel creation.
+        """
+        return _TEST_CHANNEL_NAME in dof_bot.channels
+
+    def or_fail_and_exit():
+        """
+        Can not continue testing at this point.
+        """
+        _Log.error("Timed out creating the test channel")
+
+    _Log.info("Creating the test channel")
     await dof_bot.guild.create_text_channel(_TEST_CHANNEL_NAME, reason="Created for development (testing) purposes.")
-    await _asyncio.sleep(1)
-    # TODO: Wait for the channel change to be detected by dof-bot
+    return await wait_for(channel_to_get_detected, or_fail_and_exit)
 
 
 @threaded_async
@@ -201,4 +218,5 @@ async def _remove_testing_channel():
     """
     Function used to remove the channel used for integration testing.
     """
+    _Log.info("Removing the test channel")
     await dof_bot.channels[_TEST_CHANNEL_NAME].delete()
