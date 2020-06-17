@@ -1,5 +1,11 @@
 # Dof discord bot
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/TheCodeSummoner/dof-discord-bot)
+![Coverage](https://img.shields.io/badge/coverage-TODO%25-red)
+![License](https://img.shields.io/github/license/TheCodeSummoner/dof-discord-bot?color=informational)
+![Issues](https://img.shields.io/github/issues/TheCodeSummoner/dof-discord-bot)
+![Discord](https://img.shields.io/discord/330641519931424778?label=discord&style=flat)
+
 Defenders of Faith's discord bot, as used in [here][1].
 
 Visit [our website][2] or this [Taleworlds thread][3] for more information about DoF.
