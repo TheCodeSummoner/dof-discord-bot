@@ -19,20 +19,22 @@ from dof_discord_bot.src.bot import Bot as _Bot  # noqa
 from dof_discord_bot.src.constants import COMMAND_PREFIX as _PREFIX, TOKEN as _DOF_BOT_TOKEN  # noqa
 from dof_discord_bot.src.logger import Log as _Log  # noqa
 
-# Declare some useful directories
-_TEST_CHANNEL_NAME = "test-" + "".join(_random.choice(_string.ascii_lowercase) for _ in range(16))
-TESTS_DIR = _os.path.join(_os.path.dirname(__file__), "..")
-INTEGRATION_TESTS_DIR = _os.path.join(TESTS_DIR, "integration_tests")
-LOG_DIR = _os.path.join(TESTS_DIR, "log")
-
-# Initialise the bot instances
-dof_bot = _Bot(_PREFIX)
-testing_bot = _commands.Bot("")
-
 # Find the testing bot token in the environment
 _TESTING_BOT_TOKEN = _os.getenv("DOF_TESTING_TOKEN", "")
 if not _TESTING_BOT_TOKEN:
     _pytest.exit(f"Missing token - please declare \"DOF_TESTING_TOKEN\" environment variable")
+
+# Declare some useful directories
+TESTS_DIR = _os.path.join(_os.path.dirname(__file__), "..")
+INTEGRATION_TESTS_DIR = _os.path.join(TESTS_DIR, "integration_tests")
+LOG_DIR = _os.path.join(TESTS_DIR, "log")
+
+# Generate the testing channel name
+_TEST_CHANNEL_NAME = "test-" + "".join(_random.choice(_string.ascii_lowercase) for _ in range(16))
+
+# Initialise the bot instances
+dof_bot = _Bot(_PREFIX)
+testing_bot = _commands.Bot("")
 
 
 async def process_commands_by_bot(message):
@@ -67,11 +69,19 @@ def teardown():
     _Log.info("Environment torn down")
 
 
-def call(future: _typing.Coroutine):
+def threaded_async(func: _typing.Callable):
     """
-    Helper function used to resolve future in a thread-safe manner.
+    Helper decorator used to resolve future in a thread-safe manner.
     """
-    _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
+    future: _typing.Coroutine = func()
+
+    def _call():
+        """
+        Inner function used to resolve the future correctly.
+        """
+        _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
+
+    return _call
 
 
 def get_test_channel() -> _discord.TextChannel:
@@ -81,7 +91,7 @@ def get_test_channel() -> _discord.TextChannel:
     return testing_bot.get_channel(dof_bot.channels[_TEST_CHANNEL_NAME].id)
 
 
-def _run_bots(timeout: int = 15, delay: int = 3):
+def _run_bots(timeout: int = 30, delay: int = 3):
     """
     Run both bots simultaneously and wait for them to connect.
 
@@ -121,9 +131,12 @@ def _run_bots(timeout: int = 15, delay: int = 3):
     _Log.info("Both bots started and running")
 
 
-def _stop_bots(timeout: int = 15, delay: int = 3):
+def _stop_bots(timeout: int = 30, delay: int = 3):
     """
-    Send the stop
+    Stop both bots
+
+    This function may timeout after `timeout` seconds if the bots don't stop, and will monitor the state of the
+    connections every `delay` seconds.
     """
     _Log.info("Waiting for bots to close")
 
@@ -144,15 +157,19 @@ def _stop_bots(timeout: int = 15, delay: int = 3):
     _Log.info("Both bots closed")
 
 
-def _create_testing_channel():
+@threaded_async
+async def _create_testing_channel():
     """
     Function used to create a discord channel which will be used for integration testing
     """
-    call(dof_bot.guild.create_text_channel(_TEST_CHANNEL_NAME, reason="Created for development (testing) purposes."))
+    await dof_bot.guild.create_text_channel(_TEST_CHANNEL_NAME, reason="Created for development (testing) purposes.")
+    await _asyncio.sleep(1)
+    # TODO: Wait for the channel change to be detected by dof-bot
 
 
-def _remove_testing_channel():
+@threaded_async
+async def _remove_testing_channel():
     """
     Function used to remove the channel used for integration testing.
     """
-    call(dof_bot.channels[_TEST_CHANNEL_NAME].delete())
+    await dof_bot.channels[_TEST_CHANNEL_NAME].delete()
