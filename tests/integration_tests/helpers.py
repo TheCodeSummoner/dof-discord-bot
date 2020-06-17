@@ -121,7 +121,7 @@ def teardown():
 
 def get_test_channel() -> _discord.TextChannel:
     """
-    Helper function to return the test channel
+    Helper function to return the test channel.
     """
     return testing_bot.get_channel(dof_bot.channels[_TEST_CHANNEL_NAME].id)
 
@@ -168,7 +168,7 @@ def _run_bots(timeout: int = 15, delay: int = 3):
 
 def _stop_bots(timeout: int = 3, delay: int = 3):
     """
-    Stop both bots
+    Stop both bots.
 
     This function may timeout after `timeout` seconds if the bots don't stop, and will monitor the state of the
     connections every `delay` seconds.
@@ -206,7 +206,7 @@ async def _create_testing_channel():
 
     def or_fail_and_exit():
         """
-        Can not continue testing at this point.
+        Testing without a dedicated test channel is impossible.
         """
         _Log.error("Timed out creating the test channel")
 
