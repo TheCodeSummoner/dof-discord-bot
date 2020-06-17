@@ -182,7 +182,7 @@ def _stop_bots(timeout: int = 3, delay: int = 3):
     current_time = _time.time()
     while dof_bot.is_ready() or testing_bot.is_ready():
         if _time.time() - current_time > timeout:
-            _Log.error("Timed out waiting for bots to close, manual cleanup may be needed")
+            _Log.error("Timed out waiting for bots to stop, manual cleanup may be needed")
             break
 
         _Log.debug(f"Stopping bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
@@ -190,7 +190,7 @@ def _stop_bots(timeout: int = 3, delay: int = 3):
                    f"ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
         _time.sleep(delay)
 
-    _Log.info("Both bots closed")
+    _Log.info("Both bots stopped")
 
 
 @threaded_async
