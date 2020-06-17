@@ -159,7 +159,8 @@ def _run_bots(timeout: int = 15, delay: int = 3):
             _pytest.exit("Timed out waiting for bots to start")
 
         _Log.debug(f"Starting bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
-        _Log.debug(f"Starting bots, testing-bot state - ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
+        _Log.debug(f"Starting bots, testing-bot state - "
+                   f"ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
         _time.sleep(delay)
 
     _Log.info("Both bots started and running")
@@ -185,7 +186,8 @@ def _stop_bots(timeout: int = 3, delay: int = 3):
             break
 
         _Log.debug(f"Stopping bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
-        _Log.debug(f"Stopping bots, testing-bot state - ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
+        _Log.debug(f"Stopping bots, testing-bot state - "
+                   f"ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
         _time.sleep(delay)
 
     _Log.info("Both bots closed")
