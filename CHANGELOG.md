@@ -2,6 +2,7 @@
 - Added integration tests framework
 - Added a few basic tests
 - Fixed internal logging and docstrings
+- Added Travis and GitHub shields
 
 ## Version 1.4.0
 - Added version command
