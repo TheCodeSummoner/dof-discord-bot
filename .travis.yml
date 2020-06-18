@@ -10,4 +10,4 @@ install:
   - python -m pip install .
 
 script:
-  - pytest --cov=dof_discord_bot
+  - pytest
