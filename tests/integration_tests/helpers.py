@@ -15,7 +15,7 @@ import inspect as _inspect
 from discord.ext import commands as _commands
 
 # Make sure dof_discord_bot package can be found
-_sys.path.append(_os.path.join(_os.path.dirname(__file__), "..", ".."))
+_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", ".."))
 from dof_discord_bot.src.bot import Bot as _Bot  # noqa
 from dof_discord_bot.src.constants import COMMAND_PREFIX as _PREFIX, TOKEN as _DOF_BOT_TOKEN  # noqa
 from dof_discord_bot.src.logger import Log as _Log  # noqa
