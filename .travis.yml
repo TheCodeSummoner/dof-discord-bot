@@ -10,5 +10,4 @@ install:
   - python -m pip install .
 
 script:
-  - python -c "import sys; print('\n'.join(sys.path))"
   - pytest --cov=dof_discord_bot
