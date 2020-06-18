@@ -166,7 +166,7 @@ def _run_bots(timeout: int = 15, delay: int = 3):
     _Log.info("Both bots started and running")
 
 
-def _stop_bots(timeout: int = 3, delay: int = 3):
+def _stop_bots(timeout: int = 15, delay: int = 3):
     """
     Stop both bots.
 
