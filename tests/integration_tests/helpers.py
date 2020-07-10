@@ -20,15 +20,21 @@ from dof_discord_bot.src.bot import Bot as _Bot  # noqa
 from dof_discord_bot.src.constants import COMMAND_PREFIX as _PREFIX, TOKEN as _DOF_BOT_TOKEN  # noqa
 from dof_discord_bot.src.logger import Log as _Log  # noqa
 
-# Find the testing bot token in the environment
-_TESTING_BOT_TOKEN = _os.getenv("DOF_TESTING_TOKEN", "")
-if not _TESTING_BOT_TOKEN:
-    _pytest.exit(f"Missing token - please declare \"DOF_TESTING_TOKEN\" environment variable")
-
 # Declare some useful directories
 TESTS_DIR = _os.path.join(_os.path.dirname(__file__), "..")
 INTEGRATION_TESTS_DIR = _os.path.join(TESTS_DIR, "integration_tests")
 LOG_DIR = _os.path.join(TESTS_DIR, "log")
+RES_DIR = _os.path.join(TESTS_DIR, "..", "dof_discord_bot", "res")
+
+# Find the testing bot token in the environment
+_TESTING_BOT_TOKEN = _os.getenv("DOF_TESTING_TOKEN", "")
+if not _TESTING_BOT_TOKEN:
+    if _os.path.exists(_os.path.join(RES_DIR, "token-testing")):
+        with open(_os.path.join(RES_DIR, "token-testing")) as f:
+            _TESTING_BOT_TOKEN = f.read().strip()
+    else:
+        _pytest.exit(f"Missing token - either declare \"DOF_TESTING_TOKEN\" environment variable or include the token "
+                     f"in the \"token-testing\" file at \"{_os.path.join(RES_DIR, 'token-testing')}\"")
 
 # Generate the testing channel name
 _TEST_CHANNEL_NAME = "test-" + "".join(_random.choice(_string.ascii_lowercase) for _ in range(16))

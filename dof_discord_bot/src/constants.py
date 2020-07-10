@@ -19,12 +19,12 @@ TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 # Retrieve the token - either it will be an environment variable, or will be in the text file
 TOKEN = _os.getenv("DOF_TOKEN", "")
 if not TOKEN:
-    if _os.path.exists(_os.path.join(RES_DIR, "token.txt")):
-        with open(_os.path.join(RES_DIR, "token.txt")) as f:
+    if _os.path.exists(_os.path.join(RES_DIR, "token")):
+        with open(_os.path.join(RES_DIR, "token")) as f:
             TOKEN = f.read().strip()
     else:
         print(f"Missing token - either declare \"DOF_TOKEN\" environment variable or include the token in the "
-              f"\"token.txt\" file at \"{_os.path.join(RES_DIR, 'token.txt')}\"", file=_sys.stderr)
+              f"\"token\" file at \"{_os.path.join(RES_DIR, 'token')}\"", file=_sys.stderr)
         exit(1)
 
 # Declare the command prefix - each command must have this prefix in front in order to be considered a command
