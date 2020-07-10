@@ -48,7 +48,8 @@ setuptools.setup(
     ],
     install_requires=[
         "discord",
-        "pyyaml"
+        "pyyaml",
+        "python-dotenv"
     ],
     python_requires=">=3.6",
 )
