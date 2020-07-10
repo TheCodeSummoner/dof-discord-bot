@@ -6,7 +6,8 @@ On top of the standard requirements for running `dof-discord-bot`, you must also
 
 1. Install [`pytest`][1] and the [`pytest-cov`][2] plugin for code coverage.
 2. Set `DOF_TESTING_TOKEN` environment variable, which will be used to load a secondary bot used to simulate a real user
-and perform integration tests.
+and perform integration tests. You can also provide a `token-testing` file with the token - it should be located in the
+package's resources folder, similarly to where the actual bot's token can be placed.
 
 ### Usage
 
