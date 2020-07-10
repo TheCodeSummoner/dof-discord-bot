@@ -3,6 +3,7 @@ Constants and other static values.
 """
 import os as _os
 import sys as _sys
+import dotenv as _dotenv
 
 # Declare path to the root folder (dof-discord-bot)
 ROOT_DIR = _os.path.normpath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
@@ -16,15 +17,18 @@ LOG_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "log")
 RES_DIR = _os.path.join(DOF_DISCORD_BOT_DIR, "res")
 TESTS_DIR = _os.path.join(ROOT_DIR, "tests")
 
+# Load environment variables
+_dotenv.load_dotenv(_os.path.join(DOF_DISCORD_BOT_DIR, ".env"))
+
 # Retrieve the token - either it will be an environment variable, or will be in the text file
 TOKEN = _os.getenv("DOF_TOKEN", "")
 if not TOKEN:
-    if _os.path.exists(_os.path.join(RES_DIR, "token.txt")):
-        with open(_os.path.join(RES_DIR, "token.txt")) as f:
+    if _os.path.exists(_os.path.join(RES_DIR, "token")):
+        with open(_os.path.join(RES_DIR, "token")) as f:
             TOKEN = f.read().strip()
     else:
         print(f"Missing token - either declare \"DOF_TOKEN\" environment variable or include the token in the "
-              f"\"token.txt\" file at \"{_os.path.join(RES_DIR, 'token.txt')}\"", file=_sys.stderr)
+              f"\"token\" file at \"{_os.path.join(RES_DIR, 'token')}\"", file=_sys.stderr)
         exit(1)
 
 # Declare the command prefix - each command must have this prefix in front in order to be considered a command
