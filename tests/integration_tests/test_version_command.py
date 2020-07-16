@@ -38,16 +38,21 @@ async def test_returns_current_version():
 @helpers.threaded_async
 async def test_returns_error_on_missing_role():
     """
-    TODO: Tom to add documentation
-
-    TODO: Tests' README.md should mention that before running the code you should make sure dof tester bot has the defender role
+    This function makes sure that members who do not have the "Defender" role can't use the !version command.
+    The function removes the "Defender" role from DofDevBot, then it makes the bot use the command !version as a user.
+    The bot shouldn't be able to have the version as result for his command due to his role not being the one required.
+    At the end the "Defender" role is added back to DofDevBot.
     """
     async def error_to_appear():
         """
         Calling the command without a Defender role should result in the error message being printed.
         """
-        # TODO: Write code ;)
-        pass
+        message = helpers.get_test_channel().last_message
+        if message and message.author.name == "DofDevBotApplication" :
+            assert message.embeds[0].title == "Role 'Defender' is required to run this command."
+            return True
+        Log.debug("Waiting for the response to the !version command to appear")
+
 
     def or_fail():
         """
@@ -64,7 +69,7 @@ async def test_returns_error_on_missing_role():
                 return member
 
     tester_bot_member = get_tester_bot_member()
-    defender_role = discord.utils.get(helpers.dof_bot.guild.roles, name="test")  # TODO: Change this to use the "Defneder" role in the final code
+    defender_role = discord.utils.get(helpers.dof_bot.guild.roles, name="Defender")
     await tester_bot_member.remove_roles(defender_role)
     await helpers.get_test_channel().send("!version")
     await helpers.wait_for(error_to_appear, or_fail)

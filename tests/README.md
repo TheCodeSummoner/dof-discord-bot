@@ -15,6 +15,7 @@ You should run the code by calling `pytest --cov=dof_discord_bot` in the root fo
 then automatically configure everything and run all detected tests. In addition, a basic coverage report should be
 generated (please refer to `pytest-cov` docs for getting more verbose information). Keep in mind that all logs will be
 redirected to the tests-specific log folder for optional inspection.
+Before running the code, make sure that dof tester bot has the "Defender" role.
 
 Note that, currently, even if one bot fails to stop, the overall test run will be marked as a success.
 
