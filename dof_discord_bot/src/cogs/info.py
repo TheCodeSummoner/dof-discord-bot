@@ -6,17 +6,17 @@ from dof_discord_bot import __version__, __title__
 from discord.ext import commands
 from .. import strings
 from ..bot import Bot
-from ..logger import Log
-from ..utils import Session, Page, LinePaginator, MessageEmbed
+from ..utils import Session, Page, LinePaginator, MessageEmbed, Log
 
 
 class InfoSession(Session):
     """
-    Info Session handling properly displaying info command contents in an interactive, per-user session.
+    Properly display info command contents in an interactive, per-user session.
     """
+
     async def build_pages(self):
         """
-        Builds predefined pages and puts them into the paginator.
+        Build predefined pages and put them into the paginator.
         """
         paginator = LinePaginator(prefix="", suffix="")
 
@@ -74,7 +74,7 @@ class InfoSession(Session):
 
 class InformationCog(commands.Cog):
     """
-    Information Cog is a discord extension providing a set of DoF-related informational commands and listeners.
+    Provide a set of DoF-related informational commands and listeners.
     """
 
     def __init__(self, bot: Bot):
@@ -84,7 +84,7 @@ class InformationCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """
-        Listener providing a way to listen to a new member joining DoF discord, to welcome them properly.
+        Event listener providing a way to listen to a new member joining DoF discord, to welcome them properly.
         """
         Log.info(f"{member.display_name} joined DoF discord for the first time")
         await self.bot.channels["chat"].send(strings.Info.welcome.format(member.mention))
@@ -92,7 +92,7 @@ class InformationCog(commands.Cog):
     @commands.command()
     async def info(self, ctx: commands.Context):
         """
-        Info command is used to display bot and DoF-related information, as well as a basic bot tutorial.
+        Display bot and DoF-related information, as well as a basic bot tutorial.
         """
         member = ctx.author
 
@@ -103,7 +103,7 @@ class InformationCog(commands.Cog):
     @commands.has_role("Defender")
     async def version(self, ctx: commands.Context):
         """
-        Version command is a Defender-only command used to display the current version of the bot.
+        Display the current version of the bot.
         """
         member: discord.Member = ctx.author
 
@@ -114,7 +114,7 @@ class InformationCog(commands.Cog):
     @version.error
     async def version_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
-        Custom handler needed to handle the custom error - the user should be informed about an invalid character.
+        Error handler needed to handle the custom error - the user should be informed about an invalid character.
         """
         if isinstance(error, commands.MissingRole):
             Log.debug(f"Caught missing role error - {error}")
@@ -125,6 +125,6 @@ class InformationCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     """
-    Standard setup, loads the cog.
+    Load the cog.
     """
     bot.add_cog(InformationCog(bot))

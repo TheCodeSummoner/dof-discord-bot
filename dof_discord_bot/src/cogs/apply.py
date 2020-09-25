@@ -5,8 +5,7 @@ import discord
 from discord.ext import commands
 from .. import strings
 from ..bot import Bot
-from ..logger import Log
-from ..utils import MemberApplication
+from ..utils import MemberApplication, Log
 
 
 class ApplicationCog(commands.Cog):
@@ -29,7 +28,7 @@ class ApplicationCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """
-        Listener providing a way to listen to a conversation once an application was started.
+        Event listener providing a way to listen to a conversation once an application was started.
 
         The functionality is as follows:
 
@@ -63,7 +62,7 @@ class ApplicationCog(commands.Cog):
     @commands.command()
     async def apply(self, ctx: commands.Context):
         """
-        Apply command is used to start a new member application, or display progress of the current one.
+        Start a new member application, or display progress of the current one.
 
         Current steps are as follows:
 
@@ -97,7 +96,7 @@ class ApplicationCog(commands.Cog):
     @commands.command()
     async def submit(self, ctx: commands.Context):
         """
-        Submit command is used to submit a finished application.
+        Submit a finished application.
 
         Current steps are as follows:
 
@@ -125,7 +124,7 @@ class ApplicationCog(commands.Cog):
     @commands.command()
     async def cancel(self, ctx: commands.Context):
         """
-        Cancel command is used to cancel an in-progress application.
+        Cancel an in-progress application.
 
         Current steps are as follows:
 
@@ -150,7 +149,7 @@ class ApplicationCog(commands.Cog):
 
     async def submit_application(self, member: discord.Member):
         """
-        Helper method to format and send an application to the relevant channel.
+        Format and send an application to the relevant channel.
         """
         await self.bot.channels["applications"].send(
             strings.Application.submit.format(member.display_name, self.bot.applications[member].answers))
@@ -158,6 +157,6 @@ class ApplicationCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     """
-    Standard setup, loads the cog.
+    Load the cog.
     """
     bot.add_cog(ApplicationCog(bot))

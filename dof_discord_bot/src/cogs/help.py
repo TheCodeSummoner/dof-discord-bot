@@ -5,18 +5,10 @@ import discord
 import typing
 from discord.ext import commands
 from .. import strings
+from ..exceptions import HelpQueryNotFound
 from ..bot import Bot
-from ..logger import Log
 from ..constants import MAX_HELP_LINES, COMMAND_PREFIX, COMMANDS_ORDER
-from ..utils import Session, LinePaginator, MessageEmbed
-
-
-class HelpQueryNotFound(discord.DiscordException):
-    """
-    Raised when a HelpSession query doesn't match a command or a cog.
-    """
-    def __init__(self, arg: str):
-        super().__init__(arg)
+from ..utils import Session, LinePaginator, MessageEmbed, Log
 
 
 class HelpSession(Session):
@@ -36,7 +28,7 @@ class HelpSession(Session):
 
     async def build_pages(self):
         """
-        Builds the list of content pages to be paginated through in the help message, as a list of str.
+        Build the list of content pages to be paginated through in the help message, as a list of str.
         """
         paginator = LinePaginator(prefix="", suffix="", max_lines=MAX_HELP_LINES)
 
@@ -50,7 +42,7 @@ class HelpSession(Session):
 
     async def global_help(self, paginator: LinePaginator):
         """
-        Retrieves all commands and formats them correctly
+        Retrieve all commands and format them correctly.
         """
         Log.debug(f"Displaying global help (all commands) for {self.author}")
 
@@ -80,7 +72,7 @@ class HelpSession(Session):
 
     async def command_help(self, paginator: LinePaginator, command: commands.Command):
         """
-        Retrieves command-related information and formats it correctly.
+        Retrieve command-related information and format it correctly.
         """
         Log.debug(f"Displaying command-specific help about {command.name} for {self.author}")
 
@@ -104,7 +96,7 @@ class HelpSession(Session):
 
 class HelpCog(commands.Cog):
     """
-    Help Cog is a discord extension providing the !help command and an associated error handler.
+    Provide the !help command and an associated error handler.
 
     The command will either return a session, or display an error message if it can not be created (for example due
     to missing permissions to run a command - no need to display any help about it).
@@ -115,8 +107,7 @@ class HelpCog(commands.Cog):
     @commands.command(aliases=["isummontheedofbot"])
     async def help(self, ctx: commands.Context, command: str = ""):
         """
-        Help command displays available commands, or displays command-specific information when used with an additional\
-        argument.
+        Display available commands, or display command-specific information when used with an additional argument.
 
         Some examples of the command:
 
@@ -146,7 +137,7 @@ class HelpCog(commands.Cog):
     @help.error
     async def help_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
-        Custom handler needed to handle the custom error - the user should be informed about an invalid query.
+        Error handler needed to handle the custom error - the user should be informed about an invalid query.
         """
         if isinstance(error, HelpQueryNotFound):
             Log.debug(f"Caught invalid query error - {error}")
@@ -157,9 +148,7 @@ class HelpCog(commands.Cog):
 
 def setup(bot: Bot):
     """
-    Standard setup, loads the cog.
-
-    Removes the default help command beforehand.
+    Load the cog, but also remove the default help command beforehand.
     """
     bot.remove_command("help")
     bot.add_cog(HelpCog())

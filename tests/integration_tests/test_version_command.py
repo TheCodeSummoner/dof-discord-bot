@@ -1,16 +1,17 @@
 """
 Tests associated with the !version command.
 """
+# pylint: disable=import-error
 import pytest
 import dof_discord_bot
+from dof_discord_bot.src.utils import Log
 from . import helpers
-from dof_discord_bot.src.logger import Log
 
 
 @helpers.threaded_async
 async def test_returns_current_version():
     """
-    Simply calling the command should result in bot's current version being printed.
+    Simply calling the command should result in the bot's current version being printed.
     """
     async def version_to_appear():
         """

@@ -1,12 +1,12 @@
 """
 Dof discord bot package - exposes some meta information and a helper command to run the code.
 """
-import json as _json
-import os as _os
-from dof_discord_bot.src import Bot as _Bot, COMMAND_PREFIX as _PREFIX, TOKEN as _TOKEN, RES_DIR as _RES_DIR
+import json
+import os
+from dof_discord_bot.src import Bot, constants
 
-with open(_os.path.join(_RES_DIR, "meta.json")) as f:
-    metadata = _json.load(f)
+with open(os.path.join(constants.RES_DIR, "meta.json")) as f:
+    metadata = json.load(f)
 
 __title__ = metadata["__title__"]
 __version__ = metadata["__version__"]
@@ -18,6 +18,17 @@ __url__ = metadata["__url__"]
 
 def run():
     """
-    Helper function to easily run the bot.
+    Run the bot (can be used from within the package).
     """
-    _Bot(_PREFIX).run(_TOKEN)
+    Bot(constants.COMMAND_PREFIX).run(constants.TOKEN)
+
+
+__all__ = [
+    "__title__",
+    "__version__",
+    "__description__",
+    "__lead__",
+    "__email__",
+    "__url__",
+    "run"
+]

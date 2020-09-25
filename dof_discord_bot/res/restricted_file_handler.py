@@ -1,10 +1,10 @@
 """
 Helper module storing the class to be used within the logging config files.
 """
-import logging as _logging
+import logging
 
 
-class _RestrictedFileHandler(_logging.FileHandler):
+class RestrictedFileHandler(logging.FileHandler):
     """
     Extends a classic file handler by restricting the logging messages to contain only the specified level.
 
@@ -13,10 +13,10 @@ class _RestrictedFileHandler(_logging.FileHandler):
     """
 
     def __init__(self, filename, *args, **kwargs):
-        _logging.FileHandler.__init__(self, filename, *args, **kwargs)
+        logging.FileHandler.__init__(self, filename, *args, **kwargs)
 
     def emit(self, record):
         """
         Overridden function modified to only log records of a matching level.
         """
-        return _logging.FileHandler.emit(self, record) if record.levelno == self.level else None
+        return logging.FileHandler.emit(self, record) if record.levelno == self.level else None

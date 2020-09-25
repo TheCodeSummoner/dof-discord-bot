@@ -4,8 +4,7 @@ Module storing the bot master class - an extended version of Discord's commands 
 import typing
 import discord
 from discord.ext import commands
-from .logger import Log
-from .utils import MemberApplication, MessageEmbed
+from .utils import MemberApplication, MessageEmbed, Log
 from .constants import COMMANDS_ORDER
 from . import strings
 
@@ -29,7 +28,7 @@ class Bot(commands.Bot):
 
     def _load_extensions(self):
         """
-        Function used to load all cogs.
+        Load all cogs.
         """
         self.load_extension("dof_discord_bot.src.cogs.help")
         self.load_extension("dof_discord_bot.src.cogs.info")
@@ -39,8 +38,7 @@ class Bot(commands.Bot):
 
     def _verify_commands_order(self):
         """
-        Function used to check if the order of all commands has been specified, and alphabetically sort any un-ordered
-        commands.
+        Check if the order of all commands has been specified, and alphabetically sort any un-ordered commands.
         """
         command_names = {cmd.name for cmd in self.commands}
 
@@ -55,27 +53,27 @@ class Bot(commands.Bot):
     @property
     def channels(self) -> typing.Dict[str, typing.Union[discord.TextChannel, discord.VoiceChannel]]:
         """
-        Getter to retrieve a mapping of channel name to channel instance.
+        Retrieve a mapping of channel name to channel instance.
         """
         return self._channels
 
     @property
     def applications(self) -> typing.Dict[discord.Member, MemberApplication]:
         """
-        Getter to retrieve a mapping of member instance to application instance.
+        Retrieve a mapping of member instance to application instance.
         """
         return self._applications
 
     @property
     def guild(self) -> discord.Guild:
         """
-        Getter to retrieve DoF Discord server.
+        Retrieve DoF Discord server.
         """
         return self.guilds[0]
 
     def _discover_channels(self):
         """
-        Helper function used to discover all channels and store them in a dict.
+        Discover all channels and store them in a dict.
         """
         for channel in self.get_all_channels():
 
@@ -85,7 +83,7 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """
-        Upon logging, the bot will inform about its user name and id, as well as discover all guild channels.
+        Upon logging in, the bot will inform about its user name and id, as well as discover all guild channels.
         """
         Log.info(f"Logged on as {self.user}")
         self._discover_channels()
@@ -93,7 +91,7 @@ class Bot(commands.Bot):
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel: typing.Union[discord.VoiceChannel, discord.TextChannel]):
         """
-        Listener used to keep the channels dictionary up to date and avoid name clashes.
+        Event listener used to keep the channels dictionary up to date and avoid name clashes.
         """
         if channel.name in self._channels:
             Log.error(f"Attempted to create an already existing channel - name clash detected for {channel}")
@@ -108,7 +106,7 @@ class Bot(commands.Bot):
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: typing.Union[discord.VoiceChannel, discord.TextChannel]):
         """
-        Listener used to keep the channels dictionary up to date.
+        Event listener used to keep the channels dictionary up to date.
         """
         Log.info(f"Channel {channel} deleted")
 
@@ -122,7 +120,7 @@ class Bot(commands.Bot):
     async def on_guild_channel_update(self, before: typing.Union[discord.VoiceChannel, discord.TextChannel],
                                       after: typing.Union[discord.VoiceChannel, discord.TextChannel]):
         """
-        Listener used to keep the channels dictionary up to date and avoid name clashes.
+        Event listener used to keep the channels dictionary up to date and avoid name clashes.
         """
         # Avoid handling channel updates started by this function
         if after in self._channels_being_updated:

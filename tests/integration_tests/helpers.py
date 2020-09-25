@@ -1,52 +1,52 @@
 """
 Helper file containing setup/teardown relevant functions, as well as some common testing constructs.
 """
-import os as _os
-import sys as _sys
-import time as _time
-import asyncio as _asyncio
-import threading as _threading
-import random as _random
-import string as _string
-import typing as _typing
-import discord as _discord
-import pytest as _pytest
-import inspect as _inspect
-from discord.ext import commands as _commands
+# pylint: disable=import-error, wrong-import-position
+import os
+import sys
+import time
+import asyncio
+import inspect
+import threading
+import random
+import string
+import typing
+import discord
+import pytest
+from discord.ext import commands
 
 # Make sure dof_discord_bot package can be found and overrides any installed versions
-_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", ".."))
-from dof_discord_bot.src.bot import Bot as _Bot  # noqa
-from dof_discord_bot.src.constants import COMMAND_PREFIX as _PREFIX, TOKEN as _DOF_BOT_TOKEN, RES_DIR as _RES_DIR  # noqa
-from dof_discord_bot.src.logger import Log as _Log  # noqa
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+from dof_discord_bot.src.bot import Bot  # noqa
+from dof_discord_bot.src.constants import COMMAND_PREFIX, TOKEN, RES_DIR  # noqa
+from dof_discord_bot.src.utils import Log  # noqa
 
 # Declare some useful directories
-TESTS_DIR = _os.path.join(_os.path.dirname(__file__), "..")
-INTEGRATION_TESTS_DIR = _os.path.join(TESTS_DIR, "integration_tests")
-LOG_DIR = _os.path.join(TESTS_DIR, "log")
+TESTS_DIR = os.path.join(os.path.dirname(__file__), "..")
+INTEGRATION_TESTS_DIR = os.path.join(TESTS_DIR, "integration_tests")
+LOG_DIR = os.path.join(TESTS_DIR, "log")
 
 # Find the testing bot token in the environment
-_TESTING_BOT_TOKEN = _os.getenv("DOF_TESTING_TOKEN", "")
+_TESTING_BOT_TOKEN = os.getenv("DOF_TESTING_TOKEN", "")
 if not _TESTING_BOT_TOKEN:
-    if _os.path.exists(_os.path.join(_RES_DIR, "token-testing")):
-        with open(_os.path.join(_RES_DIR, "token-testing")) as f:
+    if os.path.exists(os.path.join(RES_DIR, "token-testing")):
+        with open(os.path.join(RES_DIR, "token-testing")) as f:
             _TESTING_BOT_TOKEN = f.read().strip()
     else:
-        _pytest.exit(f"Missing token - either declare \"DOF_TESTING_TOKEN\" environment variable or include the token "
-                     f"in the \"token-testing\" file at \"{_os.path.join(_RES_DIR, 'token-testing')}\"")
+        pytest.exit(f"Missing token - either declare \"DOF_TESTING_TOKEN\" environment variable or include the token "
+                    f"in the \"token-testing\" file at \"{os.path.join(RES_DIR, 'token-testing')}\"")
 
 # Generate the testing channel name
-_TEST_CHANNEL_NAME = "test-" + "".join(_random.choice(_string.ascii_lowercase) for _ in range(16))
+_TEST_CHANNEL_NAME = "test-" + "".join(random.choice(string.ascii_lowercase) for _ in range(16))
 
 # Initialise the bot instances
-dof_bot = _Bot(_PREFIX)
-testing_bot = _commands.Bot("")
+dof_bot = Bot(COMMAND_PREFIX)
+testing_bot = commands.Bot("")
 
 
 async def process_commands_by_bot(message):
     """
-    This is an overridden version of discord's `process_commands` method, to allow handling commands invoked by the
-    testing bot.
+    Overridden version of discord's `process_commands` method, to allow handling commands invoked by the testing bot.
     """
     ctx = await dof_bot.get_context(message)
     await dof_bot.invoke(ctx)
@@ -55,24 +55,24 @@ async def process_commands_by_bot(message):
 dof_bot.process_commands = process_commands_by_bot
 
 
-def threaded_async(func: _typing.Callable):
+def threaded_async(func: typing.Callable):
     """
-    Helper decorator used to resolve future in a thread-safe manner.
+    Resolve future in a thread-safe manner.
     """
-    future: _typing.Coroutine = func()
+    future: typing.Coroutine = func()
 
     def _call():
         """
         Inner function used to resolve the future correctly.
         """
-        return _asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
+        return asyncio.run_coroutine_threadsafe(future, testing_bot.loop).result()
 
     return _call
 
 
-async def wait_for(func: _typing.Callable, on_timeout: _typing.Callable, timeout: int = 10, delay: int = 1):
+async def wait_for(func: typing.Callable, on_timeout: typing.Callable, timeout: int = 10, delay: int = 1):
     """
-    Helper function used to wait for a function to complete or timeout if it takes too long.
+    Wait for a function to complete or timeout if it takes too long.
 
     `func` is the function which will be called every loop cycle (waiting time between the cycles is defined by the
     `delay` argument), unless it takes more than `timeout` seconds, in which case the `on_timeout` function will be
@@ -83,50 +83,50 @@ async def wait_for(func: _typing.Callable, on_timeout: _typing.Callable, timeout
 
     Note that the code can handle both synchronous and asynchronous `func` and `on_timeout` functions.
     """
-    current_time = _time.time()
+    current_time = time.time()
     while True:
-        if _time.time() - current_time > timeout:
-            if _inspect.iscoroutinefunction(on_timeout):
+        if time.time() - current_time > timeout:
+            if inspect.iscoroutinefunction(on_timeout):
                 return await on_timeout()
-            else:
-                return on_timeout()
+
+            return on_timeout()
+
+        if inspect.iscoroutinefunction(func):
+            result = await func()
+            if result:
+                return result
         else:
-            if _inspect.iscoroutinefunction(func):
-                result = await func()
-                if result:
-                    return result
-            else:
-                result = func()
-                if result:
-                    return result
-            await _asyncio.sleep(delay)
+            result = func()
+            if result:
+                return result
+        await asyncio.sleep(delay)
 
 
 def setup():
     """
     Global setup function.
     """
-    _Log.info("Setting up testing environment")
+    Log.info("Setting up testing environment")
     _run_bots()
     if not _create_testing_channel():
         _stop_bots()
-        _pytest.exit("Failed to create the test channel")
-    _Log.info("Environment set up")
+        pytest.exit("Failed to create the test channel")
+    Log.info("Environment set up")
 
 
 def teardown():
     """
     Global teardown function.
     """
-    _Log.info("Tearing down testing environment")
+    Log.info("Tearing down testing environment")
     _remove_testing_channel()
     _stop_bots()
-    _Log.info("Environment torn down")
+    Log.info("Environment torn down")
 
 
-def get_test_channel() -> _discord.TextChannel:
+def get_test_channel() -> discord.TextChannel:
     """
-    Helper function to return the test channel.
+    Return the test channel.
     """
     return testing_bot.get_channel(dof_bot.channels[_TEST_CHANNEL_NAME].id)
 
@@ -138,37 +138,37 @@ def _run_bots(timeout: int = 15, delay: int = 3):
     This function may timeout after `timeout` seconds if the bots don't start, and will monitor the state of the
     connections every `delay` seconds.
     """
-    async def _connect(bot: _commands.Bot, token: str):
+    async def _connect(bot: commands.Bot, token: str):
         """
-        Helper function used to wrap the `start` and `close` commands as a single function.
+        Wrap the `start` and `close` commands as a single function.
         """
         try:
             await bot.start(token)
         finally:
             await bot.close()
 
-    def _connect_bots(loop: _asyncio.AbstractEventLoop):
+    def _connect_bots(loop: asyncio.AbstractEventLoop):
         """
-        Helper function used to create tasks and run the bots in an async loop.
+        Create tasks and run the bots in an async loop.
         """
-        dof_bot_run_task = loop.create_task(_connect(dof_bot, _DOF_BOT_TOKEN))
+        dof_bot_run_task = loop.create_task(_connect(dof_bot, TOKEN))
         testing_bot_run_task = loop.create_task(_connect(testing_bot, _TESTING_BOT_TOKEN))
-        loop.run_until_complete(_asyncio.gather(dof_bot_run_task, testing_bot_run_task))
+        loop.run_until_complete(asyncio.gather(dof_bot_run_task, testing_bot_run_task))
 
-    _Log.info("Waiting for bots to start")
-    _threading.Thread(target=_connect_bots, args=(_asyncio.get_event_loop(),)).start()
+    Log.info("Waiting for bots to start")
+    threading.Thread(target=_connect_bots, args=(asyncio.get_event_loop(),)).start()
 
-    current_time = _time.time()
+    current_time = time.time()
     while not dof_bot.is_ready() and not testing_bot.is_ready():
-        if _time.time() - current_time > timeout:
-            _pytest.exit("Timed out waiting for bots to start")
+        if time.time() - current_time > timeout:
+            pytest.exit("Timed out waiting for bots to start")
 
-        _Log.debug(f"Starting bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
-        _Log.debug(f"Starting bots, testing-bot state - "
+        Log.debug(f"Starting bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
+        Log.debug(f"Starting bots, testing-bot state - "
                    f"ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
-        _time.sleep(delay)
+        time.sleep(delay)
 
-    _Log.info("Both bots started and running")
+    Log.info("Both bots started and running")
 
 
 def _stop_bots(timeout: int = 15, delay: int = 3):
@@ -178,44 +178,44 @@ def _stop_bots(timeout: int = 15, delay: int = 3):
     This function may timeout after `timeout` seconds if the bots don't stop, and will monitor the state of the
     connections every `delay` seconds.
     """
-    _Log.info("Waiting for bots to close")
+    Log.info("Waiting for bots to close")
 
     # Await `close()` in a thread-safe manner
-    _asyncio.run_coroutine_threadsafe(dof_bot.close(), dof_bot.loop).result()
-    _asyncio.run_coroutine_threadsafe(testing_bot.close(), testing_bot.loop).result()
+    asyncio.run_coroutine_threadsafe(dof_bot.close(), dof_bot.loop).result()
+    asyncio.run_coroutine_threadsafe(testing_bot.close(), testing_bot.loop).result()
 
-    current_time = _time.time()
+    current_time = time.time()
     while dof_bot.is_ready() or testing_bot.is_ready():
-        if _time.time() - current_time > timeout:
-            _Log.error("Timed out waiting for bots to stop, manual cleanup may be needed")
+        if time.time() - current_time > timeout:
+            Log.error("Timed out waiting for bots to stop, manual cleanup may be needed")
             break
 
-        _Log.debug(f"Stopping bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
-        _Log.debug(f"Stopping bots, testing-bot state - "
+        Log.debug(f"Stopping bots, dof-bot state - ready: {dof_bot.is_ready()}, closed: {dof_bot.is_closed()}")
+        Log.debug(f"Stopping bots, testing-bot state - "
                    f"ready: {testing_bot.is_ready()}, closed: {testing_bot.is_closed()}")
-        _time.sleep(delay)
+        time.sleep(delay)
 
-    _Log.info("Both bots stopped")
+    Log.info("Both bots stopped")
 
 
 @threaded_async
 async def _create_testing_channel():
     """
-    Function used to create a discord channel which will be used for integration testing
+    Create a discord channel which will be used for integration testing.
     """
     def channel_to_get_detected():
         """
-        DoF bot must detect the channel creation.
+        Bot must detect the channel creation.
         """
         return _TEST_CHANNEL_NAME in dof_bot.channels
 
     def or_fail_and_exit():
         """
-        Testing without a dedicated test channel is impossible.
+        Can't continue - testing without a dedicated test channel is impossible.
         """
-        _Log.error("Timed out creating the test channel")
+        Log.error("Timed out creating the test channel")
 
-    _Log.info("Creating the test channel")
+    Log.info("Creating the test channel")
     await dof_bot.guild.create_text_channel(_TEST_CHANNEL_NAME, reason="Created for development (testing) purposes.")
     return await wait_for(channel_to_get_detected, or_fail_and_exit)
 
@@ -223,7 +223,7 @@ async def _create_testing_channel():
 @threaded_async
 async def _remove_testing_channel():
     """
-    Function used to remove the channel used for integration testing.
+    Remove the channel used for integration testing.
     """
-    _Log.info("Removing the test channel")
+    Log.info("Removing the test channel")
     await dof_bot.channels[_TEST_CHANNEL_NAME].delete()

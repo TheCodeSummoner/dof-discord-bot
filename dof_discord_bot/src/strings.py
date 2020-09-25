@@ -1,19 +1,11 @@
 """
-Formattable strings, loaded from a YAML file.
+Strings loaded from a YAML file. Some can be formatted with extra data.
 """
-import os as _os
-import yaml as _yaml
-from .constants import RES_DIR as _RES_DIR
-from .logger import Log as _Log
-
-with open(_os.path.join(_RES_DIR, "strings.yaml"), encoding="UTF-8") as f:
-    _CONFIG_YAML = _yaml.safe_load(f)
-
-# Hard code the root section as the yaml file is only used for strings resources
-_MAIN_YAML_SECTION = "strings"
+import sys
+from .constants import CONFIG_YAML, YAML_STRINGS_ROOT_FIELD
 
 
-class _YAMLStringsGetter(type):
+class YAMLStringsGetter(type):
     """
     Implements a custom metaclass used for accessing configuration data by simply accessing class attributes.
 
@@ -36,6 +28,7 @@ class _YAMLStringsGetter(type):
         import strings
         print(strings.Application.new_application)
     """
+
     section: str
     subsection: str = None
 
@@ -43,17 +36,18 @@ class _YAMLStringsGetter(type):
         name = name.lower()
         try:
             if cls.subsection is not None:
-                return _CONFIG_YAML[_MAIN_YAML_SECTION][cls.section][cls.subsection][name]
-            elif cls.section is not None:
-                return _CONFIG_YAML[_MAIN_YAML_SECTION][cls.section][name]
-            else:
-                raise KeyError("Can not access the values without providing a \"section\" key")
+                return CONFIG_YAML[YAML_STRINGS_ROOT_FIELD][cls.section][cls.subsection][name]
+            if cls.section is not None:
+                return CONFIG_YAML[YAML_STRINGS_ROOT_FIELD][cls.section][name]
+            raise KeyError("Can not access the values without providing a \"section\" key")
         except KeyError:
             dotted_path = ".".join((cls.subsection, cls.section, name) if cls.subsection else (cls.section, name))
-            _Log.error(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
+            print(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.",
+                  file=sys.stderr)
             raise
 
     def __getitem__(cls, name):
+        # pylint: disable=no-value-for-parameter
         return cls.__getattr__(name)
 
     def __iter__(cls):
@@ -64,20 +58,22 @@ class _YAMLStringsGetter(type):
             yield name, getattr(cls, name)
 
 
-class General(metaclass=_YAMLStringsGetter):
+class General(metaclass=YAMLStringsGetter):
     """
     Strings related to the most general, discord-related features (e.g. handling channel changes).
     """
+
     section = "general"
     failed_create_channel: str
     failed_rename_channel: str
     update_reason: str
 
 
-class Application(metaclass=_YAMLStringsGetter):
+class Application(metaclass=YAMLStringsGetter):
     """
     Strings related to the member application process (and the application cog).
     """
+
     section = "apply_cog"
     new_application: str
     completed: str
@@ -90,10 +86,11 @@ class Application(metaclass=_YAMLStringsGetter):
     submit: str
 
 
-class Utils(metaclass=_YAMLStringsGetter):
+class Utils(metaclass=YAMLStringsGetter):
     """
     Strings related to the utils module.
     """
+
     section = "utils_module"
     steam_profile_long: str
     steam_profile_short: str
@@ -115,10 +112,11 @@ class Utils(metaclass=_YAMLStringsGetter):
     anything_else_short: str
 
 
-class Info(metaclass=_YAMLStringsGetter):
+class Info(metaclass=YAMLStringsGetter):
     """
     Strings related to the general information (and the information cog).
     """
+
     section = "info_cog"
     welcome: str
     bot_welcome: str
@@ -144,20 +142,22 @@ class Info(metaclass=_YAMLStringsGetter):
     authors_link: str
 
 
-class Help(metaclass=_YAMLStringsGetter):
+class Help(metaclass=YAMLStringsGetter):
     """
     Strings related to the help session (and the help cog).
     """
+
     section = "help_cog"
     invalid_query: str
     help_title: str
     help_aliases: str
 
 
-class Characters(metaclass=_YAMLStringsGetter):
+class Characters(metaclass=YAMLStringsGetter):
     """
-    Strings related to the character session (and the character cog)
+    Strings related to the character session (and the character cog).
     """
+
     section = "character_cog"
     title: str
     invalid_character: str
@@ -169,10 +169,11 @@ class Characters(metaclass=_YAMLStringsGetter):
     available_custom_characters: str
 
 
-class FemaleCharacters(metaclass=_YAMLStringsGetter):
+class FemaleCharacters(metaclass=YAMLStringsGetter):
     """
     Female Bannerlord character codes.
     """
+
     section = "character_cog"
     subsection = "female_characters"
     rhagaea: str
@@ -224,10 +225,11 @@ class FemaleCharacters(metaclass=_YAMLStringsGetter):
     asta: str
 
 
-class MaleCharacters(metaclass=_YAMLStringsGetter):
+class MaleCharacters(metaclass=YAMLStringsGetter):
     """
     Male Bannerlord character codes.
     """
+
     section = "character_cog"
     subsection = "male_characters"
     chaghan: str
@@ -393,10 +395,11 @@ class MaleCharacters(metaclass=_YAMLStringsGetter):
     andros: str
 
 
-class CustomCharacters(metaclass=_YAMLStringsGetter):
+class CustomCharacters(metaclass=YAMLStringsGetter):
     """
     Custom Bannerlord character codes.
     """
+
     section = "character_cog"
     subsection = "custom_characters"
     druidess_by_rawex: str

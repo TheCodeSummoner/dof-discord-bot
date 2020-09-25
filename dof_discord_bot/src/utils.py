@@ -1,48 +1,86 @@
 """
 An unorganised collection of non-static constructs, such as classes or utility functions.
 """
-import discord as _discord
-import abc as _abc
-import asyncio as _asyncio
-import contextlib as _contextlib
-from .logger import Log as _Log
-from . import strings as _strings
-from .constants import DEFAULT_SESSION_ICON as _DEFAULT_SESSION_ICON, LAST_PAGE_EMOJI as _LAST_PAGE_EMOJI, \
-    FIRST_PAGE_EMOJI as _FIRST_PAGE_EMOJI, NEXT_PAGE_EMOJI as _NEXT_PAGE_EMOJI, DELETE_EMOJI as _DELETE_EMOJI, \
-    PREVIOUS_PAGE_EMOJI as _PREVIOUS_PAGE_EMOJI
-from discord.ext import commands as _commands
+from __future__ import annotations
+import os
+import abc
+import json
+import asyncio
+import contextlib
+import logging
+import logging.config
+import discord
+from discord.ext import commands
+from . import strings
+from .exceptions import LoggingConfigError
+from .constants import DEFAULT_SESSION_ICON, LOG_DIR, LOG_FILE_HANDLERS, LOG_CONFIG_FILE_PATH
+from .constants import LAST_PAGE_EMOJI, FIRST_PAGE_EMOJI, NEXT_PAGE_EMOJI, DELETE_EMOJI, PREVIOUS_PAGE_EMOJI
+
+
+def configure_logging(config_file_path: str = LOG_CONFIG_FILE_PATH, target_log_directory: str = LOG_DIR):
+    """
+    Configure the built-in logging module using a JSON configuration file.
+
+    All log files will be placed in the "target_log_directory" folder.
+    """
+    if not os.path.exists(config_file_path):
+        raise LoggingConfigError(f"Failed to find the log config file at {config_file_path}")
+    if not os.path.exists(target_log_directory):
+        raise LoggingConfigError(f"Log directory does not exist at {target_log_directory}")
+
+    try:
+        with open(config_file_path, "r") as log_config_file:
+            config = json.load(log_config_file)
+
+            # Extract the handlers and update the paths within them to use the correct folder
+            handlers = config["handlers"]
+            for handler in handlers:
+                if handlers[handler]["class"] in LOG_FILE_HANDLERS:
+                    handlers[handler]["filename"] = os.path.join(target_log_directory, handlers[handler]["filename"])
+
+    except OSError as exception:
+        raise LoggingConfigError("An error occurred while setting configuring logging") from exception
+
+    # Finally, load the configuration
+    logging.config.dictConfig(config)
+
+
+# Initially configure logging and create a log instance referring to the dof bot logger
+configure_logging()
+Log = logging.getLogger("dof-discord-bot")
 
 
 class MemberApplication:
     """
-    Member application class storing information about each applicant and the application stage.
+    Data storage class containing information about each applicant and their application stage.
 
     See usage example in `ApplicationCog` (`apply.py`)
     """
+
     questions = [
-        _strings.Utils.steam_profile_long,
-        _strings.Utils.tw_profile_long,
-        _strings.Utils.country_long,
-        _strings.Utils.english_fluency_long,
-        _strings.Utils.dof_first_encounter_long,
-        _strings.Utils.dof_why_join_long,
-        _strings.Utils.other_games_long,
-        _strings.Utils.time_availability_long,
-        _strings.Utils.anything_else_long
+        strings.Utils.steam_profile_long,
+        strings.Utils.tw_profile_long,
+        strings.Utils.country_long,
+        strings.Utils.english_fluency_long,
+        strings.Utils.dof_first_encounter_long,
+        strings.Utils.dof_why_join_long,
+        strings.Utils.other_games_long,
+        strings.Utils.time_availability_long,
+        strings.Utils.anything_else_long
     ]
-    _questions_summary = [
-        _strings.Utils.steam_profile_short,
-        _strings.Utils.tw_profile_short,
-        _strings.Utils.country_short,
-        _strings.Utils.english_fluency_short,
-        _strings.Utils.dof_first_encounter_short,
-        _strings.Utils.dof_why_join_short,
-        _strings.Utils.other_games_short,
-        _strings.Utils.time_availability_short,
-        _strings.Utils.anything_else_short
+    questions_summary = [
+        strings.Utils.steam_profile_short,
+        strings.Utils.tw_profile_short,
+        strings.Utils.country_short,
+        strings.Utils.english_fluency_short,
+        strings.Utils.dof_first_encounter_short,
+        strings.Utils.dof_why_join_short,
+        strings.Utils.other_games_short,
+        strings.Utils.time_availability_short,
+        strings.Utils.anything_else_short
     ]
 
-    def __init__(self, member: _discord.Member):
+    def __init__(self, member: discord.Member):
         self._member = member
         self._progress = 0
         self._answers = list()
@@ -50,35 +88,35 @@ class MemberApplication:
     @property
     def progress(self) -> int:
         """
-        Getter for which question is currently being answered (+1 because humans generally don't count from 0)
+        Which question is currently being answered (+1 because humans generally don't count from 0).
         """
         return self._progress + 1
 
     @property
     def question(self) -> str:
         """
-        Getter for current question.
+        Which question should be answered next.
         """
         return MemberApplication.questions[self._progress]
 
     @property
     def answers(self) -> str:
         """
-        Get formatted answers.
+        Format and return already provided answers.
         """
-        return str.join("\n", (f"{MemberApplication._questions_summary[i]}: {self._answers[i]}"
+        return str.join("\n", (f"{MemberApplication.questions_summary[i]}: {self._answers[i]}"
                                for i in range(len(self._answers)))) + "\n"
 
     @property
     def finished(self) -> bool:
         """
-        Get boolean determining whether application should be considered finished.
+        Determine whether application should be considered as finished.
         """
         return self._progress == len(MemberApplication.questions)
 
     def add_answer(self, answer: str):
         """
-        Function used to register a new answer and increase the progress counter.
+        Register a new answer and increase the progress counter.
         """
         self._progress += 1
         self._answers.append(answer)
@@ -86,14 +124,14 @@ class MemberApplication:
 
 class Page:
     """
-    Page class is used to represent multiple paginator lines, which can be then added all at once.
+    Represent multiple paginator lines, which can be then added all at once.
     """
 
     def __init__(self, *lines):
         """
         `Lines` can either be a list of strings, or multiple strings which are then packed into a list.
 
-        Keep in mind that a value error will be thrown if a non-string element is found in either case.
+        Keep in mind that an error will be raised if a non-string element is found in either case.
         """
         if len(lines) == 1 and isinstance(lines[0], list):
             lines = lines[0]
@@ -101,27 +139,27 @@ class Page:
         self._lines = list()
         for line in lines:
             if not isinstance(line, str):
-                raise ValueError(f"Each page line is expected to be a string, not {type(line)}")
+                raise TypeError(f"Each page line is expected to be a string, not {type(line)}")
             self._lines.append(line)
 
     @property
     def lines(self) -> list:
         """
-        Getter for the page lines.
+        Getter for the page's lines.
         """
         return self._lines
 
 
-class LinePaginator(_commands.Paginator):
+class LinePaginator(commands.Paginator):
     """
-    Extended paginator used to restrict the amount of displayed content by checking the number of lines.
+    Restrict the amount of displayed content by checking the number of lines.
 
     Additionally supports adding a `Page` instance, instead of manually adding each line.
     """
 
     def __init__(self, max_lines: int = None, **kwargs):
         """
-        Max lines argument is used to restrict the maximum amount of content (even though the lines can be as long as
+        Max lines argument is used to restrict the maximum amount of content (even though the lines can be as long as \
         needed, as long as they are under the character limit).
 
         All other keyword-only arguments are passed into the parent constructor.
@@ -130,20 +168,20 @@ class LinePaginator(_commands.Paginator):
         self.max_lines = max_lines
         self.lines_count = 0
 
-    def add_line(self, line: str = "", *args, **kwargs):
+    def add_line(self, line: str = "", *, empty: bool = False):
         """
-        Extended add_line method from the parent class, added the functionality to also restrict the number of lines.
+        Extend add_line method from the parent class - added the functionality to also restrict the number of lines.
         """
         if self.max_lines is not None:
             if self.lines_count >= self.max_lines:
                 self.close_page()
             self.lines_count += 1
 
-        super().add_line(line, *args, **kwargs)
+        super().add_line(line, empty=empty)
 
     def add_page(self, page: Page):
         """
-        New support method to allow adding multiple lines (pages) at once.
+        Add a `Page` instance (multiple lines at once).
         """
         for line in page.lines:
             self.add_line(line)
@@ -151,7 +189,7 @@ class LinePaginator(_commands.Paginator):
 
     def close_page(self):
         """
-        Extended close_page method from the parent class, added the functionality to reset line count limiter.
+        Extend close_page method from the parent class - added the functionality to reset line count limiter.
 
         Note that if the paginator was given the line restriction, the pages may be closed early. Don't pass max_lines
         restriction in the constructor to allow unlimited amount of lines per page.
@@ -173,10 +211,11 @@ class Session:
     pages in there.
     """
 
-    def __init__(self, ctx: _commands.Context, title: str, icon: str = _DEFAULT_SESSION_ICON, timeout: int = 60):
+    def __init__(self, ctx: commands.Context, title: str, icon: str = DEFAULT_SESSION_ICON, timeout: int = 60):
         """
-        Constructor is directly called by the `start` method, and always takes 3 arguments - context, title, and
-        optional icon.
+        Create a session given context and the title.
+
+        Keep in mind that this constructor is directly called by the `start` method.
 
         If you want to pass additional information to the session (for example to build the pages using that
         information), add it to passed context and override init to remember the value.
@@ -199,19 +238,19 @@ class Session:
 
         # Declare a mapping of emoji to reaction functions
         self.reactions = {
-            _FIRST_PAGE_EMOJI: self.do_first_page,
-            _PREVIOUS_PAGE_EMOJI: self.do_previous_page,
-            _NEXT_PAGE_EMOJI: self.do_next_page,
-            _LAST_PAGE_EMOJI: self.do_last_page,
-            _DELETE_EMOJI: self.do_delete
+            FIRST_PAGE_EMOJI: self.do_first_page,
+            PREVIOUS_PAGE_EMOJI: self.do_previous_page,
+            NEXT_PAGE_EMOJI: self.do_next_page,
+            LAST_PAGE_EMOJI: self.do_last_page,
+            DELETE_EMOJI: self.do_delete
         }
 
     @classmethod
-    async def start(cls, ctx: _commands.Context, title: str, icon: str = _DEFAULT_SESSION_ICON) -> "Session":
+    async def start(cls, ctx: commands.Context, title: str, icon: str = DEFAULT_SESSION_ICON) -> Session:
         """
         Create and begin a session based on the given context.
         """
-        _Log.info(f"Starting a session, initiated by {ctx.author}")
+        Log.info(f"Starting a session, initiated by {ctx.author}")
 
         session = cls(ctx, title, icon)
         await session.prepare()
@@ -219,22 +258,22 @@ class Session:
 
     async def stop(self):
         """
-        Stops the session, removes event listeners and attempts to delete the session message.
+        Stop the session - removes event listeners and attempts to delete the session message.
         """
-        _Log.info(f"Stopping the session started by {self.author}")
+        Log.info(f"Stopping the session started by {self.author}")
 
         self.bot.remove_listener(self.on_reaction_add)
         self.bot.remove_listener(self.on_message_delete)
 
         # Ignore if permission issue, or the message doesn't exist
-        with _contextlib.suppress(_discord.HTTPException, AttributeError):
+        with contextlib.suppress(discord.HTTPException, AttributeError):
             await self.message.delete()
 
     async def prepare(self):
         """
-        Sets up the session pages, events, message, and reactions.
+        Set up the (session) pages, events, message, and reactions.
         """
-        _Log.debug(f"Preparing the session for {self.author}")
+        Log.debug(f"Preparing the session for {self.author}")
 
         # Create paginated content
         await self.build_pages()
@@ -258,10 +297,10 @@ class Session:
         else:
             await self.stop()
 
-    @_abc.abstractmethod
+    @abc.abstractmethod
     async def build_pages(self):
         """
-        Method to be overridden - each session needs to know how to create the pages.
+        To be overridden - each session needs to know how to create the pages.
 
         You MUST set self.pages in this method to a list of paginator's pages:
 
@@ -270,7 +309,6 @@ class Session:
 
             self.pages = paginator.pages
         """
-        pass
 
     @property
     def is_first_page(self) -> bool:
@@ -290,7 +328,7 @@ class Session:
         """
         Event that is called when the user requests the first page.
         """
-        _Log.debug(f"Getting first page for {self.author}")
+        Log.debug(f"Getting first page for {self.author}")
 
         if not self.is_first_page:
             await self.update_page(0)
@@ -299,7 +337,7 @@ class Session:
         """
         Event that is called when the user requests the previous page.
         """
-        _Log.debug(f"Getting previous page for {self.author}")
+        Log.debug(f"Getting previous page for {self.author}")
 
         if not self.is_first_page:
             await self.update_page(self.current_page - 1)
@@ -308,7 +346,7 @@ class Session:
         """
         Event that is called when the user requests the next page.
         """
-        _Log.debug(f"Getting next page for {self.author}")
+        Log.debug(f"Getting next page for {self.author}")
 
         if not self.is_last_page:
             await self.update_page(self.current_page + 1)
@@ -317,7 +355,7 @@ class Session:
         """
         Event that is called when the user requests the last page.
         """
-        _Log.debug(f"Getting last page for {self.author}")
+        Log.debug(f"Getting last page for {self.author}")
 
         if not self.is_last_page:
             await self.update_page(len(self.pages) - 1)
@@ -326,24 +364,24 @@ class Session:
         """
         Event that is called when the user requests to stop the help session.
         """
-        _Log.debug(f"Deleting the message for {self.author}")
+        Log.debug(f"Deleting the message for {self.author}")
 
         await self.message.delete()
 
     async def timeout(self):
         """
-        Waits for a set number of seconds, then stops the help session.
+        Wait for a set number of seconds, then stop the help session.
         """
-        await _asyncio.sleep(self.session_timeout)
+        await asyncio.sleep(self.session_timeout)
         await self.stop()
 
     def reset_timeout(self):
         """
-        Cancels the original timeout task and sets it up again from the start.
+        Cancel the original timeout task and set it up again from the start.
 
         Used mainly to keep the session after users interact with it.
         """
-        _Log.debug(f"A user action by {self.author} forced the timeout reset")
+        Log.debug(f"A user action by {self.author} forced the timeout reset")
 
         # Cancel the original task if it exists
         if self.timeout_task:
@@ -355,19 +393,19 @@ class Session:
 
     def add_reactions(self):
         """
-        Adds the relevant reactions to the session message based on if pagination is required.
+        Add relevant reactions to the session message, a delete emoji is when pagination is not required.
         """
-        _Log.debug(f"Adding reactions for {self.author}'s session")
+        Log.debug(f"Adding reactions for {self.author}'s session")
 
         if len(self.pages) > 1:
             for reaction in self.reactions:
                 self.bot.loop.create_task(self.message.add_reaction(reaction))
         else:
-            self.bot.loop.create_task(self.message.add_reaction(_DELETE_EMOJI))
+            self.bot.loop.create_task(self.message.add_reaction(DELETE_EMOJI))
 
     async def update_page(self, page_number: int = 0):
         """
-        Displays the initial page, or changes the existing one to the given page number.
+        Display the initial page, or change the existing one to the given page number.
         """
         self.current_page = page_number
         embed_page = self.embed_page(page_number)
@@ -377,11 +415,11 @@ class Session:
         else:
             await self.message.edit(embed=embed_page)
 
-    def embed_page(self, page_number: int = 0) -> _discord.Embed:
+    def embed_page(self, page_number: int = 0) -> discord.Embed:
         """
-        Returns an Embed with the requested page formatted within.
+        Return an Embed with the requested page formatted within.
         """
-        embed = _discord.Embed()
+        embed = discord.Embed()
 
         embed.set_author(name=self.title, icon_url=self.icon)
         embed.description = self.pages[page_number]
@@ -393,11 +431,11 @@ class Session:
 
         return embed
 
-    async def on_reaction_add(self, reaction: _discord.Reaction, user: _discord.User):
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         """
         Event handler for when reactions are added on the session message.
         """
-        _Log.debug(f"Reaction added by {user.display_name}")
+        Log.debug(f"Reaction added by {user.display_name}")
 
         # Ensure it was the relevant session message
         if reaction.message.id != self.message.id:
@@ -415,23 +453,24 @@ class Session:
             return
 
         # Remove the added reaction to prep for re-use
-        with _contextlib.suppress(_discord.HTTPException):
-            _Log.debug(f"Reaction by {user.display_name} handled by the session")
+        with contextlib.suppress(discord.HTTPException):
+            Log.debug(f"Reaction by {user.display_name} handled by the session")
             await self.message.remove_reaction(reaction, user)
 
-    async def on_message_delete(self, message: _discord.Message):
+    async def on_message_delete(self, message: discord.Message):
         """
-        Closes the help session when the session message is deleted.
+        Close the help session when the session message is deleted.
         """
         if message.id == self.message.id:
             await self.stop()
 
 
-class MessageEmbed(_discord.Embed):
+class MessageEmbed(discord.Embed):
     """
-    Helper class to shortcut creation of embeds
+    Shortcut creation of embeds by providing a pre-prepared success/error message embed.
     """
+
     def __init__(self, message: str, negative: bool = False):
         super().__init__()
         self.title = message
-        self.colour = _discord.Colour.red() if negative else _discord.Colour.green()
+        self.colour = discord.Colour.red() if negative else discord.Colour.green()

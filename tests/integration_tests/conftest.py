@@ -1,17 +1,16 @@
 """
 Configuration module containing pytest-specific hooks.
 """
+# pylint: disable=import-error
 import os
-import logging
-from . import helpers
 from _pytest.config import Config as PyTestConfig
-from dof_discord_bot.src.logger import Log
-from dof_discord_bot.src import logger
+from dof_discord_bot.src.utils import Log, configure_logging
+from . import helpers
 
 
 def _reconfigure_logging():
     """
-    Helper function used to redirect all logging into the tests-specific log folder.
+    Redirect all logging into the tests-specific log folder.
 
     Accesses the private method of `logger` to avoid repeating the code.
     """
@@ -20,16 +19,15 @@ def _reconfigure_logging():
         if file_name.endswith(".log"):
             os.remove(os.path.join(helpers.LOG_DIR, file_name))
 
-    # noinspection PyProtectedMember
-    logger._configure(log_directory=helpers.LOG_DIR)
-    Log._logger = logging.getLogger("dof-discord-bot")
+    configure_logging(target_log_directory=helpers.LOG_DIR)
     Log.info("Logging has been reconfigured")
 
 
 def pytest_configure(config: PyTestConfig):
     """
-    Configuration hook which reconfigures the logging and calls the global setup function.
+    Reconfigures the logging module and call the global setup function.
     """
+    # pylint: disable=unused-argument
     _reconfigure_logging()
     helpers.setup()
     Log.info("Pytest configuration hook finished successfully")
@@ -37,8 +35,9 @@ def pytest_configure(config: PyTestConfig):
 
 def pytest_unconfigure(config: PyTestConfig):
     """
-    Configuration hook which calls the global teardown function.
+    Call the global teardown function.
     """
+    # pylint: disable=unused-argument, protected-access
     helpers.teardown()
     Log.info("Pytest unconfiguration hook finished successfully")
 

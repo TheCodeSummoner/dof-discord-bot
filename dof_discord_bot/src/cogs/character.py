@@ -5,18 +5,18 @@ import discord
 import typing
 from discord.ext import commands
 from .. import strings
-from ..utils import Session, LinePaginator, MessageEmbed, Page
-from ..constants import BANNERLORD_CHARACTER_ICON, DONT_CAPITALISE, \
-    FEMALE_CHARACTER_SPACE, FEMALE_CHARACTERS_PER_LINE, \
-    MALE_CHARACTER_SPACE, MALE_CHARACTERS_PER_LINE, \
-    CUSTOM_CHARACTER_SPACE, CUSTOM_CHARACTERS_PER_LINE
+from ..exceptions import BannerlordCharacterNotFound
+from ..utils import Session, LinePaginator, MessageEmbed, Page, Log
+from ..constants import BANNERLORD_CHARACTER_ICON, DONT_CAPITALISE
+from ..constants import FEMALE_CHARACTER_SPACE, FEMALE_CHARACTERS_PER_LINE
+from ..constants import MALE_CHARACTER_SPACE, MALE_CHARACTERS_PER_LINE
+from ..constants import CUSTOM_CHARACTER_SPACE, CUSTOM_CHARACTERS_PER_LINE
 from ..bot import Bot
-from ..logger import Log
 
 
 def split(iterable: typing.Iterable, chunks: int) -> typing.List[typing.List]:
     """
-    Helper function to split an iterable into a number of chunks in a tuple.
+    Split an iterable into a number of chunks in a tuple.
     """
     new_items = [[]]
     for item in iterable:
@@ -37,23 +37,14 @@ FEMALE_CHARACTERS_SPLIT = split(sorted(FEMALE_CHARACTERS), FEMALE_CHARACTERS_PER
 MALE_CHARACTERS_SPLIT = split(sorted(MALE_CHARACTERS), MALE_CHARACTERS_PER_LINE)
 
 
-class CharacterNotFound(discord.DiscordException):
-    """
-    Raised when the character-fetching query doesn't match any of the supported characters.
-    """
-
-    def __init__(self, arg: str):
-        super().__init__(arg)
-
-
 class CharacterSession(Session):
     """
-    Character Session allowing retrieving the Bannerlord character codes.
+    Retrieve the Bannerlord character codes.
     """
 
     async def build_pages(self):
         """
-        Builds predefined pages and puts them into the paginator.
+        Build predefined pages and put them into the paginator.
         """
         paginator = LinePaginator(prefix="", suffix="", max_size=4096)
 
@@ -94,14 +85,14 @@ class CharacterSession(Session):
     @staticmethod
     def _format_name(name: str):
         """
-        Helper function used to format a name so it appears properly in the message.
+        Format a name so it appears properly in the message.
         """
         return "• " + " ".join(part.capitalize() if part not in DONT_CAPITALISE else part for part in name.split("_"))
 
 
 class CharacterCog(commands.Cog):
     """
-    Character Cog is a discord extension providing a certain bannerlord character face based on the user's input name.
+    Provide a certain bannerlord character face based on the user's input name.
     """
 
     def __init__(self, bot: Bot):
@@ -111,7 +102,7 @@ class CharacterCog(commands.Cog):
     @commands.command(aliases=["characters"])
     async def character(self, ctx: commands.Context, *name):
         """
-        Provides a character code (you can copy the code into the character edition screen in Bannerlord).
+        Provide a character code (you can copy the code into the character edition screen in Bannerlord).
 
         Some examples of the command:
 
@@ -135,16 +126,16 @@ class CharacterCog(commands.Cog):
             elif name_formatted in CUSTOM_CHARACTERS:
                 await ctx.send(embed=MessageEmbed(getattr(strings.CustomCharacters, name_formatted)))
             else:
-                await self.character_handler(ctx, CharacterNotFound(strings.Characters.invalid_character.format(name)))
+                await self.character_handler(ctx, BannerlordCharacterNotFound(strings.Characters.invalid_character.format(name)))
         else:
             await CharacterSession.start(ctx, strings.Characters.title, icon=BANNERLORD_CHARACTER_ICON)
 
     @character.error
     async def character_handler(self, ctx: commands.Context, error: discord.DiscordException):
         """
-        Custom handler needed to handle the custom error - the user should be informed about an invalid character.
+        Error handler needed to handle the custom error - the user should be informed about an invalid character.
         """
-        if isinstance(error, CharacterNotFound):
+        if isinstance(error, BannerlordCharacterNotFound):
             Log.debug(f"Caught invalid character error - {error}")
             await ctx.send(embed=MessageEmbed(str(error), negative=True))
         else:
@@ -153,6 +144,6 @@ class CharacterCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     """
-    Standard setup, loads the cog.
+    Load the cog.
     """
     bot.add_cog(CharacterCog(bot))
