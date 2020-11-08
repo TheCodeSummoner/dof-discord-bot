@@ -1,4 +1,7 @@
-# Version 1.4.1
+# Version 1.4.2
+- Added quick-fix Intents usage to comply with discord's recent update
+
+## Version 1.4.1
 - Added integration tests framework
 - Added a few basic tests
 - Fixed internal logging and docstrings

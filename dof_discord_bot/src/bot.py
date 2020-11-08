@@ -3,6 +3,7 @@ Module storing the bot master class - an extended version of Discord's commands 
 """
 import typing
 import discord
+from discord import Intents
 from discord.ext import commands
 from .logger import Log
 from .utils import MemberApplication, MessageEmbed
@@ -18,9 +19,8 @@ class Bot(commands.Bot):
 
         Bot(command_prefix="!").run(TOKEN)
     """
-
     def __init__(self, command_prefix: str):
-        super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"))
+        super().__init__(command_prefix, activity=discord.Game(name="Commands: !help"), intents=Intents.all())
         self._applications = dict()
         self._channels = dict()
         self._load_extensions()
